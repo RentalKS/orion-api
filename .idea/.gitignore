@@ -70,7 +70,6 @@ spring.log
 # Temporary files
 *.swp
 *~
-
 # Coverage reports
 coverage/
 
