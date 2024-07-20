@@ -1,5 +1,6 @@
 package com.orion.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "company")
+@Table(name = "companies")
 
 public class Company  extends BaseEntity{
 
@@ -49,7 +50,9 @@ public class Company  extends BaseEntity{
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
 }

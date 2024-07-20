@@ -1,12 +1,16 @@
 package com.orion.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.orion.security.token.Token;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -18,18 +22,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 @Table(name = "user")
-public class User  extends BaseEntity implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
 
-    @Column(name="first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstname;
 
-    @Column(name="last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastname;
 
     @Column(name="email")

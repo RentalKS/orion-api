@@ -33,10 +33,10 @@ public class CompanyDto {
     private String city;
     private String state;
     @NotNull
-    private Integer userId;
+    private Long userId;
 
 
-    public CompanyDto(LocalDateTime createdAt, String createdBy, Long id, @NotNull String companyName, String companyAddress, @NotNull String companyEmail, String companyPhone, String companyLogo, String zipCode, String city, String state,@NotNull Integer userId) {
+    public CompanyDto(LocalDateTime createdAt, String createdBy, Long id, @NotNull String companyName, String companyAddress, @NotNull String companyEmail, String companyPhone, String companyLogo, String zipCode, String city, String state,@NotNull Long userId) {
         this.createdAt = DateUtil.localDateTimeToMilliseconds(createdAt);
         this.createdBy = createdBy;
         this.id = id;

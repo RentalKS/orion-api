@@ -76,6 +76,9 @@ logging:
 # port
 server:
   port: ${SERVER_PORT:8080}
+default:
+  tenant:
+    domain: ${SERVER_DOMAIN:localhost:8080}
 base:
   url: ${BASE_URL:api}
 

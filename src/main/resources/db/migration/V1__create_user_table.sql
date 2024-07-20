@@ -1,15 +1,7 @@
-CREATE TABLE IF NOT EXISTS user (
-                                    id INT AUTO_INCREMENT PRIMARY KEY,
-                                    firstname VARCHAR(255) NOT NULL,
-    lastname VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(255) NOT NULL
+CREATE TABLE IF NOT EXISTS  roles (
+                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                      name VARCHAR(255) NOT NULL UNIQUE
     );
 
-CREATE TABLE IF NOT EXISTS token (
-                                     id INT AUTO_INCREMENT PRIMARY KEY,
-                                     token VARCHAR(255) NOT NULL,
-    user_id INT,
-    FOREIGN KEY (user_id) REFERENCES user(id)
-    );
+-- Insert default roles
+INSERT IGNORE INTO roles (id, name) VALUES (1,'USER'), (2,'ADMIN'), (3,'MANAGER'),(4,'TENANT'), (5,'CLIENT'), (6,'AGENCY'), (7,'EMPLOYEE');

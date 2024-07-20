@@ -1,10 +1,13 @@
 package com.orion.service;
 
 import com.orion.common.ResponseObject;
+import com.orion.config.tenant.TenantContext;
 import com.orion.dto.CompanyDto;
 import com.orion.entity.Company;
+import com.orion.entity.Tenant;
 import com.orion.entity.User;
 import com.orion.repository.CompanyRepository;
+import com.orion.repository.TenantRepository;
 import com.orion.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -22,7 +24,7 @@ import java.util.Optional;
 public class CompanyService extends BaseService {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
-
+    private final TenantRepository tenantRepository;
     public ResponseObject createCompany(CompanyDto companyDto) {
         String methodName = "createCompany";
         log.info("{} -> create company", methodName);
@@ -68,8 +70,10 @@ public class CompanyService extends BaseService {
         companyToUpdate.setCompanyName(companyDto.getCompanyName());
         companyToUpdate.setCompanyEmail(companyDto.getCompanyEmail());
 
-        Optional<User> user = userRepository.findUserById(companyDto.getUserId());
+        Optional<User> user = userRepository.findUserIdDeleteAtNull(companyDto.getUserId());
         isPresent(user);
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
 
         companyToUpdate.setUser(user.get());
 
@@ -88,6 +92,7 @@ public class CompanyService extends BaseService {
         if(companyDto.getCompanyPhone() != null){
             companyToUpdate.setCompanyPhone(companyDto.getCompanyPhone());
         }
+        companyToUpdate.setTenant(tenant.get());
 
         companyRepository.save(companyToUpdate);
     }

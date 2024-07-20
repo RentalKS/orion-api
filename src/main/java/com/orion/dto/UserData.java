@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 
 public class UserData {
-    private Integer id;
+    private Long id;
     private String username;
     private String lastName;
     private String email;
     private Long createdAt;
 
-    public UserData(Integer id, String firstName, String lastName, String email, LocalDateTime createdAt) {
+    public UserData(Long id, String firstName, String lastName, String email, LocalDateTime createdAt) {
         this.id = id;
         this.username = firstName;
         this.lastName = lastName;
