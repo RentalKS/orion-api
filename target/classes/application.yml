@@ -1,0 +1,80 @@
+spring:
+  security:
+    cors:
+      allowed-origins: http://localhost:3000
+      allowed-methods: GET, POST, PUT, DELETE, OPTIONS
+      allowed-headers: Authorization, Content-Type
+      allow-credentials: true
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 388596019498-isupfjohtf939agtektbdgt007shsoqf.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+
+  #mysql
+  jpa:
+    generate-ddl: 'true'
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL:update}
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        dialect: org.hibernate.dialect.MySQLDialect
+        enable_lazy_load_no_trans: 'true'
+    show-sql: 'false'
+    open-in-view: 'true'
+
+  #flyway
+  flyway:
+    schemas: ${SCHEMA:bree }
+    user: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:shpatvata}
+    baseline-on-migrate: 'true'
+    enabled: true
+    out-of-order: true
+  datasource:
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:shpatvata}
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3306/bree}
+
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days
+
+# Swagger
+springdoc:
+  swagger-ui:
+    enabled: 'true'
+    path: ${SWAGGER_PATH:/api/swagger-ui.html}
+  api-docs:
+    path: ${SWAGGER_API-DOCS_PATH:api/v3/api-docs}
+    enabled: 'true'
+
+##Logging
+logging:
+  file:
+    path: ${LOGGIN_PATH:logs}
+    name: ${LOGGING_NAME:logs/orion-logs.log}
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+  level:
+    org.springframework.security: DEBUG
+# port
+server:
+  port: ${SERVER_PORT:8080}
+base:
+  url: ${BASE_URL:api}
