@@ -1,12 +1,14 @@
-echo "
 # Default ignored files
 /shelf/
 /workspace.xml
+
 # Editor-based HTTP Client requests
 /httpRequests/
+
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
 # Java
 *.class
 *.jar
@@ -75,7 +77,3 @@ coverage/
 # Other
 out/
 logs/
-" > .gitignore
-
-git add .gitignore
-git commit -m "Add .gitignore file"
