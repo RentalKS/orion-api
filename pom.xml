@@ -8,7 +8,7 @@
 		<version>3.3.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.bree</groupId>
+	<groupId>com.orion</groupId>
 	<artifactId>orion</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>orion</name>
