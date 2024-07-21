@@ -1,7 +1,10 @@
 package com.orion.security.auth;
 
+import com.orion.config.tenant.TenantContext;
 import com.orion.entity.Role;
+import com.orion.entity.Tenant;
 import com.orion.repository.RoleRepository;
+import com.orion.repository.TenantRepository;
 import com.orion.security.config.JwtService;
 import com.orion.security.token.Token;
 import com.orion.security.token.TokenRepository;
@@ -31,10 +34,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
-
+    private final TenantRepository tenantRepository;
 
     public AuthenticationResponse register(RegisterRequest request) {
         Optional<Role> role = roleRepository.findByName(request.getRole());
+        Optional<Tenant> tenant = tenantRepository.findById(TenantContext.getCurrentTenant().getId());
 
         var user = User.builder()
                 .email(request.getEmail())
@@ -42,7 +46,7 @@ public class AuthenticationService {
                 .lastname(request.getLastname())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(role.get())
-                .tenant(null)
+                .tenant(tenant.get())
                 .build();
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);

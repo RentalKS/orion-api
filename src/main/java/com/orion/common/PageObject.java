@@ -2,7 +2,7 @@ package com.orion.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import com.orion.dto.FileData;
+import com.orion.dto.file.FileData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -46,6 +46,7 @@ public class Company  extends BaseEntity{
     @Column(name= "state")
     private String state;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;

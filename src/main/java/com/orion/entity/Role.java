@@ -44,9 +44,11 @@ public class Role {
     public static final Role ADMIN = new Role("ADMIN", Set.of(
             ADMIN_READ, ADMIN_UPDATE, ADMIN_DELETE, ADMIN_CREATE,
             MANAGER_READ, MANAGER_UPDATE, MANAGER_DELETE, MANAGER_CREATE));
+
     @ManyToOne
-    @JoinColumn(name = "manager_id")
-    public static final Role MANAGER = new Role("MANAGER", Set.of(
+    @JoinColumn(name = "agency_id")
+    public static final Role AGENCY = new Role("AGENCY", Set.of(
+            ADMIN_READ, ADMIN_UPDATE, ADMIN_DELETE, ADMIN_CREATE,
             MANAGER_READ, MANAGER_UPDATE, MANAGER_DELETE, MANAGER_CREATE));
 
     public Role(String name, Set<Permission> permissions) {

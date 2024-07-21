@@ -1,7 +1,7 @@
 package com.orion.controller;
 
 import com.orion.common.ResponseObject;
-import com.orion.dto.TenantDto;
+import com.orion.dto.user.TenantDto;
 import com.orion.dto.tenant.UpdateTenantDto;
 import com.orion.service.TenantService;
 import io.swagger.v3.oas.annotations.Operation;

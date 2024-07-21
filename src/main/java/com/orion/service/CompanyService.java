@@ -2,13 +2,15 @@ package com.orion.service;
 
 import com.orion.common.ResponseObject;
 import com.orion.config.tenant.TenantContext;
-import com.orion.dto.CompanyDto;
+import com.orion.dto.category.CategoryDto;
+import com.orion.dto.company.CompanyDto;
 import com.orion.entity.Company;
 import com.orion.entity.Tenant;
 import com.orion.entity.User;
 import com.orion.repository.CompanyRepository;
 import com.orion.repository.TenantRepository;
 import com.orion.repository.UserRepository;
+import com.orion.util.DtoUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +47,11 @@ public class CompanyService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
         Optional<CompanyDto> company = companyRepository.findCompany(companyId, principal.getUsername());
         isPresent(company);
+
+        List<CategoryDto> categories = companyRepository.findCompanyCategories(companyId);
+        if(!categories.isEmpty()){
+            company.get().setCategories(categories);
+        }
 
         responseObject.setData(company);
         responseObject.prepareHttpStatus(HttpStatus.OK);
@@ -76,22 +84,14 @@ public class CompanyService extends BaseService {
         isPresent(tenant);
 
         companyToUpdate.setUser(user.get());
+        DtoUtils.setIfNotNull(companyDto.getCompanyLogo(), companyToUpdate::setCompanyLogo);
+        DtoUtils.setIfNotNull(companyDto.getCity(), companyToUpdate::setCity);
+        DtoUtils.setIfNotNull(companyDto.getState(), companyToUpdate::setState);
+        DtoUtils.setIfNotNull(companyDto.getZipCode(), companyToUpdate::setZipCode);
+        DtoUtils.setIfNotNull(companyDto.getCompanyAddress(), companyToUpdate::setCompanyAddress);
+        DtoUtils.setIfNotNull(companyDto.getCompanyPhone(), companyToUpdate::setCompanyPhone);
+        companyToUpdate.setTenant(tenant.get());
 
-        if(companyDto.getCity() != null){
-            companyToUpdate.setCity(companyDto.getCity());
-        }
-        if(companyDto.getState() != null){
-            companyToUpdate.setState(companyDto.getState());
-        }
-        if(companyDto.getZipCode() != null){
-            companyToUpdate.setZipCode(companyDto.getZipCode());
-        }
-        if(companyDto.getCompanyAddress() != null){
-            companyToUpdate.setCompanyAddress(companyDto.getCompanyAddress());
-        }
-        if(companyDto.getCompanyPhone() != null){
-            companyToUpdate.setCompanyPhone(companyDto.getCompanyPhone());
-        }
         companyToUpdate.setTenant(tenant.get());
 
         companyRepository.save(companyToUpdate);
@@ -116,7 +116,18 @@ public class CompanyService extends BaseService {
         String methodName = "getMyCompanies";
         log.info("{} -> get my companies", methodName);
         ResponseObject responseObject = new ResponseObject();
-        responseObject.setData(companyRepository.findAllCompanies(principal.getUsername()));
+
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+        List<CompanyDto> companyList = companyRepository.findAllCompanies(principal.getUsername(),tenant.get().getId());
+
+        for(CompanyDto company : companyList){
+            List<CategoryDto> categories = companyRepository.findCompanyCategories(company.getId());
+            if(!categories.isEmpty()){
+                company.setCategories(categories);
+            }
+        }
+        responseObject.setData(companyList);
         responseObject.prepareHttpStatus(HttpStatus.OK);
 
         return responseObject;

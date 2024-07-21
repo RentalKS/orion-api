@@ -1,8 +1,8 @@
 package com.orion.controller;
 
 import com.orion.common.ResponseObject;
-import com.orion.dto.ChangePasswordRequest;
-import com.orion.dto.UserData;
+import com.orion.dto.user.ChangePasswordRequest;
+import com.orion.dto.user.UserData;
 import com.orion.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -42,7 +43,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @GetMapping("/me")
-    public ResponseEntity myProfile(@AuthenticationPrincipal Principal applicationUserDetails) {
+    public ResponseEntity myProfile(@AuthenticationPrincipal UserDetails applicationUserDetails) {
         String methodName = "getMyProfile";
 
         log.info("{} -> Get my profile", methodName);
