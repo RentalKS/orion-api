@@ -1,24 +1,29 @@
 package com.orion.config.tenant;
 
-import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Log4j2
-@NoArgsConstructor
-public final class TenantContext {
+public class TenantContext {
+    private static ThreadLocal<TenantData> currentTenant = new InheritableThreadLocal<>();
+    private static ThreadLocal<UserDetails> applicationUser = new InheritableThreadLocal<>();
 
-    private static final InheritableThreadLocal<String> currentTenant = new InheritableThreadLocal<>();
-
-    public static void setTenantId(String tenantId) {
-        log.debug("Setting tenantId to " + tenantId);
-        currentTenant.set(tenantId);
-    }
-
-    public static String getTenantId() {
+    public static TenantData getCurrentTenant() {
         return currentTenant.get();
     }
 
+    public static UserDetails getApplicationUser(){
+        return applicationUser.get();
+    }
+
+    public static void setCurrentTenant(TenantData tenantData) {
+        currentTenant.set(tenantData);
+    }
+
+    public static void setApplicationUser(UserDetails authenticationUser){
+        applicationUser.set(authenticationUser);
+    }
+
     public static void clear() {
-        currentTenant.remove();
+        currentTenant.set(null);
+        applicationUser.set(null);
     }
 }

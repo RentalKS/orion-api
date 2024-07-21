@@ -1,18 +1,26 @@
 package com.orion.service;
 
 import com.orion.common.ResponseObject;
-import com.orion.dto.UserData;
+import com.orion.config.tenant.TenantContext;
+import com.orion.dto.company.CompanyDto;
+import com.orion.dto.user.UserData;
+import com.orion.entity.Role;
+import com.orion.entity.Tenant;
 import com.orion.entity.User;
+import com.orion.repository.CompanyRepository;
+import com.orion.repository.TenantRepository;
 import com.orion.repository.UserRepository;
-import com.orion.dto.ChangePasswordRequest;
+import com.orion.dto.user.ChangePasswordRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +30,8 @@ public class UserService extends BaseService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+    private final CompanyRepository companyRepository;
+    private final TenantRepository tenantRepository;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -42,18 +52,21 @@ public class UserService extends BaseService {
         repository.save(user);
     }
 
-    public ResponseObject myProfile(Principal connectedUser) {
-        String methodName = "getUserById";
-        log.info("{} -> get user by id : {}", methodName);
-        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-
+    public ResponseObject myProfile(UserDetails connectedUser) {
         ResponseObject responseObject = new ResponseObject();
-        Optional<UserData> userData = repository.findUserDataById(user.getId());
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+        Optional<UserData> userData = repository.findUserDataById(connectedUser.getUsername(), tenant.get().getId());
         isPresent(userData);
 
+        if(Role.AGENCY.getName().equals(userData.get().getRole())) {
+            List<CompanyDto> companyDto = companyRepository.findAllCompanies(userData.get().getEmail(), tenant.get().getId());
+            userData.get().setCompanies(companyDto);
+        }
         responseObject.setData(userData);
         responseObject.prepareHttpStatus(HttpStatus.OK);
 
         return responseObject;
     }
+
 }

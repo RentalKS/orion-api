@@ -1,7 +1,7 @@
 package com.orion.controller;
 
 import com.orion.common.ResponseObject;
-import com.orion.dto.CompanyDto;
+import com.orion.dto.company.CompanyDto;
 import com.orion.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
