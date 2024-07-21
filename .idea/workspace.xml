@@ -5,23 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6051528e-b2cf-490d-b35e-373a3626aa8d" name="Changes" comment="fix/security">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/74c2b9b8-a4aa-4374-94b2-5417313bc9d3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/74c2b9b8-a4aa-4374-94b2-5417313bc9d3/storage_v2/_src_/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/74c2b9b8-a4aa-4374-94b2-5417313bc9d3/storage_v2/_src_/schema/mysql.osA4Bg.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/74c2b9b8-a4aa-4374-94b2-5417313bc9d3/storage_v2/_src_/schema/orion.RZtRBg.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/74c2b9b8-a4aa-4374-94b2-5417313bc9d3/storage_v2/_src_/schema/performance_schema.kIw0nw.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/74c2b9b8-a4aa-4374-94b2-5417313bc9d3/storage_v2/_src_/schema/sys.zb4BAA.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.jpb/jpb-settings.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/orion-logs.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/orion-logs.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/dto/category/CategoryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/dto/fleet/FleetDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/dto/insurancePolicy/InsurancePolicyDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/dto/location/LocationDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/dto/maintenanceRecord/MaintenanceRecordDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/dto/section/SectionDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/dto/vehicle/VehicleDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/entity/BaseEntity.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/entity/User$UserBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/security/token/Token$TokenBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/orion/security/token/Token.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/orion-0.0.1-SNAPSHOT.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/orion-0.0.1-SNAPSHOT.jar.original" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.orion.OrionRentalApplicationTests.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.orion.OrionRentalApplicationTests.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +93,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "extract.method.default.visibility": "private",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "develop",
     "jdk.selected.JAVA_MODULE": "openjdk-20",
     "last_opened_file_path": "C:/Users/Shpat/Desktop/orion-api/src/main/java/com/orion",
     "node.js.detected.package.eslint": "true",
@@ -186,7 +180,7 @@
       <workItem from="1721558131764" duration="7494000" />
       <workItem from="1721565645585" duration="484000" />
       <workItem from="1721566136142" duration="496000" />
-      <workItem from="1721567453947" duration="954000" />
+      <workItem from="1721567453947" duration="1266000" />
     </task>
     <task id="LOCAL-00001" summary="fix/spring-security">
       <option name="closed" value="true" />
