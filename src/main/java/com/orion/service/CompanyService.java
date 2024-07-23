@@ -45,10 +45,13 @@ public class CompanyService extends BaseService {
         String methodName = "getCompanyById";
         log.info("{} -> get company by id : {}", methodName, companyId);
         ResponseObject responseObject = new ResponseObject();
-        Optional<CompanyDto> company = companyRepository.findCompany(companyId, principal.getUsername());
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+
+        Optional<CompanyDto> company = companyRepository.findCompany(companyId, principal.getUsername(), tenant.get().getId());
         isPresent(company);
 
-        List<CategoryDto> categories = companyRepository.findCompanyCategories(companyId);
+        List<CategoryDto> categories = companyRepository.findCompanyCategories(companyId, tenant.get().getId());
         if(!categories.isEmpty()){
             company.get().setCategories(categories);
         }
@@ -63,7 +66,11 @@ public class CompanyService extends BaseService {
         String methodName = "updateCompany";
         log.info("{} -> update company by id : {}", methodName, companyId);
         ResponseObject responseObject = new ResponseObject();
-        Optional<Company> company = companyRepository.findCompanyById(companyId);
+
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+
+        Optional<Company> company = companyRepository.findCompanyById(companyId, tenant.get().getId());
         isPresent(company);
 
         Company companyToUpdate = company.get();
@@ -77,11 +84,11 @@ public class CompanyService extends BaseService {
     private void companyAttributes(CompanyDto companyDto, Company companyToUpdate) {
         companyToUpdate.setCompanyName(companyDto.getCompanyName());
         companyToUpdate.setCompanyEmail(companyDto.getCompanyEmail());
-
-        Optional<User> user = userRepository.findUserIdDeleteAtNull(companyDto.getUserId());
-        isPresent(user);
         Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
         isPresent(tenant);
+        Optional<User> user = userRepository.findUserIdDeleteAtNull(companyDto.getUserId(), tenant.get().getId());
+        isPresent(user);
+
 
         companyToUpdate.setUser(user.get());
         DtoUtils.setIfNotNull(companyDto.getCompanyLogo(), companyToUpdate::setCompanyLogo);
@@ -101,7 +108,9 @@ public class CompanyService extends BaseService {
         String methodName = "deleteCompany";
         log.info("{} -> delete company by id : {}", methodName, companyId);
         ResponseObject responseObject = new ResponseObject();
-        Optional<Company> company = companyRepository.findCompanyById(companyId);
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+        Optional<Company> company = companyRepository.findCompanyById(companyId, tenant.get().getId());
         isPresent(company);
 
         Company companyToDelete = company.get();
@@ -121,8 +130,9 @@ public class CompanyService extends BaseService {
         isPresent(tenant);
         List<CompanyDto> companyList = companyRepository.findAllCompanies(principal.getUsername(),tenant.get().getId());
 
+
         for(CompanyDto company : companyList){
-            List<CategoryDto> categories = companyRepository.findCompanyCategories(company.getId());
+            List<CategoryDto> categories = companyRepository.findCompanyCategories(company.getId(), tenant.get().getId());
             if(!categories.isEmpty()){
                 company.setCategories(categories);
             }

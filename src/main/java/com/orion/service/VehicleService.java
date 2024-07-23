@@ -1,15 +1,10 @@
 package com.orion.service;
 
 import com.orion.common.ResponseObject;
+import com.orion.config.tenant.TenantContext;
 import com.orion.dto.vehicle.VehicleDto;
-import com.orion.entity.Fleet;
-import com.orion.entity.Location;
-import com.orion.entity.Section;
-import com.orion.entity.Vehicle;
-import com.orion.repository.FleetRepository;
-import com.orion.repository.LocationRepository;
-import com.orion.repository.SectionRepository;
-import com.orion.repository.VehicleRepository;
+import com.orion.entity.*;
+import com.orion.repository.*;
 import com.orion.util.DtoUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class VehicleService extends BaseService {
+    private final TenantRepository tenantRepository;
     private final VehicleRepository vehicleRepository;
     private final SectionRepository sectionRepository;
     private final FleetRepository fleetRepository;
@@ -36,6 +32,9 @@ public class VehicleService extends BaseService {
         Optional<Section> section = sectionRepository.findById(vehicleDto.getSectionId());
         isPresent(section);
 
+        Optional<Tenant> tenant =tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+
         Optional<Fleet> fleet = fleetRepository.findById(vehicleDto.getFleetId());
         isPresent(fleet);
 
@@ -44,6 +43,7 @@ public class VehicleService extends BaseService {
 
         Vehicle vehicle = new Vehicle();
         setVehicleProperties(vehicle, vehicleDto, section.get(), fleet.get(), location.get());
+        vehicle.setTenant(tenant.get());
 
         responseObject.setData(vehicleRepository.save(vehicle));
         responseObject.prepareHttpStatus(HttpStatus.CREATED);

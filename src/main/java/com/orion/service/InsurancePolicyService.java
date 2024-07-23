@@ -3,8 +3,10 @@ package com.orion.service;
 import com.orion.common.ResponseObject;
 import com.orion.dto.insurancePolicy.InsurancePolicyDto;
 import com.orion.entity.InsurancePolicy;
+import com.orion.entity.Tenant;
 import com.orion.entity.Vehicle;
 import com.orion.repository.InsurancePolicyRepository;
+import com.orion.repository.TenantRepository;
 import com.orion.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,6 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class InsurancePolicyService extends BaseService {
+    private final TenantRepository tenantRepository;
     private final InsurancePolicyRepository insurancePolicyRepository;
     private final VehicleRepository vehicleRepository;
 
@@ -28,6 +31,18 @@ public class InsurancePolicyService extends BaseService {
         Optional<Vehicle> vehicle = vehicleRepository.findById(insurancePolicyDto.getVehicleId());
         isPresent(vehicle);
 
+        Optional<Tenant> tenant = tenantRepository.findTenantById(vehicle.get().getTenant().getId());
+        isPresent(tenant);
+
+        InsurancePolicy insurancePolicy = getInsurancePolicy(insurancePolicyDto, vehicle, tenant);
+
+        responseObject.setData(insurancePolicyRepository.save(insurancePolicy));
+        responseObject.prepareHttpStatus(HttpStatus.CREATED);
+
+        return responseObject;
+    }
+
+    private static InsurancePolicy getInsurancePolicy(InsurancePolicyDto insurancePolicyDto, Optional<Vehicle> vehicle, Optional<Tenant> tenant) {
         InsurancePolicy insurancePolicy = new InsurancePolicy();
         insurancePolicy.setPolicyNumber(insurancePolicyDto.getPolicyNumber());
         insurancePolicy.setProviderName(insurancePolicyDto.getProviderName());
@@ -35,11 +50,8 @@ public class InsurancePolicyService extends BaseService {
         insurancePolicy.setEndDate(insurancePolicyDto.getEndDate());
         insurancePolicy.setCoverageDetails(insurancePolicyDto.getCoverageDetails());
         insurancePolicy.setVehicle(vehicle.get());
-
-        responseObject.setData(insurancePolicyRepository.save(insurancePolicy));
-        responseObject.prepareHttpStatus(HttpStatus.CREATED);
-
-        return responseObject;
+        insurancePolicy.setTenant(tenant.get());
+        return insurancePolicy;
     }
 
     public ResponseObject getInsurancePolicy(Long insurancePolicyId) {

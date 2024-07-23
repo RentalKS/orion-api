@@ -1,9 +1,12 @@
 package com.orion.service;
 
 import com.orion.common.ResponseObject;
+import com.orion.config.tenant.TenantContext;
 import com.orion.dto.location.LocationDto;
 import com.orion.entity.Location;
+import com.orion.entity.Tenant;
 import com.orion.repository.LocationRepository;
+import com.orion.repository.TenantRepository;
 import com.orion.util.DtoUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,15 +20,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class LocationService extends BaseService {
+    private final TenantRepository tenantRepository;
     private final LocationRepository locationRepository;
 
     public ResponseObject createLocation(LocationDto locationDto) {
         String methodName = "createLocation";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
 
         Location location = new Location();
         locationAttributes(locationDto, responseObject, location);
+        location.setTenant(tenant.get());
+
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
 
         return responseObject;

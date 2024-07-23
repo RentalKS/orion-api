@@ -4,8 +4,10 @@ import com.orion.common.ResponseObject;
 import com.orion.dto.fleet.FleetDto;
 import com.orion.entity.Fleet;
 import com.orion.entity.Location;
+import com.orion.entity.Tenant;
 import com.orion.repository.FleetRepository;
 import com.orion.repository.LocationRepository;
+import com.orion.repository.TenantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class FleetService extends BaseService {
+    private final TenantRepository tenantRepository;
     private final FleetRepository fleetRepository;
     private final LocationRepository locationRepository;
 
@@ -27,11 +30,14 @@ public class FleetService extends BaseService {
 
         Optional<Location> location = locationRepository.findById(fleetDto.getLocationId());
         isPresent(location);
+        Optional<Tenant> tenant = tenantRepository.findTenantById(fleetDto.getLocationId());
+        isPresent(tenant);
 
         Fleet fleet = new Fleet();
         fleet.setFleetName(fleetDto.getFleetName());
         fleet.setDescription(fleetDto.getDescription());
         fleet.setLocation(location.get());
+        fleet.setTenant(tenant.get());
 
         responseObject.setData(fleetRepository.save(fleet));
         responseObject.prepareHttpStatus(HttpStatus.CREATED);

@@ -1,9 +1,12 @@
 package com.orion.service;
 import com.orion.common.ResponseObject;
+import com.orion.config.tenant.TenantContext;
 import com.orion.dto.maintenanceRecord.MaintenanceRecordDto;
 import com.orion.entity.MaintenanceRecord;
+import com.orion.entity.Tenant;
 import com.orion.entity.Vehicle;
 import com.orion.repository.MaintenanceRecordRepository;
+import com.orion.repository.TenantRepository;
 import com.orion.repository.VehicleRepository;
 import com.orion.util.DtoUtils;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class MaintenanceRecordService extends BaseService {
+    private final TenantRepository tenantRepository;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
     private final VehicleRepository vehicleRepository;
 
@@ -27,12 +31,15 @@ public class MaintenanceRecordService extends BaseService {
 
         Optional<Vehicle> vehicle = vehicleRepository.findById(maintenanceRecordDto.getVehicleId());
         isPresent(vehicle);
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
 
         MaintenanceRecord maintenanceRecord = new MaintenanceRecord();
         maintenanceRecord.setMaintenanceDate(maintenanceRecordDto.getMaintenanceDate());
         maintenanceRecord.setDescription(maintenanceRecordDto.getDescription());
         maintenanceRecord.setCost(maintenanceRecordDto.getCost());
         maintenanceRecord.setVehicle(vehicle.get());
+        maintenanceRecord.setTenant(tenant.get());
 
         responseObject.setData(maintenanceRecordRepository.save(maintenanceRecord));
         responseObject.prepareHttpStatus(HttpStatus.CREATED);

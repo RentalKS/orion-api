@@ -13,9 +13,9 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("select new com.orion.dto.category.CategoryDto(c.id, c.createdAt, c.categoryName, c.categoryDescription, c.company.id) " +
-            "from Category c where c.id = :categoryId and c.deletedAt is null")
-    Optional<CategoryDto> findCategoryByIdFromDto(Long categoryId);
+            "from Category c where c.id = :categoryId and c.deletedAt is null and c.tenant.id = :tenantId")
+    Optional<CategoryDto> findCategoryByIdFromDto(@Param("categoryId") Long categoryId, @Param("tenantId") Long tenantId);
 
-    @Query("select c from Category c where c.id = :categoryId and c.deletedAt is null")
-    Optional<Category> findCategoryById(@Param("categoryId") Long categoryId);
+    @Query("select c from Category c where c.id = :categoryId and c.deletedAt is null and c.tenant.id = :tenantId")
+    Optional<Category> findCategoryById(@Param("categoryId") Long categoryId, @Param("tenantId") Long tenantId);
 }
