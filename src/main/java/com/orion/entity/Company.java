@@ -23,7 +23,7 @@ public class Company  extends BaseEntity{
 
 
     @Column(name= "company_name")
-    private String companyName;
+    private String companyName; //auto sherreti // fron a
 
     @Column(name= "company_address")
     private String companyAddress;

@@ -1,6 +1,6 @@
 package com.orion.controller;
 
-import com.orion.common.ResponseObject;
+import com.orion.generics.ResponseObject;
 import com.orion.dto.company.CompanyDto;
 import com.orion.service.CompanyService;
 import lombok.RequiredArgsConstructor;
