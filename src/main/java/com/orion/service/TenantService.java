@@ -1,6 +1,6 @@
 package com.orion.service;
 
-import com.orion.common.ResponseObject;
+import com.orion.generics.ResponseObject;
 import com.orion.dto.user.TenantDto;
 import com.orion.dto.tenant.TenantDataDto;
 import com.orion.dto.tenant.UpdateTenantDto;
