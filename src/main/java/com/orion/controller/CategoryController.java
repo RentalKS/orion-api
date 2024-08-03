@@ -43,7 +43,7 @@ public class CategoryController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping("/{categoryId}")
+    @PutMapping("/update/{categoryId}")
     public ResponseEntity<ResponseObject> updateCategory(@RequestParam Long categoryId, @RequestBody CategoryDto companyDto) {
         String methodName = "updateCategory";
 
@@ -52,7 +52,7 @@ public class CategoryController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping("/{categoryId}")
+    @PutMapping("/delete/{categoryId}")
     public ResponseEntity<ResponseObject> deleteCategory(@RequestParam Long categoryId) {
         String methodName = "deleteCategory";
 
