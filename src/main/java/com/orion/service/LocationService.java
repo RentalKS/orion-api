@@ -1,6 +1,6 @@
 package com.orion.service;
 
-import com.orion.common.ResponseObject;
+import com.orion.generics.ResponseObject;
 import com.orion.config.tenant.TenantContext;
 import com.orion.dto.location.LocationDto;
 import com.orion.entity.Location;
@@ -62,12 +62,12 @@ public class LocationService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject updateLocation(LocationDto locationDto) {
+    public ResponseObject updateLocation(Long locationId,LocationDto locationDto) {
         String methodName = "updateLocation";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Location> location = locationRepository.findById(locationDto.getId());
+        Optional<Location> location = locationRepository.findById(locationId);
         isPresent(location);
 
         Location locationToUpdate = location.get();

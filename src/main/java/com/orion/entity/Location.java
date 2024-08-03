@@ -41,10 +41,6 @@ public class Location extends BaseEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
-    private List<Fleet> fleets;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
     private List<Vehicle> vehicles;
 
     @ManyToOne(fetch = FetchType.LAZY)
