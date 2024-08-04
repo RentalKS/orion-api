@@ -4,5 +4,6 @@ public enum RentalStatus {
     ONGOING,
     COMPLETED,
     CANCELED,
-    PENDING
+    PENDING,
+    WAITING_FOR_PAYMENT
 }

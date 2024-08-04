@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Query("SELECT r FROM Rental r WHERE r.customer.id = :customerId")
@@ -18,4 +19,6 @@ List<Rental> findByVehicleId(@Param("vehicleId") Long vehicleId);
     @Query("SELECT r FROM Rental r WHERE r.startDate >= :startDate AND r.endDate <= :endDate")
 List<Rental> findRentalsWithinDateRange(@Param("startDate") LocalDateTime startDate,
                                         @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT r FROM Rental r WHERE r.status = 'WAITING_PAYMENT' AND r.id = :rentalId and r.deletedAt is null")
+    Optional<Rental> findRentalWaitingToPayment(Long rentalId);
 }
