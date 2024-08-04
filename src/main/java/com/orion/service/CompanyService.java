@@ -130,7 +130,6 @@ public class CompanyService extends BaseService {
         isPresent(tenant);
         List<CompanyDto> companyList = companyRepository.findAllCompanies(principal.getUsername(),tenant.get().getId());
 
-
         for(CompanyDto company : companyList){
             List<CategoryDto> categories = companyRepository.findCompanyCategories(company.getId(), tenant.get().getId());
             if(!categories.isEmpty()){

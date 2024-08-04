@@ -21,8 +21,7 @@ public class Company  extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(name= "company_name")
+    @Column(name= "company_name", unique = true)
     private String companyName; //auto sherreti // fron a
 
     @Column(name= "company_address")
