@@ -6,6 +6,7 @@ import com.orion.service.RateDatesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class RateDatesController {
     private final RateDatesService rateDatesService;
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PostMapping
     public ResponseEntity<ResponseObject> createRates(@RequestBody RatesDto ratesDto) {
         String methodName = "createRates";
@@ -23,7 +25,9 @@ public class RateDatesController {
         ResponseObject response = rateDatesService.createRateDates(ratesDto);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-      @GetMapping("/all")
+
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
+    @GetMapping("/all")
     public ResponseEntity<ResponseObject> getAllRates() {
         String methodName = "getAllRates";
 
@@ -32,6 +36,7 @@ public class RateDatesController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{sectionId}")
     public ResponseEntity<ResponseObject> getRates(@RequestParam Long rateDateId) {
         String methodName = "getRates";
@@ -41,6 +46,7 @@ public class RateDatesController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{rateDateId}")
     public ResponseEntity<ResponseObject> updateRates(@RequestParam Long rateDateId, @RequestBody RatesDto ratesDto) {
         String methodName = "updateRates";
@@ -50,6 +56,7 @@ public class RateDatesController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/delete/{rateDateId}")
     public ResponseEntity<ResponseObject> deleteRates(@RequestParam Long rateDateId) {
         String methodName = "deleteRates";
