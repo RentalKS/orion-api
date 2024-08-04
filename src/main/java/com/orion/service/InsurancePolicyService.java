@@ -1,6 +1,6 @@
 package com.orion.service;
 
-import com.orion.common.ResponseObject;
+import com.orion.generics.ResponseObject;
 import com.orion.dto.insurancePolicy.InsurancePolicyDto;
 import com.orion.entity.InsurancePolicy;
 import com.orion.entity.Tenant;
