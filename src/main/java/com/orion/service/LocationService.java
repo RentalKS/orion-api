@@ -40,7 +40,7 @@ public class LocationService extends BaseService {
     }
 
     private void locationAttributes(LocationDto locationDto, ResponseObject responseObject, Location location) {
-        DtoUtils.setIfNotNull(locationDto.getLocationName(), location::setLocationName);
+        DtoUtils.setIfNotNull(locationDto.getTables(), location::setTables);
         DtoUtils.setIfNotNull(locationDto.getAddress(), location::setAddress);
         DtoUtils.setIfNotNull(locationDto.getCity(), location::setCity);
         DtoUtils.setIfNotNull(locationDto.getState(), location::setState);
@@ -53,11 +53,25 @@ public class LocationService extends BaseService {
         String methodName = "getLocation";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
 
-        Optional<Location> location = locationRepository.findById(locationId);
+        Optional<LocationDto> location = locationRepository.findLocationByIdAndByTenant(locationId,tenant.get().getId());
         isPresent(location);
 
         responseObject.setData(location.get());
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        return responseObject;
+    }
+
+    public ResponseObject getAllLocations() {
+        String methodName = "getAllLocations";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+
+        responseObject.setData(locationRepository.findAllLocationsByTenant(tenant.get().getId()));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }

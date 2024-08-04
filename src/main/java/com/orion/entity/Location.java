@@ -17,8 +17,8 @@ import java.util.List;
 @Table(name = "locations")
 public class Location extends BaseEntity {
 
-    @Column(name = "location_name", nullable = false)
-    private String locationName;
+    @Column(name = "tables", nullable = false)
+    private String tables;
 
     @Column(name = "address")
     private String address;
