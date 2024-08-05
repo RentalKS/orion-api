@@ -24,6 +24,7 @@ public class SectionService extends BaseService{
     private final TenantRepository tenantRepository;
     private final SectionRepository sectionRepository;
     private final CategoryRepository categoryRepository;
+
     public ResponseObject createSection(SectionDto sectionDto) {
         String methodName = "createSection";
         log.info("Entering: {}", methodName);
