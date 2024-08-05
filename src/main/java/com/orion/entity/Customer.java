@@ -19,6 +19,9 @@ public class Customer extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "last_name")
+    private String lastName;
+
     @Column(name = "email", unique = true)
     private String email;
 
@@ -27,7 +30,6 @@ public class Customer extends BaseEntity {
 
     @Column(name = "license_number", unique = true)
     private String licenseNumber;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")

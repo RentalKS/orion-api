@@ -1,5 +1,6 @@
 package com.orion.service;
 
+import com.orion.entity.Rental;
 import com.orion.generics.ResponseObject;
 import com.orion.config.tenant.TenantContext;
 import com.orion.dto.customer.CustomerDto;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -54,12 +56,17 @@ public class CustomerService extends BaseService {
         Optional<CustomerDto> customer = customerRepository.findCustomerByIdFromDto(customerId, tenant.get().getId());
         isPresent(customer);
 
+        List<Rental> rentals = customerRepository.findCustomerRentals(customerId);
+        if(!rentals.isEmpty()){
+            customer.get().setRentals(rentals);
+        }
+
         responseObject.setData(customer.get());
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
 
-    public ResponseObject updateCustomer(CustomerDto customerDto) {
+    public ResponseObject updateCustomer(Long customerId, CustomerDto customerDto) {
         String methodName = "updateCustomer";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
