@@ -1,47 +1,56 @@
 package com.orion.dto.vehicle;
 
-import com.orion.entity.Vehicle;
 import com.orion.enums.vehicle.VehicleStatus;
-import jakarta.validation.constraints.NotNull;
-import lombok.Value;
+import com.orion.enums.vehicle.FuelType;
+import com.orion.enums.vehicle.TransmissionType;
+import com.orion.entity.Model;
+import com.orion.entity.Location;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+@Getter
+@Setter
+@NoArgsConstructor
+public class VehicleDto {
+    private Long id;
+    private String registrationNumber;
+    private Long modelId;
+    private String year;
+    private VehicleStatus status;
+    private FuelType fuelType;
+    private Long mileage;
+    private TransmissionType transmission;
+    private String color;
+    private String description;
+    private String image;
+    private Long locationId;
+    private Long rateId;
+    private String rateName;
+    private Double dailyRate;
+    private Double weeklyRate;
+    private Double monthlyRate;
 
-/**
- * DTO for {@link Vehicle}
- */
-@Value
-public class VehicleDto implements Serializable {
-    Long id;
-    LocalDateTime createdAt;
-    @NotNull
-    String model;
-    @NotNull
-    String year;
-    String price;
-    String image;
-    String description;
-    @NotNull
-    VehicleStatus status;
-    @NotNull
-    String fuelType;
-    Long mileage;
-    String engine;
-    String transmission;
-    String color;
-    String interior;
-    String exterior;
-    String vin;
-    String stockNumber;
-    String mpg;
-    String features;
-    String options;
-    String registrationNumber;
-    @NotNull
-    Long fleetId;
-    @NotNull
-    Long locationId;
-    @NotNull
-    Long sectionId;
+    public VehicleDto(Long id, String registrationNumber, Long modelId, String year, VehicleStatus status, FuelType fuelType, Long mileage, TransmissionType transmission, String color, String description, String image, long locationId, Long rateId, String name,Double dailyRate, Double weeklyRate, Double monthlyRate) {
+        this.id = id;
+        this.registrationNumber = registrationNumber;
+        this.modelId = modelId;
+        this.year = year;
+        this.status = status;
+        this.fuelType = fuelType;
+        this.mileage = mileage;
+        this.transmission = transmission;
+        this.color = color;
+        this.description = description;
+        this.image = image;
+        this.locationId = locationId;
+        this.rateId = rateId;
+        this.rateName = name;
+        this.weeklyRate = weeklyRate;
+        this.dailyRate = dailyRate;
+        this.monthlyRate = monthlyRate;
+
+    }
+
 }
