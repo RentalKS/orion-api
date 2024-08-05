@@ -6,6 +6,7 @@ import com.orion.service.ModelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class ModelController {
     private final ModelService modelService;
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PostMapping
     public ResponseEntity<ResponseObject> createModel(@RequestBody ModelDto modelDto) {
         String methodName = "createModel";
@@ -24,6 +26,7 @@ public class ModelController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/all")
     public ResponseEntity<ResponseObject> getAllModel() {
         String methodName = "getAllModel";
@@ -33,6 +36,7 @@ public class ModelController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{modelId}")
     public ResponseEntity<ResponseObject> getModel(@RequestParam Long modelId) {
         String methodName = "getModel";
@@ -42,6 +46,7 @@ public class ModelController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{modelId}")
     public ResponseEntity<ResponseObject> updateModel(@RequestParam Long modelId, @RequestBody ModelDto modelDto) {
         String methodName = "updateModel";
@@ -51,6 +56,7 @@ public class ModelController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/delete/{modelId}")
     public ResponseEntity<ResponseObject> deleteModel(@RequestParam Long modelId) {
         String methodName = "deleteModel";

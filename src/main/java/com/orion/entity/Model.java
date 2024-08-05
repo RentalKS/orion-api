@@ -29,7 +29,10 @@ public class Model extends BaseEntity {
     @Column(name = "fuel_efficiency")
     private String fuelEfficiency; // e.g., MPG
 
-      @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name= "year")
+    private String year;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
 }
