@@ -23,10 +23,6 @@ public class Vehicle extends BaseEntity {
     @Column(name = "registration_number", nullable = false, unique = true)
     private String registrationNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "model_id", referencedColumnName = "id")
-    private Model model;
-
     @Column(name = "year")
     private String year;
 
@@ -55,11 +51,18 @@ public class Vehicle extends BaseEntity {
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "model_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Model model;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
+    @JsonIgnore
     private Location location;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", referencedColumnName = "id")
+    @JsonIgnore
     private Section section;
 
     @JsonIgnore
@@ -72,9 +75,10 @@ public class Vehicle extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rate_dates_id", referencedColumnName = "id")
+    @JsonIgnore
     private RateDates rateDates;
 
-
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
