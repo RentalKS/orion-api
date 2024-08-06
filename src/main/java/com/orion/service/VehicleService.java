@@ -1,24 +1,35 @@
 package com.orion.service;
 
+import com.orion.dto.filter.VehicleFilter;
 import com.orion.dto.reservation.ReservationDto;
 import com.orion.entity.*;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
+import com.orion.exception.ErrorCode;
+import com.orion.exception.ThrowException;
 import com.orion.generics.ResponseObject;
 import com.orion.config.tenant.TenantContext;
 import com.orion.dto.vehicle.VehicleDto;
 import com.orion.repository.*;
+import com.orion.repository.nativeQuery.NativeQueryRepository;
 import com.orion.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +44,9 @@ public class VehicleService extends BaseService {
     private final RentalRepository rentalRepository;
     private final ModelRepository modelRepository;
     private final LocationRepository locationRepository;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
+    private final NativeQueryRepository nativeQueryRepository;
 
     public ResponseObject createVehicle(VehicleDto vehicleDto) {
         String methodName = "createVehicle";
@@ -113,6 +127,45 @@ public class VehicleService extends BaseService {
         return responseObject;
     }
 
+    public ResponseObject getAll(Integer page, Integer size, VehicleFilter vehicleFilter, UserDetails userDetails){
+        String methodName = "getAll";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+
+        try {
+            Long tenantId = TenantContext.getCurrentTenant().getId();
+            Optional<User> optionalUser = userRepository.findByEmail(userDetails.getUsername());
+            isPresent(optionalUser);
+
+            User user = optionalUser.get();
+            List<Long> memberIds = new ArrayList<>();
+            if(vehicleFilter.getAgencyId() != null) {
+                List<Long> agencyMembers = userRepository.findAllIdsByAgency(vehicleFilter.getAgencyId());
+                memberIds.addAll(agencyMembers);
+            }
+
+            String memberIdList = null;
+            if (!memberIds.isEmpty())
+                memberIdList = memberIds.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(",", "(", ")"));
+
+            List<VehicleDto> vehicleDtos = nativeQueryRepository.filterVehicles(tenantId, page, size, vehicleFilter, memberIdList);
+            Long count = nativeQueryRepository.countVehicles(tenantId, vehicleFilter, memberIdList);
+
+            Pageable pageable = PageRequest.of(page - 1, size);
+            Page<VehicleDto> vehiclePage = new PageImpl<>(vehicleDtos, pageable, count);
+
+            responseObject.setData(mapPage(vehiclePage));
+            responseObject.prepareHttpStatus(HttpStatus.OK);
+        }catch (Exception e) {
+            log.error("Error getting vehicles: {}", e.getMessage());
+            responseObject.prepareHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            responseObject.setData("An error occurred while getting vehicles.");
+        }
+        return responseObject;
+    }
+
     public ResponseObject updateVehicle(Long vehicleId, VehicleDto vehicleDto) {
         String methodName = "updateVehicle";
         log.info("Entering: {}", methodName);
@@ -169,40 +222,48 @@ public class VehicleService extends BaseService {
 
         if (!isAvailable) {
             responseObject.prepareHttpStatus(HttpStatus.BAD_REQUEST);
-            responseObject.setData("Vehicle is not available for the selected dates");
+            ThrowException.throwBadRequestApiException(ErrorCode.VEHICLE_NOT_AVAILABLE, List.of("Vehicle is not available for the selected dates."));
             return responseObject;
         }
+        try {
 
-        long rentalDays = ChronoUnit.DAYS.between(startDate, endDate);
-        double totalCost = calculateTotalCost(vehicle.get().getRateDates(), rentalDays);
+            long rentalDays = ChronoUnit.DAYS.between(startDate, endDate);
+            double totalCost = calculateTotalCost(vehicle.get().getRateDates(), rentalDays);
 
-        Booking booking = new Booking();
-        booking.setVehicle(vehicle.get());
-        booking.setCustomer(customer.get());
-        booking.setStartDate(startDate);
-        booking.setEndDate(endDate);
-        booking.setStatus(RentalStatus.PENDING);
-        booking.setVehicleStatus(VehicleStatus.RESERVED);
-        booking.setTenant(tenant.get());
+            Booking booking = new Booking();
+            booking.setVehicle(vehicle.get());
+            booking.setCustomer(customer.get());
+            booking.setStartDate(startDate);
+            booking.setEndDate(endDate);
+            booking.setStatus(RentalStatus.PENDING);
+            booking.setVehicleStatus(VehicleStatus.RESERVED);
+            booking.setTenant(tenant.get());
 
-        Rental rental = new Rental();
-        rental.setVehicle(vehicle.get());
-        rental.setCustomer(customer.get());
-        rental.setStartDate(startDate);
-        rental.setEndDate(endDate);
-        rental.setStatus(RentalStatus.PENDING);
-        rental.setTenant(tenant.get());
-        rental.setTotalCost(totalCost);
-        rental.setBooking(booking);
+            Rental rental = new Rental();
+            rental.setVehicle(vehicle.get());
+            rental.setCustomer(customer.get());
+            rental.setStartDate(startDate);
+            rental.setEndDate(endDate);
+            rental.setStatus(RentalStatus.PENDING);
+            rental.setTenant(tenant.get());
+            rental.setTotalCost(totalCost);
+            rental.setBooking(booking);
 
-        rentalRepository.save(rental);
-        bookingRepository.save(booking);
+            rentalRepository.save(rental);
+            bookingRepository.save(booking);
 
-        vehicle.get().setStatus(VehicleStatus.RESERVED);
-        vehicleRepository.save(vehicle.get());
+            vehicle.get().setStatus(VehicleStatus.RESERVED);
+            vehicleRepository.save(vehicle.get());
 
-        responseObject.setData(booking);
-        responseObject.prepareHttpStatus(HttpStatus.CREATED);
+            notificationService.sendNotification(customer.get().getId(), "Reservation Confirmation", "Your reservation has been confirmed.");
+
+            responseObject.setData(booking);
+            responseObject.prepareHttpStatus(HttpStatus.CREATED);
+        }catch (Exception e) {
+            log.error("Error creating reservation: {}", e.getMessage());
+            responseObject.prepareHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            responseObject.setData("An error occurred while creating the reservation.");
+        }
         return responseObject;
     }
 

@@ -10,13 +10,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class VehicleDto {
+    private Long createdAt;;
     private Long id;
     private String registrationNumber;
     private Long modelId;
+    private String modelName;
+    private String modelBrand;
+    private String modelType;
+    private String modelImage;
+    private String locationName;
+    private String locationAddress;
     private String year;
     private VehicleStatus status;
     private FuelType fuelType;
@@ -31,6 +40,9 @@ public class VehicleDto {
     private Double dailyRate;
     private Double weeklyRate;
     private Double monthlyRate;
+    private Long sectionId;
+    private String sectionName;
+
 
     public VehicleDto(Long id, String registrationNumber, Long modelId, String year, VehicleStatus status, FuelType fuelType, Long mileage, TransmissionType transmission, String color, String description, String image, long locationId, Long rateId, String name,Double dailyRate, Double weeklyRate, Double monthlyRate) {
         this.id = id;
