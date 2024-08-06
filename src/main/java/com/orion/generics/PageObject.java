@@ -1,4 +1,4 @@
-package com.orion.common;
+package com.orion.generics;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
