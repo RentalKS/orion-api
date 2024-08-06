@@ -1,4 +1,4 @@
-package com.orion.service;
+package com.orion.repository.nativeQuery;
 
 import com.orion.config.tenant.TenantContext;
 import com.orion.dto.dashboard.InfoDashboard;

@@ -7,6 +7,7 @@ import com.orion.entity.User;
 import com.orion.exception.InternalException;
 import com.orion.generics.ResponseObject;
 import com.orion.repository.UserRepository;
+import com.orion.repository.nativeQuery.DashboardNativeQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
