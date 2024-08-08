@@ -1,6 +1,6 @@
 package com.orion.controller;
 
-import com.orion.common.ResponseObject;
+import com.orion.generics.ResponseObject;
 import com.orion.dto.user.ChangePasswordRequest;
 import com.orion.dto.user.UserData;
 import com.orion.service.UserService;

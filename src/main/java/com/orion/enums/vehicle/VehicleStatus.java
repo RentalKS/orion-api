@@ -1,8 +1,9 @@
 package com.orion.enums.vehicle;
 
 public enum VehicleStatus {
-    ACTIVE,
-    INACTIVE,
-    MAINTENANCE,
-    DELETED
+    AVAILABLE,
+    RENTED,
+    UNDER_MAINTENANCE,
+    RESERVED,
+    OUT_OF_SERVICE
 }

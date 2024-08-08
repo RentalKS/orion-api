@@ -17,8 +17,8 @@ import java.util.List;
 @Table(name = "locations")
 public class Location extends BaseEntity {
 
-    @Column(name = "location_name", nullable = false)
-    private String locationName;
+    @Column(name = "tables", nullable = false)
+    private String tables;
 
     @Column(name = "address")
     private String address;
@@ -41,9 +41,10 @@ public class Location extends BaseEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
-    private List<Fleet> fleets;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
     private List<Vehicle> vehicles;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", referencedColumnName = "id")
+    private Tenant tenant;
+
 }

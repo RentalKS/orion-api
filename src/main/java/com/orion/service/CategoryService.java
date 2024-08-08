@@ -1,11 +1,14 @@
 package com.orion.service;
 
-import com.orion.common.ResponseObject;
+import com.orion.generics.ResponseObject;
+import com.orion.config.tenant.TenantContext;
 import com.orion.dto.category.CategoryDto;
 import com.orion.entity.Category;
 import com.orion.entity.Company;
+import com.orion.entity.Tenant;
 import com.orion.repository.CategoryRepository;
 import com.orion.repository.CompanyRepository;
+import com.orion.repository.TenantRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -18,14 +21,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class CategoryService extends BaseService {
+    private final TenantRepository tenantRepository;
     private final CategoryRepository categoryRepository;
     private final CompanyRepository companyRepository;
+
     public ResponseObject createCategory(CategoryDto categoryDto) {
         String methodName = "createCategory";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Company> company = companyRepository.findCompanyById(categoryDto.getCompanyId());
+        Optional<Tenant> tenant = tenantRepository.findById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+        Optional<Company> company = companyRepository.findCompanyById(categoryDto.getCompanyId(),tenant.get().getId());
         isPresent(company);
 
         Category category = new Category();
@@ -34,6 +41,7 @@ public class CategoryService extends BaseService {
             category.setCategoryDescription(categoryDto.getCategoryDescription());
         }
         category.setCompany(company.get());
+        category.setTenant(tenant.get());
 
         responseObject.setData(categoryRepository.save(category));
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
@@ -45,8 +53,10 @@ public class CategoryService extends BaseService {
         String methodName = "getCategory";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
 
-        Optional<CategoryDto> category = categoryRepository.findCategoryByIdFromDto(categoryId);
+        Optional<CategoryDto> category = categoryRepository.findCategoryByIdFromDto(categoryId,tenant.get().getId());
         isPresent(category);
 
         responseObject.setData(category.get());
@@ -54,12 +64,15 @@ public class CategoryService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject updateCategory(CategoryDto categoryDto) {
+    public ResponseObject updateCategory(Long categoryId,CategoryDto categoryDto) {
         String methodName = "updateCategory";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Category> category = categoryRepository.findCategoryById(categoryDto.getId());
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+
+        Optional<Category> category = categoryRepository.findCategoryById(categoryId, tenant.get().getId());
         isPresent(category);
 
         category.get().setCategoryName(categoryDto.getCategoryName());
@@ -76,12 +89,27 @@ public class CategoryService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Category> category = categoryRepository.findCategoryById(categoryId);
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+
+        Optional<Category> category = categoryRepository.findCategoryById(categoryId, tenant.get().getId());
         isPresent(category);
 
         category.get().setDeletedAt(LocalDateTime.now());
         categoryRepository.save(category.get());
         responseObject.setData(true);
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        return responseObject;
+    }
+
+    public ResponseObject getAllCategory() {
+        String methodName = "getAllCategory";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+
+        responseObject.setData(categoryRepository.findAllCategory(tenant.get().getId()));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }

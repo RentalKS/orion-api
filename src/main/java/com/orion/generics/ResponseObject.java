@@ -1,4 +1,4 @@
-package com.orion.common;
+package com.orion.generics;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
