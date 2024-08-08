@@ -1,5 +1,6 @@
 package com.orion.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.orion.dto.user.UserData;
@@ -25,4 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT ut FROM User ut WHERE ut.id=?1 AND ut.tenant.id=?2 AND ut.deletedAt IS null ")
     Optional<User> findByUserIdAndTenantIdAndDeletedAtIsNull(Long userId, Long tenantId);
+
+    @Query("SELECT u.id FROM User u WHERE u.id = :agencyId and u.role.name = 'AGENCY' and u.deletedAt is null")
+    List<Long> findAllIdsByAgency(Long agencyId);
 }
