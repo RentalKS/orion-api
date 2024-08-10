@@ -56,12 +56,17 @@ public class VehicleService extends BaseService {
         Optional<Tenant> tenant = tenantRepository.findById(TenantContext.getCurrentTenant().getId());
         isPresent(tenant);
 
+
+
         Vehicle vehicle = new Vehicle();
                 Optional<RateDates> rateDates = rateDatesRepository.findRateById(vehicleDto.getRateId(), tenant.get().getId());
         isPresent(rateDates);
         vehicle.setRateDates(rateDates.get());
 
         vehicleParameters(vehicleDto, responseObject, tenant, vehicle);
+        Optional<User> user = userRepository.findByEmail(vehicle.getCreatedBy());
+        isPresent(user);
+        vehicle.setUser(user.get());
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
 
         return responseObject;
@@ -127,7 +132,7 @@ public class VehicleService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject getAll(Integer page, Integer size, VehicleFilter vehicleFilter, UserDetails userDetails){
+    public ResponseObject filterVehicles(Integer page, Integer size, VehicleFilter vehicleFilter, UserDetails userDetails){
         String methodName = "getAll";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();

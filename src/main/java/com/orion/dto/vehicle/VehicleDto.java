@@ -1,8 +1,6 @@
 package com.orion.dto.vehicle;
 
-import com.orion.enums.vehicle.VehicleStatus;
-import com.orion.enums.vehicle.FuelType;
-import com.orion.enums.vehicle.TransmissionType;
+import com.orion.enums.vehicle.*;
 import com.orion.entity.Model;
 import com.orion.entity.Location;
 import lombok.AllArgsConstructor;
@@ -42,7 +40,13 @@ public class VehicleDto {
     private Double monthlyRate;
     private Long sectionId;
     private String sectionName;
-
+    private Long maintenanceDate;
+    private String maintenanceDescription;
+    private Double maintenanceCost;
+    private DamageType maintenanceDamageType;
+    private RentalStatus rentalStatus;
+    private String createdByName;
+    private Long createdById;
 
     public VehicleDto(Long id, String registrationNumber, Long modelId, String year, VehicleStatus status, FuelType fuelType, Long mileage, TransmissionType transmission, String color, String description, String image, long locationId, Long rateId, String name,Double dailyRate, Double weeklyRate, Double monthlyRate) {
         this.id = id;

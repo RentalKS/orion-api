@@ -1,5 +1,6 @@
 package com.orion.controller;
 
+import com.orion.dto.filter.VehicleFilter;
 import com.orion.dto.reservation.ReservationDto;
 import com.orion.dto.vehicle.VehicleDto;
 import com.orion.generics.ResponseObject;
@@ -7,6 +8,8 @@ import com.orion.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,7 +36,7 @@ public class VehicleController {
         ResponseObject response = vehicleService.createReservation(reservationDto);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-      @GetMapping("/all")
+    @GetMapping("/all")
     public ResponseEntity<ResponseObject> getAllVehicles() {
         String methodName = "getAllVehicles";
 
@@ -48,6 +51,16 @@ public class VehicleController {
 
         log.info("{} -> Get vehicle", methodName);
         ResponseObject response = vehicleService.getVehicle(vehicleId);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PostMapping("/filter-vehicles")
+    public ResponseEntity filterForOrders(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
+                                          @RequestBody VehicleFilter filter, @AuthenticationPrincipal UserDetails userDetails) {
+        String methodName = "filterForOrders";
+
+        log.info("{} -> Filter vehicles", methodName);
+        ResponseObject response = vehicleService.filterVehicles(page, size, filter,userDetails);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

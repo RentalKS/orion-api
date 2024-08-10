@@ -71,6 +71,10 @@ public class Vehicle extends BaseEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
+    private List<Rental> rentals;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
     private List<InsurancePolicy> insurancePolicies;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -82,5 +86,10 @@ public class Vehicle extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
 }
