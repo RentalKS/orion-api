@@ -2,16 +2,16 @@ package com.orion.repository.nativeQuery;
 
 import com.orion.dto.filter.VehicleFilter;
 import com.orion.dto.vehicle.VehicleDto;
-import com.orion.enums.vehicle.FuelType;
-import com.orion.enums.vehicle.TransmissionType;
-import com.orion.enums.vehicle.VehicleStatus;
+import com.orion.enums.vehicle.*;
 import com.orion.util.DateUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -22,8 +22,7 @@ public class NativeQueryRepository {
     public List<VehicleDto> filterVehicles(Long tenantId, Integer page, Integer size, VehicleFilter vehicleFilter, String memberIds){
         page = page - 1;
         int offset = page * size;
-        String where = " v.tenant_id=" + tenantId + " ";
-        filterConditions(tenantId, vehicleFilter, memberIds, where);
+        String where =  filterConditions(tenantId, vehicleFilter, memberIds);
 
 
         String queryString = "Select " +
@@ -45,20 +44,30 @@ public class NativeQueryRepository {
                 " v.image, " +
                 " v.location_id, " +
                 " v.section_id, " +
-                " s.name as section_name, " +
+                " s.section_name as section_name, " +
                 " m.name as model_name, " +
                 " m.brand as model_brand, " +
                 " m.type as model_type, " +
-                " m.image as model_image, " +
-                " l.name as location_name, " +
-                " l.address as location_address " +
+                " m.model_image as model_image, " +
+                " l.country as location_name, " +
+                " l.address as location_address, " +
+                " r.status as rental_status, " +
+                " mr.maintenance_date as meintenance_date, " +
+                " mr.description as meintenance_description, " +
+                " mr.cost as meintenance_cost, " +
+                " mr.damage_type as meintenance_damage_type, " +
+                " u.first_name as created_from_name, " +
+                " u.id as created_from_name " +
                 " FROM vehicles v " +
                 " LEFT JOIN rate_dates rt ON v.rate_dates_id = rt.id " +
                 " LEFT JOIN sections s ON v.section_id = s.id " +
                 " LEFT JOIN models m ON v.model_id = m.id " +
                 " LEFT JOIN locations l ON v.location_id = l.id " +
+                " LEFT JOIN maintenance_records mr on mr.vehicle_id = v.id " +
+                " LEFT JOIN rentals r on r.vehicle_id = v.id " +
+                " LEFT JOIN user u on v.user_id = u.id " +
                 " WHERE " + where + " and v.deleted_at is null " +
-                " GROUP BY v.id ORDER BY o.id DESC " +
+                " GROUP BY v.id, v.created_at, rt.name, rt.daily_rate, rt.weekly_rate, rt.monthly_rate, v.registration_number, v.model_id, v.year, v.status, v.fuel_type, v.mileage, v.transmission, v.color, v.description, v.image, v.location_id, v.section_id, s.section_name, m.name, m.brand, m.type, m.model_image, l.country, l.address, r.status, mr.maintenance_date, mr.description, mr.cost, mr.damage_type,u.first_name, u.id " +
                 " LIMIT " + size + " OFFSET " + offset;
 
         Query query = entityManager.createNativeQuery(queryString);
@@ -66,7 +75,9 @@ public class NativeQueryRepository {
         return mapVehicleDto(resultList);
     }
 
-    private void filterConditions(Long tenantId, VehicleFilter vehicleFilter, String memberIds, String where) {
+    private String  filterConditions(Long tenantId, VehicleFilter vehicleFilter, String memberIds) {
+        String where = " v.tenant_id=" + tenantId + " ";
+
         String fromDate = null;
         String toDate = null;
 
@@ -112,6 +123,7 @@ public class NativeQueryRepository {
         if(vehicleFilter.getLocationId() != null){
             where = where + " AND r.location_id = " + vehicleFilter.getLocationId();
         }
+        return where;
     }
 
     private List<VehicleDto> mapVehicleDto(List<Object[]> resultList) {
@@ -125,7 +137,8 @@ public class NativeQueryRepository {
             }
 
             if (objects[1] != null) {
-                vehicleDto.setCreatedAt(Long.valueOf(String.valueOf(DateUtil.convertToLocalDateTime(Long.valueOf(String.valueOf(objects[1]))))));
+                Timestamp createdAt = (Timestamp) objects[1];
+                vehicleDto.setCreatedAt(createdAt.getTime());
             }
 
             if (objects[2] != null) {
@@ -220,6 +233,34 @@ public class NativeQueryRepository {
                 vehicleDto.setLocationAddress(String.valueOf(objects[24]));
             }
 
+            if(objects[25] != null){
+                vehicleDto.setRentalStatus(RentalStatus.valueOf(String.valueOf(objects[25])));
+            }
+
+            if (objects[26] != null) {
+                vehicleDto.setMaintenanceDate(DateUtil.localDateTimeToMilliseconds((LocalDateTime) objects[26]));
+            }
+
+            if (objects[27] != null) {
+                vehicleDto.setMaintenanceDescription(String.valueOf(objects[27]));
+            }
+
+            if (objects[28] != null) {
+                vehicleDto.setMaintenanceCost(Double.valueOf(String.valueOf(objects[28])));
+            }
+
+            if (objects[29] != null) {
+                vehicleDto.setMaintenanceDamageType(DamageType.valueOf(String.valueOf(objects[29])));
+            }
+
+            if (objects[30] != null) {
+                vehicleDto.setCreatedByName(String.valueOf(objects[30]));
+            }
+
+            if (objects[31] != null) {
+                vehicleDto.setCreatedById(Long.valueOf(String.valueOf(objects[31])));
+            }
+
             vehicleDtoList.add(vehicleDto);
 
         }
@@ -229,8 +270,7 @@ public class NativeQueryRepository {
 
     public Long countVehicles(Long tenantId, VehicleFilter vehicleFilter, String memberIdList) {
 
-        String where = " v.tenant_id=" + tenantId + " ";
-        filterConditions(tenantId, vehicleFilter, memberIdList, where);
+       String where = filterConditions(tenantId, vehicleFilter, memberIdList);
 
         String queryString = "Select count(v.id) " +
                 " FROM vehicles v " +
@@ -238,8 +278,10 @@ public class NativeQueryRepository {
                 " LEFT JOIN sections s ON v.section_id = s.id " +
                 " LEFT JOIN models m ON v.model_id = m.id " +
                 " LEFT JOIN locations l ON v.location_id = l.id " +
+                " LEFT JOIN rentals r on r.vehicle_id = v.id " +
+                " LEFT JOIN maintenance_records mr on mr.vehicle_id = v.id " +
                 " WHERE " + where + " and v.deleted_at is null " +
-                " GROUP BY v.id ORDER BY o.id DESC ";
+                " GROUP BY v.id ORDER BY v.id DESC ";
 
         Query query = entityManager.createNativeQuery(queryString);
 
