@@ -32,6 +32,9 @@ public class Model extends BaseEntity {
     @Column(name= "year")
     private String year;
 
+    @Column(name = "model_image")
+    private String modelImage;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;

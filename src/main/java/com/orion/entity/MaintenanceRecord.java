@@ -1,5 +1,7 @@
 package com.orion.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.orion.enums.vehicle.DamageType;
+import com.orion.enums.vehicle.VehicleStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +30,10 @@ public class MaintenanceRecord extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
     private Vehicle vehicle;
+
+    @Column(name= "damage_type")
+    @Enumerated(EnumType.STRING)
+    private DamageType damageType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
