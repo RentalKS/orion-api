@@ -30,5 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("Select b from Booking b where b.status = :status ")
     List<Booking> findByStatus(@Param("status") RentalStatus status);
 
-
+    @Query("Select b from Booking b where b.status = 'PENDING' and b.vehicleStatus = 'RESERVED' and " +
+            "(b.startDate <= :endDate AND b.endDate >= :startDate)")
+    List<Booking> findBookingsBetweenDates(LocalDateTime startDate, LocalDateTime endDate);
 }

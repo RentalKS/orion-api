@@ -2,6 +2,7 @@ package com.orion.controller;
 
 import com.orion.service.ExcelGenerationService;
 import com.orion.service.PdfGenerationService;
+import com.orion.service.ReportingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReportController {
     private final PdfGenerationService pdfGenerationService;
     private final ExcelGenerationService excelGenerationService;
+    private final ReportingService reportingService;
 
     @GetMapping("/vehicle/pdf")
     public ResponseEntity<byte[]> generateVehiclePdfReport() {
@@ -36,5 +38,13 @@ public class ReportController {
         return new ResponseEntity<>(excelContent, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/monthly/excel")
+    public ResponseEntity<byte[]> generateMonthlyExcelReport() {
+        byte[] excelContent = reportingService.generateMonthlyReportExcel();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "monthly-report.xlsx");
+        return new ResponseEntity<>(excelContent, headers, HttpStatus.OK);
+    }
 
 }

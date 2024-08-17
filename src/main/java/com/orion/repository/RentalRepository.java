@@ -1,5 +1,6 @@
 package com.orion.repository;
 
+import com.orion.entity.Booking;
 import com.orion.entity.Rental;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,10 @@ List<Rental> findRentalsWithinDateRange(@Param("startDate") LocalDateTime startD
                                         @Param("endDate") LocalDateTime endDate);
     @Query("SELECT r FROM Rental r WHERE r.status = 'WAITING_PAYMENT' AND r.id = :rentalId and r.deletedAt is null")
     Optional<Rental> findRentalWaitingToPayment(Long rentalId);
+
+    @Query(" SELECT sum(r.totalCost) from Rental r left join Booking b on r.booking.id = b.id where b in :bookings and r.deletedAt is null and b.deletedAt is null")
+    Double findTotalRevenue(List<Booking> bookings);
+
+    @Query("SELECT SUM(r.totalCost) FROM Rental r WHERE r.booking.id = :bookingId")
+    Double findTotalRevenueByBookingId(@Param("bookingId") Long bookingId);
 }
