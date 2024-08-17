@@ -36,4 +36,7 @@ List<Vehicle> findAvailableVehicles(@Param("startDate") LocalDateTime startDate,
 
     @Query("SELECT v FROM Vehicle v WHERE v.id = :vehicleId and v.deletedAt is null and v.deactivatedAt is null")
     Optional<Vehicle> findVehicleById (@Param("vehicleId") Long vehicleId);
+
+    @Query("SELECT v FROM Vehicle v WHERE v.status = :status and v.deletedAt is null and v.deactivatedAt is null")
+    List<Vehicle> findByStatus(@Param("status") VehicleStatus status);
 }
