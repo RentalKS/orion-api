@@ -23,14 +23,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findActiveBookings(@Param("startDate") LocalDateTime startDate,
                                      @Param("endDate") LocalDateTime endDate);
 
-    @Query("Select b from Booking b where b.vehicle.id = :vehicleId and b.status = 'PENDING' and b.vehicleStatus = 'RESERVED' and " +
+    @Query("Select count(b.id) > 0 from Booking b " +
+            " where b.vehicle.id = :vehicleId " +
+            " and b.status = 'RENTED' " +
+            " and b.bookingStatus = 'ONGOING' and " +
             "(b.startDate <= :endDate AND b.endDate >= :startDate)")
-    List<Booking> findBookingsByVehicleAndDateRange(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate);
+    boolean findBookingsByVehicleAndDateRange(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("Select b from Booking b where b.status = :status ")
     List<Booking> findByStatus(@Param("status") RentalStatus status);
 
-    @Query("Select b from Booking b where b.status = 'PENDING' and b.vehicleStatus = 'RESERVED' and " +
+    @Query("Select b from Booking b where b.status = 'PENDING' and b.bookingStatus = 'RESERVED' and " +
             "(b.startDate <= :endDate AND b.endDate >= :startDate)")
     List<Booking> findBookingsBetweenDates(LocalDateTime startDate, LocalDateTime endDate);
 }

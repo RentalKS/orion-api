@@ -55,7 +55,7 @@ public class SignatureService extends BaseService{
         }
 
         rental.get().setStatus(RentalStatus.ONGOING);
-        rental.get().getVehicle().setStatus(VehicleStatus.RENTED);
+        rental.get().setVehicleStatus(VehicleStatus.RENTED);
 
         rentalRepository.save(rental.get());
         paymentRepository.updatePaymentStatusByRentalId(rentalId, PaymentStatus.SUCCESS);

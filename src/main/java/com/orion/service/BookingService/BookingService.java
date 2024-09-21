@@ -22,20 +22,19 @@ import java.util.Optional;
 public class BookingService extends BaseService {
     private final BookingRepository bookingRepository;
 
-    public Booking createBooking(Vehicle vehicle, Customer customer, LocalDateTime startDate, LocalDateTime endDate, Tenant tenant) {
+    public Booking createBooking(Vehicle vehicle, Customer customer, LocalDateTime startDate, LocalDateTime endDate, Tenant tenant,VehicleStatus vehicleStatus) {
             Booking booking = new Booking();
             booking.setVehicle(vehicle);
             booking.setCustomer(customer);
             booking.setStartDate(startDate);
             booking.setEndDate(endDate);
-            booking.setStatus(RentalStatus.PENDING);
-            booking.setVehicleStatus(VehicleStatus.RESERVED);
+            booking.setBookingStatus(vehicleStatus);
             booking.setTenant(tenant);
             bookingRepository.save(booking);
             return booking;
     }
 
-    public List<Booking> findBookingsByVehicleAndDateRange(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate) {
+    public boolean findBookingsByVehicleAndDateRange(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate) {
         return bookingRepository.findBookingsByVehicleAndDateRange(vehicleId, startDate, endDate);
     }
     public Booking findBookingById(Long bookingId) {
@@ -43,8 +42,9 @@ public class BookingService extends BaseService {
         isPresent(booking);
         return booking.get();
     }
-    public void updateBookingStatus(Booking booking, RentalStatus status) {
+    public void updateBookingStatus(Booking booking, RentalStatus status, VehicleStatus vehicleStatus) {
         booking.setStatus(status);
+        booking.setBookingStatus(vehicleStatus);
         bookingRepository.save(booking);
     }
 

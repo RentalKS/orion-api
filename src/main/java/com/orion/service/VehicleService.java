@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -70,6 +69,11 @@ public class VehicleService extends BaseService {
         vehicle.setUser(user);
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
         return responseObject;
+    }
+    public Vehicle findById(Long vehicleId) {
+        Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
+        isPresent(vehicle);
+        return vehicle.get();
     }
     public ResponseObject getVehicle(Long vehicleId) {
         String methodName = "getVehicle";
@@ -129,11 +133,6 @@ public class VehicleService extends BaseService {
         }
         return responseObject;
     }
-    public Vehicle findById(Long vehicleId) {
-        Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
-        isPresent(vehicle);
-        return vehicle.get();
-    }
     public ResponseObject updateVehicle(Long vehicleId, VehicleDto vehicleDto) {
         String methodName = "updateVehicle";
         log.info("Entering: {}", methodName);
@@ -160,11 +159,6 @@ public class VehicleService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    public Vehicle findVehicleById(Long vehicleId) {
-        Optional<Vehicle> optionalVehicle = vehicleRepository.findVehicleById(vehicleId);
-        isPresent(optionalVehicle);
-        return optionalVehicle.get();
-    }
     @Transactional
     public ResponseObject createReservation(ReservationDto reservationDto) {
         String methodName = "createReservation";
@@ -172,30 +166,27 @@ public class VehicleService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
 
         Tenant tenant = tenantService.findTenantById(TenantContext.getCurrentTenant().getId());
-        Vehicle vehicle = findVehicleById(reservationDto.getVehicleId());
-
+        Vehicle vehicle = findById(reservationDto.getVehicleId());
 
         LocalDateTime startDate =  DateUtil.convertToLocalDateTime(reservationDto.getStartDate());
         LocalDateTime endDate = DateUtil.convertToLocalDateTime(reservationDto.getEndDate());
         Customer customer = customerService.findCustomerById(reservationDto.getCustomerId());
 
-        boolean isAvailable = checkVehicleAvailability(vehicle,startDate,endDate) ;
+        boolean isNotAvailable = checkVehicleAvailability(vehicle,startDate,endDate) ;
 
-        if (!isAvailable) {
+        if (isNotAvailable) {
             responseObject.prepareHttpStatus(HttpStatus.BAD_REQUEST);
             ThrowException.throwBadRequestApiException(ErrorCode.VEHICLE_NOT_AVAILABLE, List.of("Vehicle is not available for the selected dates."));
             return responseObject;
         }
+
         try {
 
             long rentalDays = ChronoUnit.DAYS.between(startDate, endDate);
             double totalCost = calculateTotalCost(vehicle.getRateDates(), rentalDays);
 
-            Booking booking = bookingService.createBooking(vehicle, customer, startDate, endDate, tenant);
-            rentalService.createRental(vehicle, customer, startDate, endDate, tenant, totalCost, booking);
-
-            vehicle.setStatus(VehicleStatus.RESERVED);
-            vehicleRepository.save(vehicle);
+            Booking booking = bookingService.createBooking(vehicle, customer, startDate, endDate, tenant, VehicleStatus.RESERVED);
+            rentalService.createRental(vehicle, customer, startDate, endDate, tenant, totalCost, booking,RentalStatus.PENDING,VehicleStatus.RESERVED);
 
             notificationService.sendNotification(customer.getId(), "Reservation Confirmation", "Your reservation has been confirmed.");
 
@@ -209,10 +200,8 @@ public class VehicleService extends BaseService {
         return responseObject;
     }
     private boolean checkVehicleAvailability(Vehicle vehicle, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Booking> bookings = bookingService.findBookingsByVehicleAndDateRange(vehicle.getId(), startDate, endDate);
-        return bookings.isEmpty();
+        return bookingService.findBookingsByVehicleAndDateRange(vehicle.getId(), startDate, endDate);
     }
-
     private double calculateTotalCost(RateDates rateDates, long rentalDays) {
         double dailyRate = rateDates.getDailyRate();
         double weeklyRate = rateDates.getWeeklyRate();
@@ -238,24 +227,11 @@ public class VehicleService extends BaseService {
         }
         return totalCost;
     }
-
     private double applyDiscounts(double totalCost, long rentalDays) {
         if (rentalDays > 14) {
             totalCost *= 0.90;
         }
         return totalCost;
-    }
-    public ResponseObject updateVehicleStatus(Long vehicleId, VehicleStatus status) {
-        String methodName = "updateVehicleStatus";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
-
-        Vehicle vehicle = findById(vehicleId);
-        vehicle.setStatus(status);
-        vehicleRepository.save(vehicle);
-        responseObject.setData(vehicle);
-        responseObject.prepareHttpStatus(HttpStatus.OK);
-        return responseObject;
     }
     @Transactional
     public ResponseObject cancelReservation(Long bookingId) {
@@ -271,11 +247,10 @@ public class VehicleService extends BaseService {
             return responseObject;
         }
 
-        bookingService.updateBookingStatus(booking, RentalStatus.CANCELLED);
+        bookingService.updateBookingStatus(booking, RentalStatus.CANCELLED, VehicleStatus.AVAILABLE);
+        Rental rental = rentalService.findByBooking(booking);
+        rentalService.updateRentalStatus(rental, RentalStatus.CANCELLED, VehicleStatus.AVAILABLE);
 
-        Vehicle vehicle = booking.getVehicle();
-        vehicle.setStatus(VehicleStatus.AVAILABLE);
-        vehicleRepository.save(vehicle);
 
         responseObject.setData(booking);
         responseObject.prepareHttpStatus(HttpStatus.OK);
@@ -289,8 +264,8 @@ public class VehicleService extends BaseService {
         Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
         isPresent(vehicle);
 
-        boolean isAvailable = checkVehicleAvailability(vehicle.get(), startDate, endDate);
-        responseObject.setData(isAvailable);
+        boolean isNotAvailable = checkVehicleAvailability(vehicle.get(), startDate, endDate);
+        responseObject.setData(isNotAvailable);
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
@@ -310,7 +285,6 @@ public class VehicleService extends BaseService {
 
         vehicle.setModel(model);
         vehicle.setYear(vehicleDto.getYear());
-        vehicle.setStatus(vehicleDto.getStatus());
         vehicle.setFuelType(vehicleDto.getFuelType());
         vehicle.setMileage(vehicleDto.getMileage());
         vehicle.setTransmission(vehicleDto.getTransmission());

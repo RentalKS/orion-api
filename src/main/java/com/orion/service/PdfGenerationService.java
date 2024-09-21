@@ -57,7 +57,7 @@ public class PdfGenerationService {
                 table.addCell(vehicle.getFuelType().name());
                 table.addCell(vehicle.getTransmission().name());
                 table.addCell(vehicle.getMileage().toString());
-                table.addCell(vehicle.getStatus().name());
+//                table.addCell(vehicle.getStatus().name());
 
             }
 

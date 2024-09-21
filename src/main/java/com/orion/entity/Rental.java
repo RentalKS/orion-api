@@ -2,6 +2,7 @@ package com.orion.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.orion.enums.vehicle.RentalStatus;
+import com.orion.enums.vehicle.VehicleStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,6 +32,10 @@ public class Rental extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private RentalStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicle_status")
+    private VehicleStatus vehicleStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")

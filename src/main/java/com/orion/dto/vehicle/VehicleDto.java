@@ -25,7 +25,6 @@ public class VehicleDto {
     private String locationName;
     private String locationAddress;
     private String year;
-    private VehicleStatus status;
     private FuelType fuelType;
     private Long mileage;
     private TransmissionType transmission;
@@ -48,12 +47,11 @@ public class VehicleDto {
     private String createdByName;
     private Long createdById;
 
-    public VehicleDto(Long id, String registrationNumber, Long modelId, String year, VehicleStatus status, FuelType fuelType, Long mileage, TransmissionType transmission, String color, String description, String image, long locationId, Long rateId, String name,Double dailyRate, Double weeklyRate, Double monthlyRate) {
+    public VehicleDto(Long id, String registrationNumber, Long modelId, String year, FuelType fuelType, Long mileage, TransmissionType transmission, String color, String description, String image, long locationId, Long rateId, String name,Double dailyRate, Double weeklyRate, Double monthlyRate) {
         this.id = id;
         this.registrationNumber = registrationNumber;
         this.modelId = modelId;
         this.year = year;
-        this.status = status;
         this.fuelType = fuelType;
         this.mileage = mileage;
         this.transmission = transmission;
