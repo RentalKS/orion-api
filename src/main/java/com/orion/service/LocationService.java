@@ -23,6 +23,11 @@ public class LocationService extends BaseService {
     private final TenantRepository tenantRepository;
     private final LocationRepository locationRepository;
 
+    public Location findLocationById(Long locationId){
+        Optional<Location> location = locationRepository.findLocationById(locationId);
+        isPresent(location);
+        return location.get();
+    }
     public ResponseObject createLocation(LocationDto locationDto) {
         String methodName = "createLocation";
         log.info("Entering: {}", methodName);

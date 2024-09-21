@@ -28,4 +28,7 @@ List<Rental> findRentalsWithinDateRange(@Param("startDate") LocalDateTime startD
 
     @Query("SELECT SUM(r.totalCost) FROM Rental r WHERE r.booking.id = :bookingId")
     Double findTotalRevenueByBookingId(@Param("bookingId") Long bookingId);
+
+    @Query("Select ")
+    List<Rental> findRentalsStartingAt(LocalDateTime now);
 }

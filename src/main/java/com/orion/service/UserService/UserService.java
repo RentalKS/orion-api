@@ -1,4 +1,4 @@
-package com.orion.service;
+package com.orion.service.UserService;
 
 import com.orion.generics.ResponseObject;
 import com.orion.config.tenant.TenantContext;
@@ -11,6 +11,7 @@ import com.orion.repository.CompanyRepository;
 import com.orion.repository.TenantRepository;
 import com.orion.repository.UserRepository;
 import com.orion.dto.user.ChangePasswordRequest;
+import com.orion.service.BaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,8 @@ public class UserService extends BaseService {
     private final UserRepository repository;
     private final CompanyRepository companyRepository;
     private final TenantRepository tenantRepository;
+    private final UserRepository userRepository;
+
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -67,6 +70,15 @@ public class UserService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
 
         return responseObject;
+    }
+    public User findByEmail(String email){
+        Optional<User> user = repository.findByEmail(email);
+        isPresent(user);
+        return user.get();
+    }
+
+    public List<Long> getAgencyMembers(Long agencyId) {
+        return userRepository.findAllIdsByAgency(agencyId);
     }
 
 }

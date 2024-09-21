@@ -106,4 +106,9 @@ public class CustomerService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
+    public Customer findCustomerById(Long customerId){
+        Optional<Customer> customer = customerRepository.findCustomerByIdAndTenantId(customerId, TenantContext.getCurrentTenant().getId());
+        isPresent(customer);
+        return customer.get();
+    }
 }

@@ -8,7 +8,9 @@ import com.orion.exception.ThrowException;
 import com.orion.repository.TenantRepository;
 import com.orion.repository.UserRepository;
 import com.orion.security.config.JwtService;
+import com.orion.service.BaseService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +22,8 @@ import java.util.*;
 
 @Log4j2
 @Service
-public class TenantContextService {
+@RequiredArgsConstructor
+public class TenantContextService extends BaseService {
 
     @Value("${default.tenant.domain}")
     private String defaultTenant;
@@ -29,13 +32,6 @@ public class TenantContextService {
     private final TenantRepository tenantRepository;
     private final JwtService jwtTokenComponent;
 
-    public TenantContextService(UserRepository userRepository,
-                                TenantRepository tenantRepository,
-                                JwtService jwtTokenComponent) {
-        this.userRepository = userRepository;
-        this.tenantRepository = tenantRepository;
-        this.jwtTokenComponent = jwtTokenComponent;
-    }
 
     @Transactional
     public void loadTenantContext(HttpServletRequest httpServletRequest) {
@@ -104,5 +100,4 @@ public class TenantContextService {
 
         TenantContext.setCurrentTenant(new TenantData(tenant.getId(), tenant.getDomain()));
     }
-
 }

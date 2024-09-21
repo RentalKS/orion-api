@@ -3,7 +3,7 @@ package com.orion.controller;
 import com.orion.generics.ResponseObject;
 import com.orion.dto.user.ChangePasswordRequest;
 import com.orion.dto.user.UserData;
-import com.orion.service.UserService;
+import com.orion.service.UserService.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
