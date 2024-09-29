@@ -25,6 +25,11 @@ public class ModelService extends BaseService {
     private final ModelRepository modelRepository;
     private final TenantRepository tenantRepository;
 
+    public Model findModelById(Long modelId){
+         Optional<Model> model = modelRepository.findModelById(modelId,TenantContext.getCurrentTenant().getId());
+        isPresent(model);
+        return model.get();
+    }
     public ResponseObject createModel(ModelDto modelDto) {
         String methodName = "createModel";
         log.info("Entering: {}", methodName);

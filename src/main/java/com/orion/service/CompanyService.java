@@ -10,6 +10,7 @@ import com.orion.entity.Tenant;
 import com.orion.entity.User;
 import com.orion.repository.CompanyRepository;
 import com.orion.security.CustomUserDetails;
+import com.orion.service.UserService.UserService;
 import com.orion.util.DtoUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,7 +29,7 @@ import java.util.Optional;
 @Log4j2
 public class CompanyService extends BaseService {
     private final CompanyRepository companyRepository;
-    private  UserService userService;
+    private UserService userService;
     private final TenantService tenantService;
     private final FileUploadService fileUploadService;
 

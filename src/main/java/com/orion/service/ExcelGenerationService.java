@@ -42,7 +42,7 @@ public class ExcelGenerationService {
                 row.createCell(5).setCellValue(vehicle.getFuelType().name());
                 row.createCell(6).setCellValue(vehicle.getTransmission().name());
                 row.createCell(7).setCellValue(vehicle.getMileage());
-                row.createCell(8).setCellValue(vehicle.getStatus().name());
+//                row.createCell(8).setCellValue(vehicle.getStatus().name());
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

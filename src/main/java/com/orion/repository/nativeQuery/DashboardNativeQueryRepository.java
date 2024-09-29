@@ -47,7 +47,7 @@ public class DashboardNativeQueryRepository {
                 "SUM(r.total_cost) as totalAmount, " +
                 "SUM(CASE WHEN r.status = 'COMPLETED' THEN 1 ELSE 0 END) as completedReservations, " +
                 "SUM(CASE WHEN r.status = 'PENDING' THEN 1 ELSE 0 END) as pendingReservations, " +
-                "SUM(CASE WHEN r.status = 'CANCELED' THEN 1 ELSE 0 END) as canceledReservations " +
+                "SUM(CASE WHEN r.status = 'CANCELLED' THEN 1 ELSE 0 END) as canceledReservations " +
                 "FROM customers u " +
                 "LEFT JOIN rentals r ON u.id = r.customer_id " +
                 "WHERE " + where + " and u.deleted_at is null and r.deleted_at is null " +

@@ -1,4 +1,4 @@
-package com.orion.service;
+package com.orion.service.UserService;
 
 import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.company.CompanyDto;
@@ -10,6 +10,7 @@ import com.orion.repository.CompanyRepository;
 import com.orion.repository.UserRepository;
 import com.orion.dto.user.ChangePasswordRequest;
 import com.orion.security.CustomUserDetails;
+import com.orion.service.BaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -52,7 +53,7 @@ public class UserService extends BaseService {
 
     public ResponseObject myProfile(String emailCurrentUser) {
         ResponseObject responseObject = new ResponseObject();
-        UserData userData = findByEmail(emailCurrentUser);
+        UserData userData = findUserDataByEmail(emailCurrentUser);
 
         if(Role.AGENCY.getName().equals(userData.getRole())) {
             List<CompanyDto> companyList = companyRepository.findAllCompanies(emailCurrentUser, TenantContext.getCurrentTenant().getId());
@@ -64,10 +65,20 @@ public class UserService extends BaseService {
         return responseObject;
     }
 
-    public UserData findByEmail(String email){
+    public List<Long> getAgencyMembers(Long agencyId) {
+        return repository.findAllIdsByAgency(agencyId);
+    }
+
+    public UserData findUserDataByEmail(String email){
         Optional<UserData> userData = repository.findUserDataById(email);
         isPresent(userData);
         return userData.get();
+    }
+
+    public User findByEmail(String email){
+        Optional<User> user = repository.findByEmail(email);
+        isPresent(user);
+        return user.get();
     }
     public User findById(Long userId){
         Optional<User> user = repository.findUserIdDeleteAtNull(userId, TenantContext.getCurrentTenant().getId());

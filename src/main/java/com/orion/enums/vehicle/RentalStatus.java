@@ -3,7 +3,7 @@ package com.orion.enums.vehicle;
 public enum RentalStatus {
     ONGOING,
     COMPLETED,
-    CANCELED,
+    CANCELLED,
     PENDING,
     WAITING_FOR_PAYMENT
 }

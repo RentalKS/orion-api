@@ -16,7 +16,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,7 +26,6 @@ public class PaymentService extends BaseService {
     private final PaymentRepository paymentRepository;
     private final RentalRepository rentalRepository;
     private final VehicleRepository vehicleRepository;
-    private final BookingRepository bookingRepository;
     private final EmailService emailService;
     private final TenantRepository tenantRepository;
 
@@ -63,7 +61,7 @@ public class PaymentService extends BaseService {
 
             payment.setStatus(PaymentStatus.PENDING);
             rental.get().setStatus(RentalStatus.WAITING_FOR_PAYMENT);
-            rental.get().getVehicle().setStatus(VehicleStatus.RESERVED);
+            rental.get().setVehicleStatus(VehicleStatus.RESERVED);
 
             rentalRepository.save(rental.get());
             vehicleRepository.save(rental.get().getVehicle());
@@ -86,58 +84,6 @@ public class PaymentService extends BaseService {
 
     private String generateTransactionId() {
         return UUID.randomUUID().toString();
-    }
-
-    @Transactional
-    public ResponseObject modifyReservation(Long bookingId, LocalDateTime newStartDate, LocalDateTime newEndDate) {
-        String methodName = "modifyReservation";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
-
-        Optional<Booking> booking = bookingRepository.findById(bookingId);
-        isPresent(booking);
-
-        Booking existingBooking = booking.get();
-        if (existingBooking.getStatus() != RentalStatus.PENDING) {
-            responseObject.prepareHttpStatus(HttpStatus.BAD_REQUEST);
-            responseObject.setData("Only pending reservations can be modified.");
-            return responseObject;
-        }
-
-        existingBooking.setStartDate(newStartDate);
-        existingBooking.setEndDate(newEndDate);
-
-        boolean isAvailable = checkVehicleAvailability(existingBooking.getVehicle(), newStartDate, newEndDate);
-        if (!isAvailable) {
-            responseObject.prepareHttpStatus(HttpStatus.BAD_REQUEST);
-            responseObject.setData("Vehicle is not available for the new selected dates");
-            return responseObject;
-        }
-
-        bookingRepository.save(existingBooking);
-
-        responseObject.setData(existingBooking);
-        responseObject.prepareHttpStatus(HttpStatus.OK);
-        return responseObject;
-    }
-
-    public ResponseObject checkAvailability(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate) {
-        String methodName = "checkAvailability";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
-
-        Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
-        isPresent(vehicle);
-
-        boolean isAvailable = checkVehicleAvailability(vehicle.get(), startDate, endDate);
-        responseObject.setData(isAvailable);
-        responseObject.prepareHttpStatus(HttpStatus.OK);
-        return responseObject;
-    }
-
-    private boolean checkVehicleAvailability(Vehicle vehicle, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Booking> bookings = bookingRepository.findBookingsByVehicleAndDateRange(vehicle.getId(), startDate, endDate);
-        return bookings.isEmpty();
     }
 
 }

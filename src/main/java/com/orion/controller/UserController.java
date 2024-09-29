@@ -5,7 +5,7 @@ import com.orion.generics.ResponseObject;
 import com.orion.dto.user.ChangePasswordRequest;
 import com.orion.dto.user.UserData;
 import com.orion.security.CustomUserDetails;
-import com.orion.service.UserService;
+import com.orion.service.UserService.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;

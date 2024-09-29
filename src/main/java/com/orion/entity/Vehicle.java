@@ -27,10 +27,6 @@ public class Vehicle extends BaseEntity {
     private String year;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private VehicleStatus status;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "fuel_type")
     private FuelType fuelType;
 
