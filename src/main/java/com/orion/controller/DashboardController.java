@@ -2,6 +2,7 @@ package com.orion.controller;
 
 import com.orion.dto.dashboard.InfoDashboard;
 import com.orion.generics.ResponseObject;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.DashboardService;
 import com.orion.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @PostMapping
-    public ResponseEntity<ResponseObject> dashboard(@RequestBody InfoDashboard infoDashboard, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ResponseObject> dashboard(@RequestBody InfoDashboard infoDashboard, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String methodName = "dashboard";
 
         log.info("{} -> Process dashboard", methodName);
@@ -28,7 +29,7 @@ public class DashboardController {
     }
 
     @PostMapping("/vehicles")
-    public ResponseEntity<ResponseObject> vehicleDashboard(@RequestBody InfoDashboard infoDashboard, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ResponseObject> vehicleDashboard(@RequestBody InfoDashboard infoDashboard, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String methodName = "dashboard";
 
         log.info("{} -> Process dashboard", methodName);

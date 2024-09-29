@@ -9,9 +9,11 @@ import com.orion.entity.Company;
 import com.orion.entity.Tenant;
 import com.orion.entity.User;
 import com.orion.repository.CompanyRepository;
+import com.orion.security.CustomUserDetails;
 import com.orion.util.DtoUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -26,10 +28,14 @@ import java.util.Optional;
 @Log4j2
 public class CompanyService extends BaseService {
     private final CompanyRepository companyRepository;
-    private final UserService userService;
+    private  UserService userService;
     private final TenantService tenantService;
     private final FileUploadService fileUploadService;
 
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
     public ResponseObject createCompany(CompanyDto companyDto)  {
         String methodName = "createCompany";
         log.info("{} -> create company", methodName);
@@ -44,13 +50,13 @@ public class CompanyService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject getCompanyById(Long companyId,  UserDetails principal) {
+    public ResponseObject getCompanyById(Long companyId,  String currentUserEmail) {
         String methodName = "getCompanyById";
         log.info("{} -> get company by id : {}", methodName, companyId);
         ResponseObject responseObject = new ResponseObject();
         Tenant tenant= tenantService.findById();
 
-        Optional<CompanyDto> company = companyRepository.findCompany(companyId, principal.getUsername(), tenant.getId());
+        Optional<CompanyDto> company = companyRepository.findCompany(companyId, currentUserEmail, tenant.getId());
         isPresent(company);
 
         List<CategoryDto> categories = companyRepository.findCompanyCategories(companyId, tenant.getId());
@@ -79,8 +85,8 @@ public class CompanyService extends BaseService {
     }
 
     private void companyAttributes(CompanyDto companyDto, Company companyToUpdate) {
-        companyToUpdate.setCompanyName(companyDto.getCompanyName());
-        companyToUpdate.setCompanyEmail(companyDto.getCompanyEmail());
+        companyToUpdate.setCompanyName(companyDto.getName());
+        companyToUpdate.setCompanyEmail(companyDto.getEmail());
         Tenant tenant = tenantService.findById();
         User user = userService.findById(companyDto.getUserId());
 
@@ -88,8 +94,8 @@ public class CompanyService extends BaseService {
         DtoUtils.setIfNotNull(companyDto.getCity(), companyToUpdate::setCity);
         DtoUtils.setIfNotNull(companyDto.getState(), companyToUpdate::setState);
         DtoUtils.setIfNotNull(companyDto.getZipCode(), companyToUpdate::setZipCode);
-        DtoUtils.setIfNotNull(companyDto.getCompanyAddress(), companyToUpdate::setCompanyAddress);
-        DtoUtils.setIfNotNull(companyDto.getCompanyPhone(), companyToUpdate::setCompanyPhone);
+        DtoUtils.setIfNotNull(companyDto.getAddress(), companyToUpdate::setCompanyAddress);
+        DtoUtils.setIfNotNull(companyDto.getPhone(), companyToUpdate::setCompanyPhone);
         companyToUpdate.setTenant(tenant);
         companyToUpdate.setTenant(tenant);
 
@@ -112,13 +118,13 @@ public class CompanyService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject getMyCompanies(UserDetails principal) {
+    public ResponseObject getMyCompanies(String currentUserEmail) {
         String methodName = "getMyCompanies";
         log.info("{} -> get my companies", methodName);
         ResponseObject responseObject = new ResponseObject();
 
         Tenant tenant = tenantService.findById();
-        List<CompanyDto> companyList = companyRepository.findAllCompanies(principal.getUsername(),tenant.getId());
+        List<CompanyDto> companyList = companyRepository.findAllCompanies(currentUserEmail,tenant.getId());
 
         for(CompanyDto company : companyList){
             List<CategoryDto> categories = companyRepository.findCompanyCategories(company.getId(), tenant.getId());
@@ -150,8 +156,8 @@ public class CompanyService extends BaseService {
 
     public void setCompanyLogo(CompanyDto companyDto, Company company){
         try {
-            if (companyDto.getCompanyLogo() != null && !companyDto.getCompanyLogo().isEmpty()) {
-                String logoUrl = fileUploadService.uploadFile(companyDto.getCompanyLogo());
+            if (companyDto.getLogo() != null && !companyDto.getLogo().isEmpty()) {
+                String logoUrl = fileUploadService.uploadFile(companyDto.getLogo());
                 company.setCompanyLogo(logoUrl);
             }
         } catch (Exception e) {

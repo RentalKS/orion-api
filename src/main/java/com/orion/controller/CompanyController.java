@@ -2,9 +2,11 @@ package com.orion.controller;
 
 import com.orion.generics.ResponseObject;
 import com.orion.dto.company.CompanyDto;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,8 +21,8 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant)")
-    @PostMapping("/create")
-    public ResponseEntity<ResponseObject> createCompany(@RequestBody CompanyDto companyDto) {
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseObject> createCompany(@ModelAttribute CompanyDto companyDto) {
         String methodName = "createCompany";
 
         log.info("{} -> Create company", methodName);
@@ -28,13 +30,13 @@ public class CompanyController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
+//    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{companyId}")
-    public ResponseEntity<ResponseObject> getCompanyById(@PathVariable Long companyId, @AuthenticationPrincipal UserDetails principal) {
+    public ResponseEntity<ResponseObject> getCompanyById(@PathVariable Long companyId, @AuthenticationPrincipal CustomUserDetails principal) {
         String methodName = "getCompanyById";
 
         log.info("{} -> Get my company", methodName);
-        ResponseObject response = companyService.getCompanyById(companyId, principal);
+        ResponseObject response = companyService.getCompanyById(companyId, principal.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -60,11 +62,11 @@ public class CompanyController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/my")
-    public ResponseEntity<ResponseObject> getMyCompanies(@AuthenticationPrincipal UserDetails principal) {
+    public ResponseEntity<ResponseObject> getMyCompanies(@AuthenticationPrincipal CustomUserDetails principal) {
         String methodName = "getMyCompanies";
 
         log.info("{} -> Get my companies", methodName);
-        ResponseObject response = companyService.getMyCompanies(principal);
+        ResponseObject response = companyService.getMyCompanies(principal.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

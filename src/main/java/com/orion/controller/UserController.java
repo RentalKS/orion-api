@@ -1,8 +1,10 @@
 package com.orion.controller;
 
+import com.orion.entity.User;
 import com.orion.generics.ResponseObject;
 import com.orion.dto.user.ChangePasswordRequest;
 import com.orion.dto.user.UserData;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,11 +45,11 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @GetMapping("/me")
-    public ResponseEntity myProfile(@AuthenticationPrincipal UserDetails applicationUserDetails) {
+    public ResponseEntity myProfile(@AuthenticationPrincipal CustomUserDetails applicationUserDetails) {
         String methodName = "getMyProfile";
 
         log.info("{} -> Get my profile", methodName);
-        ResponseObject responseObject = service.myProfile(applicationUserDetails);
+        ResponseObject responseObject = service.myProfile(applicationUserDetails.getUsername());
 
         log.info("{} -> Get my profile, response status: {}",methodName, responseObject.getCode());
         return ResponseEntity.status(responseObject.getStatus()).body(responseObject);

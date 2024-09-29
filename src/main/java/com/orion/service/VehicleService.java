@@ -12,6 +12,7 @@ import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.vehicle.VehicleDto;
 import com.orion.repository.*;
 import com.orion.repository.nativeQuery.NativeQueryRepository;
+import com.orion.security.CustomUserDetails;
 import com.orion.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -132,7 +133,7 @@ public class VehicleService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject filterVehicles(Integer page, Integer size, VehicleFilter vehicleFilter, UserDetails userDetails){
+    public ResponseObject filterVehicles(Integer page, Integer size, VehicleFilter vehicleFilter, CustomUserDetails userDetails){
         String methodName = "getAll";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();

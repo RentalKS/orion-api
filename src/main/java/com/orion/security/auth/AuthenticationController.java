@@ -19,7 +19,7 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    @PreAuthorize("hasAuthority(@securityService.roleTenant) or hasAuthority(@securityService.roleAdmin)")
+//    @PreAuthorize("hasAuthority(@securityService.roleTenant) or hasAuthority(@securityService.roleAdmin)")
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request

@@ -4,6 +4,7 @@ import com.orion.dto.filter.VehicleFilter;
 import com.orion.dto.reservation.ReservationDto;
 import com.orion.dto.vehicle.VehicleDto;
 import com.orion.generics.ResponseObject;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -56,7 +57,7 @@ public class VehicleController {
 
     @PostMapping("/filter-vehicles")
     public ResponseEntity filterForOrders(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
-                                          @RequestBody VehicleFilter filter, @AuthenticationPrincipal UserDetails userDetails) {
+                                          @RequestBody VehicleFilter filter, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String methodName = "filterForOrders";
 
         log.info("{} -> Filter vehicles", methodName);

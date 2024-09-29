@@ -6,8 +6,10 @@ import com.orion.generics.ResponseObject;
 import com.orion.dto.user.UserData;
 import com.orion.entity.Role;
 import com.orion.entity.User;
+import com.orion.repository.CompanyRepository;
 import com.orion.repository.UserRepository;
 import com.orion.dto.user.ChangePasswordRequest;
+import com.orion.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -27,7 +29,7 @@ public class UserService extends BaseService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
-    private final CompanyService companyService;
+    private final CompanyRepository  companyRepository;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -48,12 +50,12 @@ public class UserService extends BaseService {
         repository.save(user);
     }
 
-    public ResponseObject myProfile(UserDetails connectedUser) {
+    public ResponseObject myProfile(String emailCurrentUser) {
         ResponseObject responseObject = new ResponseObject();
-        UserData userData = findByEmail(connectedUser.getUsername());
+        UserData userData = findByEmail(emailCurrentUser);
 
         if(Role.AGENCY.getName().equals(userData.getRole())) {
-            List<CompanyDto> companyList= companyService.findAllCompanies(userData.getEmail());
+            List<CompanyDto> companyList = companyRepository.findAllCompanies(emailCurrentUser, TenantContext.getCurrentTenant().getId());
             userData.setCompanies(companyList);
         }
         responseObject.setData(userData);
@@ -63,7 +65,7 @@ public class UserService extends BaseService {
     }
 
     public UserData findByEmail(String email){
-        Optional<UserData> userData = repository.findUserDataById(email, TenantContext.getCurrentTenant().getId());
+        Optional<UserData> userData = repository.findUserDataById(email);
         isPresent(userData);
         return userData.get();
     }

@@ -1,5 +1,6 @@
 package com.orion.controller;
 import com.orion.entity.Notification;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<List<Notification>> getUserNotifications(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<Notification>> getUserNotifications(@AuthenticationPrincipal CustomUserDetails userDetails) {
         String email = userDetails.getUsername();
         List<Notification> notifications = notificationService.getUserNotifications(email);
         return ResponseEntity.ok(notifications);
