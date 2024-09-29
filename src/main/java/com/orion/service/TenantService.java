@@ -1,5 +1,6 @@
 package com.orion.service;
 
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.generics.ResponseObject;
 import com.orion.dto.user.TenantDto;
 import com.orion.dto.tenant.TenantDataDto;
@@ -223,4 +224,10 @@ public class TenantService extends BaseService{
         log.info("{} -> Delete Tenant by Id, response status: {}", methodName, responseObject.getCode());
         return responseObject;
     }
+    public Tenant findById(){
+        Optional<Tenant> tenant = tenantRepository.findById(TenantContext.getCurrentTenant().getId());
+        isPresent(tenant);
+        return tenant.get();
+    }
+
 }

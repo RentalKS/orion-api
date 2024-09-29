@@ -1,6 +1,6 @@
 package com.orion.repository.nativeQuery;
 
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.dashboard.InfoDashboard;
 import com.orion.dto.dashboard.ReservationDashboard;
 import com.orion.dto.vehicle.VehicleDashboard;

@@ -1,7 +1,7 @@
 package com.orion.service;
 
 import com.orion.generics.ResponseObject;
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.location.LocationDto;
 import com.orion.entity.Location;
 import com.orion.entity.Tenant;

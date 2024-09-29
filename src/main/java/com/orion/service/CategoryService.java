@@ -1,7 +1,7 @@
 package com.orion.service;
 
 import com.orion.generics.ResponseObject;
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.category.CategoryDto;
 import com.orion.entity.Category;
 import com.orion.entity.Company;
@@ -112,5 +112,11 @@ public class CategoryService extends BaseService {
         responseObject.setData(categoryRepository.findAllCategory(tenant.get().getId()));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
+    }
+    public Category findById(Long id){
+        Optional<Category> category = categoryRepository.findCategoryById(id,TenantContext.getCurrentTenant().getId());
+        isPresent(category);
+        return category.get();
+
     }
 }

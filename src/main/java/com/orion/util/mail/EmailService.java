@@ -1,4 +1,4 @@
-package com.orion.mail;
+package com.orion.util.mail;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

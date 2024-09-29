@@ -5,6 +5,7 @@ import com.orion.util.DateUtil;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,7 +29,8 @@ public class CompanyDto {
     @Email(message = "Invalid email format")
     private String companyEmail;
     private String companyPhone;
-    private String companyLogo;
+    private MultipartFile companyLogo;
+    private String companyLogoUrl;
     private String zipCode;
     private String city;
     private String state;
@@ -37,7 +39,7 @@ public class CompanyDto {
     private List<CategoryDto> categories;
 
 
-    public CompanyDto(LocalDateTime createdAt, String createdBy, Long id, @NotNull String companyName, String companyAddress, @NotNull String companyEmail, String companyPhone, String companyLogo, String zipCode, String city, String state,@NotNull Long userId) {
+    public CompanyDto(LocalDateTime createdAt, String createdBy, Long id, @NotNull String companyName, String companyAddress, @NotNull String companyEmail, String companyPhone, String companyLogoUrl, String zipCode, String city, String state,@NotNull Long userId) {
         this.createdAt = DateUtil.localDateTimeToMilliseconds(createdAt);
         this.createdBy = createdBy;
         this.id = id;
@@ -45,7 +47,7 @@ public class CompanyDto {
         this.companyAddress = companyAddress;
         this.companyEmail = companyEmail;
         this.companyPhone = companyPhone;
-        this.companyLogo = companyLogo;
+        this.companyLogoUrl = companyLogoUrl;
         this.zipCode = zipCode;
         this.city = city;
         this.state = state;

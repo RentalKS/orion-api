@@ -1,4 +1,4 @@
-package com.orion.config.tenant;
+package com.orion.infrastructure.tenant;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

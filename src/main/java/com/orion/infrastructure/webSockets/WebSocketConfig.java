@@ -1,6 +1,5 @@
-package com.orion.config.webSockets;
+package com.orion.infrastructure.webSockets;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;

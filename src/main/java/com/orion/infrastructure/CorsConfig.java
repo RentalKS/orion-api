@@ -1,4 +1,4 @@
-package com.orion.config;
+package com.orion.infrastructure;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

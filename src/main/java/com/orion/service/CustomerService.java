@@ -2,7 +2,7 @@ package com.orion.service;
 
 import com.orion.entity.Rental;
 import com.orion.generics.ResponseObject;
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.customer.CustomerDto;
 import com.orion.entity.Customer;
 import com.orion.entity.Tenant;

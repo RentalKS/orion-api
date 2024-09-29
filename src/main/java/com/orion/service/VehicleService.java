@@ -8,7 +8,7 @@ import com.orion.enums.vehicle.VehicleStatus;
 import com.orion.exception.ErrorCode;
 import com.orion.exception.ThrowException;
 import com.orion.generics.ResponseObject;
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.vehicle.VehicleDto;
 import com.orion.repository.*;
 import com.orion.repository.nativeQuery.NativeQueryRepository;

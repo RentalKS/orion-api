@@ -1,6 +1,6 @@
 package com.orion.service;
 import com.orion.generics.ResponseObject;
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.maintenanceRecord.MaintenanceRecordDto;
 import com.orion.entity.MaintenanceRecord;
 import com.orion.entity.Tenant;

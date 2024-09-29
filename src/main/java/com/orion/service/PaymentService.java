@@ -1,13 +1,13 @@
 package com.orion.service;
 
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.entity.*;
 import com.orion.enums.payment.PaymentMethod;
 import com.orion.enums.payment.PaymentStatus;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
 import com.orion.generics.ResponseObject;
-import com.orion.mail.EmailService;
+import com.orion.util.mail.EmailService;
 import com.orion.repository.*;
 import com.orion.util.TokenUtil;
 import jakarta.transaction.Transactional;

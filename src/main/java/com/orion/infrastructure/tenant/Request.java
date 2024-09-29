@@ -1,4 +1,4 @@
-package com.orion.config.tenant;
+package com.orion.infrastructure.tenant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class TenantData {
+public class Request {
 
     private Long id;
     private String hostname;

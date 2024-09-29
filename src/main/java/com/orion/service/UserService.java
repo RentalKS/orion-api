@@ -1,14 +1,11 @@
 package com.orion.service;
 
-import com.orion.generics.ResponseObject;
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.dto.company.CompanyDto;
+import com.orion.generics.ResponseObject;
 import com.orion.dto.user.UserData;
 import com.orion.entity.Role;
-import com.orion.entity.Tenant;
 import com.orion.entity.User;
-import com.orion.repository.CompanyRepository;
-import com.orion.repository.TenantRepository;
 import com.orion.repository.UserRepository;
 import com.orion.dto.user.ChangePasswordRequest;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +27,7 @@ public class UserService extends BaseService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
-    private final CompanyRepository companyRepository;
-    private final TenantRepository tenantRepository;
+    private final CompanyService companyService;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -54,14 +50,11 @@ public class UserService extends BaseService {
 
     public ResponseObject myProfile(UserDetails connectedUser) {
         ResponseObject responseObject = new ResponseObject();
-        Optional<Tenant> tenant = tenantRepository.findTenantById(TenantContext.getCurrentTenant().getId());
-        isPresent(tenant);
-        Optional<UserData> userData = repository.findUserDataById(connectedUser.getUsername(), tenant.get().getId());
-        isPresent(userData);
+        UserData userData = findByEmail(connectedUser.getUsername());
 
-        if(Role.AGENCY.getName().equals(userData.get().getRole())) {
-            List<CompanyDto> companyDto = companyRepository.findAllCompanies(userData.get().getEmail(), tenant.get().getId());
-            userData.get().setCompanies(companyDto);
+        if(Role.AGENCY.getName().equals(userData.getRole())) {
+            List<CompanyDto> companyList= companyService.findAllCompanies(userData.getEmail());
+            userData.setCompanies(companyList);
         }
         responseObject.setData(userData);
         responseObject.prepareHttpStatus(HttpStatus.OK);
@@ -69,4 +62,14 @@ public class UserService extends BaseService {
         return responseObject;
     }
 
+    public UserData findByEmail(String email){
+        Optional<UserData> userData = repository.findUserDataById(email, TenantContext.getCurrentTenant().getId());
+        isPresent(userData);
+        return userData.get();
+    }
+    public User findById(Long userId){
+        Optional<User> user = repository.findUserIdDeleteAtNull(userId, TenantContext.getCurrentTenant().getId());
+        isPresent(user);
+        return user.get();
+    }
 }

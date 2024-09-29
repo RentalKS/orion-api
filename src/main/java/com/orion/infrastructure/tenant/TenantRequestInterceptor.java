@@ -1,4 +1,4 @@
-package com.orion.config.tenant;
+package com.orion.infrastructure.tenant;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

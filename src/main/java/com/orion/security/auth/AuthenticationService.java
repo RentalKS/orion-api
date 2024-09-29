@@ -1,6 +1,6 @@
 package com.orion.security.auth;
 
-import com.orion.config.tenant.TenantContext;
+import com.orion.infrastructure.tenant.TenantContext;
 import com.orion.entity.Role;
 import com.orion.entity.Tenant;
 import com.orion.repository.RoleRepository;
@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service

@@ -1,4 +1,4 @@
-package com.orion.config.tenant;
+package com.orion.infrastructure.tenant;
 
 
 import com.orion.entity.Tenant;
@@ -92,17 +92,10 @@ public class TenantContextService {
             } else
                 tenant = tenantRepository.findByDomain(defaultTenant).get();
 
-            TenantContext.setCurrentTenant(new TenantData(tenant.getId(), tenant.getDomain()));
+            TenantContext.setCurrentTenant(new Request(tenant.getId(), tenant.getDomain()));
         }
 
-//        if(user!=null) {
-//            Optional<User> optionalUserTenant = userTenantRepository.findByTenantIdUserIdAndActivated(tenant.getId(), user.getId(), Status.ACTIVE);
-//            if (optionalUserTenant.isEmpty()) {
-//                ThrowException.throwBadRequestApiException(ErrorCode.USER_IS_NOT_ACTIVATED, null);
-//            }
-//        }
-
-        TenantContext.setCurrentTenant(new TenantData(tenant.getId(), tenant.getDomain()));
+        TenantContext.setCurrentTenant(new Request(tenant.getId(), tenant.getDomain()));
     }
 
 }

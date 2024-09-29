@@ -1,12 +1,12 @@
-package com.orion.config.tenant;
+package com.orion.infrastructure.tenant;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class TenantContext {
-    private static ThreadLocal<TenantData> currentTenant = new InheritableThreadLocal<>();
+    private static ThreadLocal<Request> currentTenant = new InheritableThreadLocal<>();
     private static ThreadLocal<UserDetails> applicationUser = new InheritableThreadLocal<>();
 
-    public static TenantData getCurrentTenant() {
+    public static Request getCurrentTenant() {
         return currentTenant.get();
     }
 
@@ -14,7 +14,7 @@ public class TenantContext {
         return applicationUser.get();
     }
 
-    public static void setCurrentTenant(TenantData tenantData) {
+    public static void setCurrentTenant(Request tenantData) {
         currentTenant.set(tenantData);
     }
 
