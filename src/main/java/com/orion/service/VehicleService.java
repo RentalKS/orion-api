@@ -139,6 +139,7 @@ public class VehicleService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
 
 
+
         try {
             Long tenantId = TenantContext.getCurrentTenant().getId();
             Optional<User> optionalUser = userRepository.findByEmail(userDetails.getUsername());

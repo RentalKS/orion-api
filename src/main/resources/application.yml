@@ -1,4 +1,6 @@
 spring:
+  cloudinary:
+    url: cloudinary://455168161139481:YnrO3MvvhleM6DPpVYGu003KbwU@vata
   mail:
     host: smtp.gmail.com
     port: 587
@@ -46,7 +48,7 @@ spring:
 
   #flyway
   flyway:
-    schemas: ${SCHEMA:orion }
+    schemas: ${SCHEMA:orion}
     user: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:shpatvata}
     baseline-on-migrate: 'true'
