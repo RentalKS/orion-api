@@ -36,7 +36,7 @@ public class SectionController {
     }
 
     @GetMapping("/{sectionId}")
-    public ResponseEntity<ResponseObject> getSection(@RequestParam Long sectionId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ResponseObject> getSection(@PathVariable Long sectionId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getSection";
 
         log.info("{} -> Get section", methodName);
@@ -45,7 +45,7 @@ public class SectionController {
     }
 
     @PutMapping("/update/{sectionId}")
-    public ResponseEntity<ResponseObject> updateSection(@RequestParam Long sectionId, @RequestBody SectionDto sectionDto) {
+    public ResponseEntity<ResponseObject> updateSection(@PathVariable Long sectionId, @RequestBody SectionDto sectionDto) {
         String methodName = "updateSection";
 
         log.info("{} -> update section", methodName);
@@ -54,7 +54,7 @@ public class SectionController {
     }
 
     @PutMapping("/delete/{sectionId}")
-    public ResponseEntity<ResponseObject> deleteSection(@RequestParam Long sectionId) {
+    public ResponseEntity<ResponseObject> deleteSection(@PathVariable Long sectionId) {
         String methodName = "deleteSection";
 
         log.info("{} -> Delete section", methodName);

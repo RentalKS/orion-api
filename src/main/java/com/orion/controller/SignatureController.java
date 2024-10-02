@@ -15,12 +15,12 @@ public class SignatureController {
     }
 
     @GetMapping
-    public ResponseObject getAgreement(@RequestParam String token) {
+    public ResponseObject getAgreement(@PathVariable String token) {
         return signatureService.validateAndCompleteRental(token);
     }
 
 //    @PostMapping
-//    public ResponseObject signAgreement(@RequestParam String token) {
+//    public ResponseObject signAgreement(@PathVariable String token) {
 //        return signatureService.signAgreement(token);
 //    }
 }

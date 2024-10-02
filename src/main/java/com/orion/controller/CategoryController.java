@@ -40,7 +40,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{categoryId}")
-    public ResponseEntity<ResponseObject> getCategory(@RequestParam Long categoryId,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ResponseObject> getCategory(@PathVariable Long categoryId,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getCategory";
 
         log.info("{} -> Get category", methodName);
@@ -50,7 +50,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{categoryId}")
-    public ResponseEntity<ResponseObject> updateCategory(@RequestParam Long categoryId, @RequestBody CategoryDto companyDto) {
+    public ResponseEntity<ResponseObject> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDto companyDto) {
         String methodName = "updateCategory";
 
         log.info("{} -> update category", methodName);
@@ -60,7 +60,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/delete/{categoryId}")
-    public ResponseEntity<ResponseObject> deleteCategory(@RequestParam Long categoryId) {
+    public ResponseEntity<ResponseObject> deleteCategory(@PathVariable Long categoryId) {
         String methodName = "deleteCategory";
 
         log.info("{} -> Delete category", methodName);

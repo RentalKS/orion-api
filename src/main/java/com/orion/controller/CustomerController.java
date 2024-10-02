@@ -28,7 +28,7 @@ public class CustomerController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{customerId}")
-    public ResponseEntity<ResponseObject> getCustomer(@RequestParam Long customerId) {
+    public ResponseEntity<ResponseObject> getCustomer(@PathVariable Long customerId) {
         String methodName = "getCustomer";
 
         log.info("{} -> Get customer", methodName);
@@ -38,7 +38,7 @@ public class CustomerController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{customerId}")
-    public ResponseEntity<ResponseObject> updateCustomer(@RequestParam Long customerId, @RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ResponseObject> updateCustomer(@PathVariable Long customerId, @RequestBody CustomerDto customerDto) {
         String methodName = "updateCustomer";
 
         log.info("{} -> update customer", methodName);
@@ -48,7 +48,7 @@ public class CustomerController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/delete/{customerId}")
-    public ResponseEntity<ResponseObject> deleteCustomer(@RequestParam Long customerId) {
+    public ResponseEntity<ResponseObject> deleteCustomer(@PathVariable Long customerId) {
         String methodName = "deleteCustomer";
 
         log.info("{} -> Delete customer", methodName);

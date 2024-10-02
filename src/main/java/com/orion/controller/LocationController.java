@@ -47,7 +47,7 @@ public class LocationController {
 
 
     @PutMapping("/update/{locationId}")
-    public ResponseEntity<ResponseObject> updateLocation(@RequestParam Long locationId, @RequestBody LocationDto locationDto) {
+    public ResponseEntity<ResponseObject> updateLocation(@PathVariable Long locationId, @RequestBody LocationDto locationDto) {
         String methodName = "updateLocation";
 
         log.info("{} -> update location", methodName);
@@ -56,7 +56,7 @@ public class LocationController {
     }
 
     @PutMapping("/delete/{locationId}")
-    public ResponseEntity<ResponseObject> deleteLocation(@RequestParam Long locationId) {
+    public ResponseEntity<ResponseObject> deleteLocation(@PathVariable Long locationId) {
         String methodName = "deleteLocation";
 
         log.info("{} -> Delete location", methodName);

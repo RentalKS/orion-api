@@ -1,19 +1,15 @@
 package com.orion.entity;
-
-import com.fasterxml.jackson.databind.ser.Serializers;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 @Table(name = "brands")
 public class Brand extends BaseEntity {
 
@@ -22,4 +18,58 @@ public class Brand extends BaseEntity {
 
     @Column(name = "logo")
     private String logo;
+
+    @Column(name="description")
+    private String description;
+
+    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Model> vehicles;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", referencedColumnName = "id")
+    private Tenant tenant;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        if(logo == null || logo.isEmpty()){
+            return;
+        }
+        this.logo = logo;
+    }
+
+    public List<Model> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Model> vehicles) {
+        this.vehicles = vehicles;
+    }
+
+    public Tenant getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

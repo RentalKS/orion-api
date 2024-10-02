@@ -38,7 +38,7 @@ public class RateDatesController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{sectionId}")
-    public ResponseEntity<ResponseObject> getRates(@RequestParam Long rateDateId) {
+    public ResponseEntity<ResponseObject> getRates(@PathVariable Long rateDateId) {
         String methodName = "getRates";
 
         log.info("{} -> Get rates", methodName);
@@ -48,7 +48,7 @@ public class RateDatesController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{rateDateId}")
-    public ResponseEntity<ResponseObject> updateRates(@RequestParam Long rateDateId, @RequestBody RatesDto ratesDto) {
+    public ResponseEntity<ResponseObject> updateRates(@PathVariable Long rateDateId, @RequestBody RatesDto ratesDto) {
         String methodName = "updateRates";
 
         log.info("{} -> update section", methodName);
@@ -58,7 +58,7 @@ public class RateDatesController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/delete/{rateDateId}")
-    public ResponseEntity<ResponseObject> deleteRates(@RequestParam Long rateDateId) {
+    public ResponseEntity<ResponseObject> deleteRates(@PathVariable Long rateDateId) {
         String methodName = "deleteRates";
 
         log.info("{} -> Delete Rates", methodName);

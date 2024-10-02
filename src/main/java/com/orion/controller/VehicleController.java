@@ -44,7 +44,7 @@ public class VehicleController {
     }
 
     @GetMapping("/{vehicleId}")
-    public ResponseEntity<ResponseObject> getVehicle(@RequestParam Long vehicleId) {
+    public ResponseEntity<ResponseObject> getVehicle(@PathVariable Long vehicleId) {
         String methodName = "getVehicle";
 
         log.info("{} -> Get vehicle", methodName);
@@ -53,7 +53,7 @@ public class VehicleController {
     }
 
     @PostMapping("/filter-vehicles")
-    public ResponseEntity filterForOrders(@RequestParam("page") Integer page, @RequestParam("size") Integer size,
+    public ResponseEntity filterForOrders(@PathVariable("page") Integer page, @PathVariable("size") Integer size,
                                           @RequestBody VehicleFilter filter) {
         String methodName = "filterForOrders";
 
@@ -63,7 +63,7 @@ public class VehicleController {
     }
 
     @PutMapping("/update/{vehicleId}")
-    public ResponseEntity<ResponseObject> updateVehicle(@RequestParam Long vehicleId, @RequestBody VehicleDto vehicleDto) {
+    public ResponseEntity<ResponseObject> updateVehicle(@PathVariable Long vehicleId, @RequestBody VehicleDto vehicleDto) {
         String methodName = "updateVehicle";
 
         log.info("{} -> update vehicle", methodName);
@@ -72,7 +72,7 @@ public class VehicleController {
     }
 
     @PutMapping("/delete/{vehicleId}")
-    public ResponseEntity<ResponseObject> deleteVehicle(@RequestParam Long vehicleId) {
+    public ResponseEntity<ResponseObject> deleteVehicle(@PathVariable Long vehicleId) {
         String methodName = "deleteVehicle";
 
         log.info("{} -> Delete vehicle", methodName);

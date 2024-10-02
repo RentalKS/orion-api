@@ -38,7 +38,7 @@ public class ModelController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{modelId}")
-    public ResponseEntity<ResponseObject> getModel(@RequestParam Long modelId) {
+    public ResponseEntity<ResponseObject> getModel(@PathVariable Long modelId) {
         String methodName = "getModel";
 
         log.info("{} -> Get model", methodName);
@@ -48,7 +48,7 @@ public class ModelController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{modelId}")
-    public ResponseEntity<ResponseObject> updateModel(@RequestParam Long modelId, @RequestBody ModelDto modelDto) {
+    public ResponseEntity<ResponseObject> updateModel(@PathVariable Long modelId, @RequestBody ModelDto modelDto) {
         String methodName = "updateModel";
 
         log.info("{} -> update model", methodName);
@@ -58,7 +58,7 @@ public class ModelController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/delete/{modelId}")
-    public ResponseEntity<ResponseObject> deleteModel(@RequestParam Long modelId) {
+    public ResponseEntity<ResponseObject> deleteModel(@PathVariable Long modelId) {
         String methodName = "deleteModel";
 
         log.info("{} -> Delete model", methodName);

@@ -45,7 +45,7 @@ public class TenantController {
 
     @PreAuthorize("hasAuthority(@securityService.roleAdmin)")
     @GetMapping("/all")
-    public ResponseEntity getAllTenants(@RequestParam("page") Integer page, @RequestParam("size") Integer size, @RequestParam(required = false, name = "search") String search) {
+    public ResponseEntity getAllTenants(@PathVariable("page") Integer page, @PathVariable("size") Integer size, @PathVariable(required = false, name = "search") String search) {
         String methodName = "getAllTenants";
 
         log.info("{} -> Get all Tenants", methodName);

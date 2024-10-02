@@ -18,7 +18,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/process")
-    public ResponseEntity<ResponseObject> processPayment(@RequestParam Long rentalId, @RequestParam String paymentMethod) {
+    public ResponseEntity<ResponseObject> processPayment(@PathVariable Long rentalId, @PathVariable String paymentMethod) {
         String methodName = "processPayment";
 
         log.info("{} -> Process payment", methodName);

@@ -1,0 +1,125 @@
+package com.orion.service.brand;
+
+import com.orion.dto.brand.BrandDto;
+import com.orion.dto.model.ModelDto;
+import com.orion.entity.Brand;
+import com.orion.entity.Brand;
+import com.orion.entity.Tenant;
+import com.orion.generics.ResponseObject;
+import com.orion.infrastructure.cloudinary.FileUploadService;
+import com.orion.infrastructure.tenant.ConfigSystem;
+import com.orion.mapper.LocationMapper;
+import com.orion.repository.BrandRepository;
+import com.orion.repository.LocationRepository;
+import com.orion.service.BaseService;
+import com.orion.service.model.ModelService;
+import com.orion.service.user.TenantService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+@Log4j2
+public class BrandService extends BaseService {
+    private final TenantService tenantService;
+    private final BrandRepository brandRepository;
+    private final FileUploadService fileUploadService;
+    private final ModelService modelService;
+
+    public Brand findById(Long id){
+        Optional<Brand> brand = brandRepository.findById(id);
+        isPresent(brand);
+        return brand.get();
+    }
+    public void setLogoBrand(Brand brand,BrandDto brandDto){
+        try {
+            String logo = fileUploadService.uploadFile(brandDto.getLogo());
+            brand.setLogo(logo);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+    public ResponseObject create(BrandDto brandDto) {
+        String methodName = "create";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        Tenant tenant = tenantService.findById();
+
+        Brand brand = new Brand();
+        brand.setName(brandDto.getName());
+        brand.setDescription(brandDto.getDescription());
+        setLogoBrand(brand,brandDto);
+        brand.setTenant(tenant);
+
+        brandRepository.save(brand);
+        responseObject.prepareHttpStatus(HttpStatus.CREATED);
+        responseObject.setData(brand.getId());
+
+        return responseObject;
+    }
+
+    public ResponseObject get(Long locationId) {
+        String methodName = "getLocation";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+
+        Optional<BrandDto> brand = brandRepository.findBrandByIdAndByTenant(locationId, ConfigSystem.getTenant().getId());
+        isPresent(brand);
+
+        responseObject.setData(brand.get());
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        return responseObject;
+    }
+
+    public ResponseObject getAll(String currentEmail) {
+        String methodName = "getAllLocations";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        Long tenantId = ConfigSystem.getTenant().getId();
+
+        List<BrandDto> brandDtoList = brandRepository.findAllBrandsByTenant(tenantId,currentEmail);
+
+        if(!brandDtoList.isEmpty()){
+            brandDtoList.forEach(
+                    brandDto -> modelService.findModelsFromBrand(brandDto.getId()));
+        }
+        responseObject.setData(Optional.of(brandDtoList).orElseGet(Collections::emptyList));
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        return responseObject;
+    }
+
+    public ResponseObject update(Long locationId,BrandDto brandDto) {
+        String methodName = "updateBrand";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        Brand brandToUpdate = findById(locationId);
+        brandToUpdate.setName(brandDto.getName());
+        brandToUpdate.setDescription(brandDto.getDescription());
+
+        setLogoBrand(brandToUpdate,brandDto);
+        brandRepository.save(brandToUpdate);
+
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        responseObject.setData(brandToUpdate.getId());
+        return responseObject;
+    }
+    public ResponseObject delete(Long locationId) {
+        String methodName = "deleteBrand";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        Brand brandToDelete = findById(locationId);
+        brandToDelete.setDeletedAt(LocalDateTime.now());
+
+        brandRepository.save(brandToDelete);
+        responseObject.setData(true);
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        return responseObject;
+    }
+}
