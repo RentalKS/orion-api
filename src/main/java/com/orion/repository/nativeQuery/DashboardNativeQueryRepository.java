@@ -1,6 +1,6 @@
 package com.orion.repository.nativeQuery;
 
-import com.orion.infrastructure.tenant.TenantContext;
+import com.orion.infrastructure.tenant.ConfigSystem;
 import com.orion.dto.dashboard.InfoDashboard;
 import com.orion.dto.dashboard.ReservationDashboard;
 import com.orion.dto.vehicle.VehicleDashboard;
@@ -21,7 +21,7 @@ public class DashboardNativeQueryRepository {
 
 
     public List<ReservationDashboard> getDashboard(InfoDashboard infoDashboard, List<Long> userIds) {
-        Long tenantId = TenantContext.getCurrentTenant().getId();
+        Long tenantId = ConfigSystem.getTenant().getId();
 
         String where = " u.tenant_id=" + tenantId + " ";
 
@@ -102,48 +102,47 @@ public class DashboardNativeQueryRepository {
 
         return leaderBoardList;
     }
-
-        public List<VehicleDashboard> getVehicleDashboard(InfoDashboard infoDashboard, List<Long> userIds) {
-        Long tenantId = TenantContext.getCurrentTenant().getId();
-
-        String where = " v.tenant_id=" + tenantId + " ";
-
-        String fromDate = null;
-        String toDate = null;
-
-        if (infoDashboard.getFrom() != null) {
-            fromDate = String.valueOf(DateUtil.convertToLocalDateTime(infoDashboard.getFrom()));
-        }
-        if (infoDashboard.getTo() != null) {
-            toDate = String.valueOf(DateUtil.convertToLocalDateTime(infoDashboard.getTo()));
-        }
-
-        if (userIds != null) {
-            String memberIdList = userIds.stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(",", "(", ")"));
-            where += " AND u.id IN " + memberIdList;
-        }
-
-
-        String queryString = "SELECT " +
-                "COUNT(v.id) as totalVehicles, " +
-                "SUM(CASE WHEN v.status = 'AVAILABLE' THEN 1 ELSE 0 END) as availableVehicles, " +
-                "SUM(CASE WHEN v.status = 'RENTED' THEN 1 ELSE 0 END) as rentedVehicles, " +
-                "SUM(CASE WHEN v.status = 'UNDER_MAINTENANCE' THEN 1 ELSE 0 END) as underMaintenance, " +
-                "SUM(CASE WHEN v.status = 'RESERVED' THEN 1 ELSE 0 END) as reserved, " +
-                "SUM(CASE WHEN v.status = 'OUT_OF_SERVICE' THEN 1 ELSE 0 END) as outOfService, " +
-                "c.category_name as category, COUNT(c.id) as categoryCount " +
-                "FROM vehicles v " +
-                "LEFT JOIN sections s on v.section_id = s.id LEFT JOIN categories c ON s.category_id = c.id " +
-                "LEFT JOIN user u on c.user_id = u.id " +
-                "WHERE " + where + " and v.deleted_at is null " +
-                "GROUP BY c.category_name";
-
-        Query query = entityManager.createNativeQuery(queryString);
-        List<Object[]> resultList = query.getResultList();
-        return mapVehicleDashboard(resultList);
-    }
+//
+//        public List<VehicleDashboard> getVehicleDashboard(InfoDashboard infoDashboard, List<Long> userIds) {
+//        Long tenantId = ConfigSystem.getTenant().getId();
+//
+//        String where = " v.tenant_id=" + tenantId + " ";
+//
+//        String fromDate = null;
+//        String toDate = null;
+//
+//        if (infoDashboard.getFrom() != null) {
+//            fromDate = String.valueOf(DateUtil.convertToLocalDateTime(infoDashboard.getFrom()));
+//        }
+//        if (infoDashboard.getTo() != null) {
+//            toDate = String.valueOf(DateUtil.convertToLocalDateTime(infoDashboard.getTo()));
+//        }
+//
+//        if (userIds != null) {
+//            String memberIdList = userIds.stream()
+//                    .map(String::valueOf)
+//                    .collect(Collectors.joining(",", "(", ")"));
+//            where += " AND u.id IN " + memberIdList;
+//        }
+//
+//
+//        String queryString = "SELECT " +
+//                "COUNT(v.id) as totalVehicles, " +
+//                "SUM(CASE WHEN v.status = 'RENTED' THEN 1 ELSE 0 END) as rentedVehicles, " +
+//                "SUM(CASE WHEN v.status = 'UNDER_MAINTENANCE' THEN 1 ELSE 0 END) as underMaintenance, " +
+//                "SUM(CASE WHEN v.status = 'RESERVED' THEN 1 ELSE 0 END) as reserved, " +
+//                "SUM(CASE WHEN v.status = 'OUT_OF_SERVICE' THEN 1 ELSE 0 END) as outOfService, " +
+//                "c.category_name as category, COUNT(c.id) as categoryCount " +
+//                "FROM vehicles v " +
+//                "LEFT JOIN sections s on v.section_id = s.id LEFT JOIN categories c ON s.category_id = c.id " +
+//                "LEFT JOIN user u on c.user_id = u.id " +
+//                "WHERE " + where + " and v.deleted_at is null " +
+//                "GROUP BY c.category_name";
+//
+//        Query query = entityManager.createNativeQuery(queryString);
+//        List<Object[]> resultList = query.getResultList();
+//        return mapVehicleDashboard(resultList);
+//    }
 
     private List<VehicleDashboard> mapVehicleDashboard(List<Object[]> resultList) {
         List<VehicleDashboard> vehicleDashboardList = new ArrayList<>();
@@ -155,21 +154,18 @@ public class DashboardNativeQueryRepository {
                 dashboard.setTotalVehicles(Long.valueOf(String.valueOf(objects[0])));
 
             if(objects[1] != null)
-                dashboard.setAvailableVehicles(Long.valueOf(String.valueOf(objects[1])));
+                dashboard.setRentedVehicles(Long.valueOf(String.valueOf(objects[1])));
 
             if(objects[2] != null)
-                dashboard.setRentedVehicles(Long.valueOf(String.valueOf(objects[2])));
+                dashboard.setUnderMaintenance(Long.valueOf(String.valueOf(objects[2])));
 
             if(objects[3] != null)
-                dashboard.setUnderMaintenance(Long.valueOf(String.valueOf(objects[3])));
+                dashboard.setReservedVehicles(Long.valueOf(String.valueOf(objects[3])));
 
             if(objects[4] != null)
-                dashboard.setReservedVehicles(Long.valueOf(String.valueOf(objects[4])));
+                dashboard.setOutOfServiceVehicles(Long.valueOf(String.valueOf(objects[4])));
 
             if(objects[5] != null)
-                dashboard.setOutOfServiceVehicles(Long.valueOf(String.valueOf(objects[5])));
-
-            if(objects[6] != null)
                 dashboard.setCategoryCount(Long.valueOf(String.valueOf(objects[5])));
 
             vehicleDashboardList.add(dashboard);

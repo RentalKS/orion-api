@@ -20,7 +20,6 @@ public enum ErrorCode {
     FROM_TO_NOT_NULL(2007, "The from and to values cannot be null."),
     CANCELLATION_TYPE(2008, "The cancellation type is not valid."),
     CURRENT_PASSWORD(2009, "The current password is incorrect."),
-    TARIFF_COMMISSION_VALID(2010, "The tariff commission value is not valid."),
     WRONG_STATUS(2011, "The order status type is incorrect."),
     ONLY_PUBLISHED_OR_DRAFT(2012, "The template status must be either published or draft."),
     VEHICLE_NOT_AVAILABLE(2013, "The vehicle is not available.");

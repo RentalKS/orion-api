@@ -2,7 +2,7 @@ package com.orion.controller;
 
 import com.orion.dto.customer.CustomerDto;
 import com.orion.generics.ResponseObject;
-import com.orion.service.CustomerService;
+import com.orion.service.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;

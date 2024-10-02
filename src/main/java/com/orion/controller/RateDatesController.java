@@ -2,7 +2,7 @@ package com.orion.controller;
 
 import com.orion.dto.rates.RatesDto;
 import com.orion.generics.ResponseObject;
-import com.orion.service.RateDatesService;
+import com.orion.service.rental.RateDatesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;

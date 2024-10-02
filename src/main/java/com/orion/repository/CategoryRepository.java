@@ -14,13 +14,16 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("select new com.orion.dto.category.CategoryDto(c.id, c.createdAt, c.categoryName, c.categoryDescription, c.company.id) " +
-            "from Category c where c.id = :categoryId and c.deletedAt is null and c.tenant.id = :tenantId")
-    Optional<CategoryDto> findCategoryByIdFromDto(@Param("categoryId") Long categoryId, @Param("tenantId") Long tenantId);
+            "from Category c " +
+            "where c.id = :categoryId " +
+            "and c.deletedAt is null and c.tenant.id = :tenantId " +
+            "and c.createdBy = :email ")
+    Optional<CategoryDto> findCategoryByIdFromDto(@Param("categoryId") Long categoryId, @Param("tenantId") Long tenantId,@Param("email") String email);
 
     @Query("select c from Category c where c.id = :categoryId and c.deletedAt is null and c.tenant.id = :tenantId")
     Optional<Category> findCategoryById(@Param("categoryId") Long categoryId, @Param("tenantId") Long tenantId);
 
      @Query("select new com.orion.dto.category.CategoryDto(c.id, c.createdAt, c.categoryName, c.categoryDescription, c.company.id) " +
-            "from Category c where c.tenant.id = :tenantId and c.deletedAt is null")
-     List<CategoryDto> findAllCategory(@Param("tenantId") Long tenantId);
+            "from Category c where c.createdBy in :email and c.tenant.id = :tenantId and c.deletedAt is null")
+     List<CategoryDto> findAllCategory(@Param("tenantId") Long tenantId,@Param("email") List<String> email);
 }

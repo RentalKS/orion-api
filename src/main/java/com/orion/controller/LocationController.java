@@ -2,10 +2,14 @@ package com.orion.controller;
 
 import com.orion.dto.location.LocationDto;
 import com.orion.generics.ResponseObject;
-import com.orion.service.LocationService;
+import com.orion.security.CustomUserDetails;
+import com.orion.service.location.LocationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 @Log4j2
 public class LocationController {
     private final LocationService locationService;
-
+    @PreAuthorize("hasAnyRole(@securityService.roleAgency)")
     @PostMapping
-    public ResponseEntity<ResponseObject> createLocation(@RequestBody LocationDto locationDto) {
+    public ResponseEntity<ResponseObject> createLocation(@Valid @RequestBody LocationDto locationDto) {
         String methodName = "createLocation";
 
         log.info("{} -> Create location", methodName);
@@ -25,13 +29,22 @@ public class LocationController {
     }
 
     @GetMapping("/{locationId}")
-    public ResponseEntity<ResponseObject> getLocation(@RequestParam Long locationId) {
+    public ResponseEntity<ResponseObject> getLocation(@PathVariable Long locationId) {
         String methodName = "getLocation";
 
         log.info("{} -> Get location", methodName);
         ResponseObject response = locationService.getLocation(locationId);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+    @GetMapping
+    public ResponseEntity<ResponseObject> getAllLocations(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        String methodName = "getAll";
+
+        log.info("{} -> Get all location", methodName);
+        ResponseObject response = locationService.getAllLocations(customUserDetails.getUsername());
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
 
     @PutMapping("/update/{locationId}")
     public ResponseEntity<ResponseObject> updateLocation(@RequestParam Long locationId, @RequestBody LocationDto locationDto) {

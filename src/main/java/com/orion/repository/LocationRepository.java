@@ -14,8 +14,8 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
     Optional<Location> findLocationById(@Param("locationId") Long locationId);
 
     @Query("Select new com.orion.dto.location.LocationDto(l.id, l.createdAt, l.address, l.city, l.state, l.zipCode, l.country,l.tables) " +
-            "FROM Location l WHERE l.tenant.id = :tenantId and l.deletedAt is null ")
-    List<LocationDto> findAllLocationsByTenant(@Param("tenantId") Long tenantId);
+            "FROM Location l WHERE l.tenant.id = :tenantId and l.createdBy = :email and l.deletedAt is null ")
+    List<LocationDto> findAllLocationsByTenant(@Param("tenantId") Long tenantId,@Param("email") String email);
 
     @Query("Select new com.orion.dto.location.LocationDto(l.id, l.createdAt, l.address, l.city, l.state, l.zipCode, l.country,l.tables) " +
             "FROM Location l WHERE l.id = :locationId and l.tenant.id = :tenantId and l.deletedAt is null ")

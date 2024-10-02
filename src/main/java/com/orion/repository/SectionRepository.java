@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public interface SectionRepository extends JpaRepository<Section, Long> {
     @Query("select new com.orion.dto.section.SectionDto(s.id, s.createdAt, s.sectionName, s.sectionDescription, s.sectionImage, s.category.id) " +
-            "from Section s where s.id = :sectionId and s.deletedAt is null and s.tenant.id = :tenantId")
-    Optional<SectionDto> findSectionById(@Param("sectionId") Long sectionId, @Param("tenantId") Long tenantId);
+            "from Section s where s.id = :sectionId and s.deletedAt is null and s.tenant.id = :tenantId and s.createdBy = :email")
+    Optional<SectionDto> findSectionById(@Param("sectionId") Long sectionId, @Param("tenantId") Long tenantId,@Param("email") String email);
 
     @Query("select new com.orion.dto.section.SectionDto(s.id, s.createdAt, s.sectionName, s.sectionDescription, s.sectionImage, s.category.id) " +
-            "from Section s where s.deletedAt is null and s.tenant.id = :tenantId")
-    List<SectionDto> findAllSections(@Param("tenantId") Long tenantId);
+            "from Section s where s.deletedAt is null and s.tenant.id = :tenantId and s.createdBy = :email ")
+    List<SectionDto> findAllSections(@Param("tenantId") Long tenantId,@Param("email") String email);
 }

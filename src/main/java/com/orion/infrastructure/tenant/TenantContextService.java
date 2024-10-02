@@ -88,9 +88,9 @@ public class TenantContextService extends BaseService {
             } else
                 tenant = tenantRepository.findByDomain(defaultTenant).get();
 
-            TenantContext.setCurrentTenant(new Request(tenant.getId(), tenant.getDomain()));
+            ConfigSystem.setCurrentTenant(new Request(tenant.getId(), tenant.getDomain()));
         }
 
-        TenantContext.setCurrentTenant(new Request(tenant.getId(), tenant.getDomain()));
+        ConfigSystem.setCurrentTenant(new Request(tenant.getId(), tenant.getDomain()));
     }
 }

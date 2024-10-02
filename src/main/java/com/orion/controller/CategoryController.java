@@ -1,13 +1,14 @@
 package com.orion.controller;
 
 import com.orion.dto.category.CategoryDto;
-import com.orion.dto.company.CompanyDto;
 import com.orion.generics.ResponseObject;
-import com.orion.service.CategoryService;
+import com.orion.security.CustomUserDetails;
+import com.orion.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +20,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PostMapping
-    public ResponseEntity<ResponseObject> createCategory(@RequestBody CategoryDto companyDto) {
+    public ResponseEntity<ResponseObject> createCategory(@RequestBody CategoryDto companyDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "createCategory";
 
         log.info("{} -> Create category", methodName);
@@ -29,21 +30,21 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/all")
-    public ResponseEntity<ResponseObject> getAllCategory() {
+    public ResponseEntity<ResponseObject> getAllCategory(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getAllCategory";
 
         log.info("{} -> Get all category", methodName);
-        ResponseObject response = categoryService.getAllCategory();
+        ResponseObject response = categoryService.getAllCategory(customUserDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{categoryId}")
-    public ResponseEntity<ResponseObject> getCategory(@RequestParam Long categoryId) {
+    public ResponseEntity<ResponseObject> getCategory(@RequestParam Long categoryId,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getCategory";
 
         log.info("{} -> Get category", methodName);
-        ResponseObject response = categoryService.getCategory(categoryId);
+        ResponseObject response = categoryService.getCategory(categoryId,customUserDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

@@ -29,4 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.id FROM User u WHERE u.id = :agencyId and u.role.name = 'AGENCY' and u.deletedAt is null")
     List<Long> findAllIdsByAgency(Long agencyId);
+
+    @Query("SELECT u.email from User u where u.tenant.id = :id and u.deactivatedAt is null and u.deletedAt is null ")
+    List<String> findEmailsAgenciesByTenant(Long id);
 }

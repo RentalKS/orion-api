@@ -21,7 +21,7 @@ public class TenantRequestInterceptor implements HandlerInterceptor {
                              HttpServletResponse response, Object object) {
         boolean preHandle = true;
 
-        if(TenantContext.getCurrentTenant() == null)
+        if(ConfigSystem.getTenant() == null)
             tenantContextService.loadTenantContext(request);
 
         return preHandle;
@@ -30,7 +30,7 @@ public class TenantRequestInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(
             HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-        TenantContext.clear();
+        ConfigSystem.clear();
     }
 
 }

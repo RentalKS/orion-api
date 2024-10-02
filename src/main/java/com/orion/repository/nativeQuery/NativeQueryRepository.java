@@ -35,7 +35,6 @@ public class NativeQueryRepository {
                 " v.registration_number, " +
                 " v.model_id, " +
                 " v.year, " +
-                " v.status, " +
                 " v.fuel_type, " +
                 " v.mileage, " +
                 " v.transmission, " +
@@ -49,7 +48,7 @@ public class NativeQueryRepository {
                 " m.brand as model_brand, " +
                 " m.type as model_type, " +
                 " m.model_image as model_image, " +
-                " l.country as location_name, " +
+                " l.country as location_country, " +
                 " l.address as location_address, " +
                 " r.status as rental_status, " +
                 " mr.maintenance_date as meintenance_date, " +
@@ -67,7 +66,7 @@ public class NativeQueryRepository {
                 " LEFT JOIN rentals r on r.vehicle_id = v.id " +
                 " LEFT JOIN user u on v.user_id = u.id " +
                 " WHERE " + where + " and v.deleted_at is null " +
-                " GROUP BY v.id, v.created_at, rt.name, rt.daily_rate, rt.weekly_rate, rt.monthly_rate, v.registration_number, v.model_id, v.year, v.status, v.fuel_type, v.mileage, v.transmission, v.color, v.description, v.image, v.location_id, v.section_id, s.section_name, m.name, m.brand, m.type, m.model_image, l.country, l.address, r.status, mr.maintenance_date, mr.description, mr.cost, mr.damage_type,u.first_name, u.id " +
+                " GROUP BY v.id, v.created_at, rt.name, rt.daily_rate, rt.weekly_rate, rt.monthly_rate, v.registration_number, v.model_id, v.year, v.fuel_type, v.mileage, v.transmission, v.color, v.description, v.image, v.location_id, v.section_id, s.section_name, m.name, m.brand, m.type, m.model_image, l.country, l.address, r.status, mr.maintenance_date, mr.description, mr.cost, mr.damage_type,u.first_name, u.id " +
                 " LIMIT " + size + " OFFSET " + offset;
 
         Query query = entityManager.createNativeQuery(queryString);
@@ -170,95 +169,91 @@ public class NativeQueryRepository {
             }
 
             if (objects[9] != null) {
-                vehicleDto.setStatus(VehicleStatus.valueOf(String.valueOf(objects[9])));
+                vehicleDto.setFuelType(FuelType.valueOf(String.valueOf(objects[9])));
             }
 
             if (objects[10] != null) {
-                vehicleDto.setFuelType(FuelType.valueOf(String.valueOf(objects[10])));
+                vehicleDto.setMileage(Long.valueOf(String.valueOf(objects[10])));
             }
 
             if (objects[11] != null) {
-                vehicleDto.setMileage(Long.valueOf(String.valueOf(objects[11])));
+                vehicleDto.setTransmission(TransmissionType.valueOf(String.valueOf(objects[11])));
             }
 
             if (objects[12] != null) {
-                vehicleDto.setTransmission(TransmissionType.valueOf(String.valueOf(objects[12])));
+                vehicleDto.setColor(String.valueOf(objects[12]));
             }
 
             if (objects[13] != null) {
-                vehicleDto.setColor(String.valueOf(objects[13]));
+                vehicleDto.setDescription(String.valueOf(objects[13]));
             }
 
             if (objects[14] != null) {
-                vehicleDto.setDescription(String.valueOf(objects[14]));
+                vehicleDto.setImage(String.valueOf(objects[14]));
             }
 
             if (objects[15] != null) {
-                vehicleDto.setImage(String.valueOf(objects[15]));
+                vehicleDto.setLocationId(Long.valueOf(String.valueOf(objects[15])));
             }
 
             if (objects[16] != null) {
-                vehicleDto.setLocationId(Long.valueOf(String.valueOf(objects[16])));
+                vehicleDto.setSectionId(Long.valueOf(String.valueOf(objects[16])));
             }
 
             if (objects[17] != null) {
-                vehicleDto.setSectionId(Long.valueOf(String.valueOf(objects[17])));
+                vehicleDto.setSectionName(String.valueOf(objects[17]));
             }
 
             if (objects[18] != null) {
-                vehicleDto.setSectionName(String.valueOf(objects[18]));
+                vehicleDto.setModelName(String.valueOf(objects[18]));
             }
 
             if (objects[19] != null) {
-                vehicleDto.setModelName(String.valueOf(objects[19]));
+                vehicleDto.setModelBrand(String.valueOf(objects[19]));
             }
 
             if (objects[20] != null) {
-                vehicleDto.setModelBrand(String.valueOf(objects[20]));
+                vehicleDto.setModelType(String.valueOf(objects[20]));
             }
 
             if (objects[21] != null) {
-                vehicleDto.setModelType(String.valueOf(objects[21]));
+                vehicleDto.setModelImage(String.valueOf(objects[21]));
             }
 
             if (objects[22] != null) {
-                vehicleDto.setModelImage(String.valueOf(objects[22]));
+                vehicleDto.setLocationName(String.valueOf(objects[22]));
             }
 
             if (objects[23] != null) {
-                vehicleDto.setLocationName(String.valueOf(objects[23]));
+                vehicleDto.setLocationAddress(String.valueOf(objects[23]));
             }
 
-            if (objects[24] != null) {
-                vehicleDto.setLocationAddress(String.valueOf(objects[24]));
+            if(objects[24] != null){
+                vehicleDto.setRentalStatus(RentalStatus.valueOf(String.valueOf(objects[24])));
             }
 
-            if(objects[25] != null){
-                vehicleDto.setRentalStatus(RentalStatus.valueOf(String.valueOf(objects[25])));
+            if (objects[25] != null) {
+                vehicleDto.setMaintenanceDate(DateUtil.localDateTimeToMilliseconds((LocalDateTime) objects[25]));
             }
 
             if (objects[26] != null) {
-                vehicleDto.setMaintenanceDate(DateUtil.localDateTimeToMilliseconds((LocalDateTime) objects[26]));
+                vehicleDto.setMaintenanceDescription(String.valueOf(objects[26]));
             }
 
             if (objects[27] != null) {
-                vehicleDto.setMaintenanceDescription(String.valueOf(objects[27]));
+                vehicleDto.setMaintenanceCost(Double.valueOf(String.valueOf(objects[27])));
             }
 
             if (objects[28] != null) {
-                vehicleDto.setMaintenanceCost(Double.valueOf(String.valueOf(objects[28])));
+                vehicleDto.setMaintenanceDamageType(DamageType.valueOf(String.valueOf(objects[28])));
             }
 
             if (objects[29] != null) {
-                vehicleDto.setMaintenanceDamageType(DamageType.valueOf(String.valueOf(objects[29])));
+                vehicleDto.setCreatedByName(String.valueOf(objects[29]));
             }
 
             if (objects[30] != null) {
-                vehicleDto.setCreatedByName(String.valueOf(objects[30]));
-            }
-
-            if (objects[31] != null) {
-                vehicleDto.setCreatedById(Long.valueOf(String.valueOf(objects[31])));
+                vehicleDto.setCreatedById(Long.valueOf(String.valueOf(objects[30])));
             }
 
             vehicleDtoList.add(vehicleDto);

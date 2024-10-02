@@ -1,5 +1,7 @@
 package com.orion.security.config;
 
+import com.orion.entity.User;
+import com.orion.security.CustomUserDetails;
 import com.orion.security.auditing.ApplicationAuditAware;
 import com.orion.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +19,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
-public class ApplicationConfig {
+public class ApplicationConfig  {
 
     private final UserRepository repository;
-
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> {
+            User user = repository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            return new CustomUserDetails(user);
+        };
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

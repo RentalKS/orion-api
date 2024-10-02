@@ -1,10 +1,11 @@
 package com.orion.security.auth;
 
-import com.orion.infrastructure.tenant.TenantContext;
+import com.orion.infrastructure.tenant.ConfigSystem;
 import com.orion.entity.Role;
 import com.orion.entity.Tenant;
 import com.orion.repository.RoleRepository;
 import com.orion.repository.TenantRepository;
+import com.orion.security.CustomUserDetails;
 import com.orion.security.config.JwtService;
 import com.orion.security.token.Token;
 import com.orion.security.token.TokenRepository;
@@ -37,25 +38,30 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         Optional<Role> role = roleRepository.findByName(request.getRole());
-        Optional<Tenant> tenant = tenantRepository.findById(TenantContext.getCurrentTenant().getId());
+        Optional<Tenant> tenant = tenantRepository.findById(ConfigSystem.getTenant().getId());
 
         var user = User.builder()
                 .email(request.getEmail())
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(role.get())
-                .tenant(tenant.get())
+                .role(role.orElseThrow(() -> new RuntimeException("Role not found")))
+                .tenant(tenant.orElseThrow(() -> new RuntimeException("Tenant not found")))
                 .build();
+
         var savedUser = repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        CustomUserDetails userDetails = new CustomUserDetails(savedUser);
+        var jwtToken = jwtService.generateToken(userDetails);
+        var refreshToken = jwtService.generateRefreshToken(userDetails);
+
         saveUserToken(savedUser, jwtToken);
+
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
@@ -66,8 +72,10 @@ public class AuthenticationService {
         );
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        var jwtToken = jwtService.generateToken(userDetails);
+        var refreshToken = jwtService.generateRefreshToken(userDetails);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
@@ -113,8 +121,8 @@ public class AuthenticationService {
         if (userEmail != null) {
             var user = this.repository.findByEmail(userEmail)
                     .orElseThrow();
-            if (jwtService.isTokenValid(refreshToken, user)) {
-                var accessToken = jwtService.generateToken(user);
+            if (jwtService.isTokenValid(refreshToken, new CustomUserDetails(user))) {
+                var accessToken = jwtService.generateToken(new CustomUserDetails(user));
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()

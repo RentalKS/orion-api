@@ -2,10 +2,12 @@ package com.orion.controller;
 
 import com.orion.dto.section.SectionDto;
 import com.orion.generics.ResponseObject;
-import com.orion.service.SectionService;
+import com.orion.security.CustomUserDetails;
+import com.orion.service.section.SectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,20 +27,20 @@ public class SectionController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<ResponseObject> getAllSection() {
+    public ResponseEntity<ResponseObject> getAllSection(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getAllSection";
 
         log.info("{} -> Get all section", methodName);
-        ResponseObject response = sectionService.getAllSections();
+        ResponseObject response = sectionService.getAllSections(customUserDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/{sectionId}")
-    public ResponseEntity<ResponseObject> getSection(@RequestParam Long sectionId) {
+    public ResponseEntity<ResponseObject> getSection(@RequestParam Long sectionId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getSection";
 
         log.info("{} -> Get section", methodName);
-        ResponseObject response = sectionService.getSection(sectionId);
+        ResponseObject response = sectionService.getSection(sectionId,customUserDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

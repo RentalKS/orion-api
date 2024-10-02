@@ -1,8 +1,8 @@
 package com.orion.controller;
 
-import com.orion.service.ExcelGenerationService;
-import com.orion.service.PdfGenerationService;
-import com.orion.service.ReportingService;
+import com.orion.service.reports.ExcelGenerationService;
+import com.orion.service.reports.PdfGenerationService;
+import com.orion.service.reports.ReportingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
