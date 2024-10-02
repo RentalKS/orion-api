@@ -1,37 +1,42 @@
 package com.orion.service.brand;
-
 import com.orion.dto.brand.BrandDto;
 import com.orion.dto.model.ModelDto;
-import com.orion.entity.Brand;
 import com.orion.entity.Brand;
 import com.orion.entity.Tenant;
 import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.cloudinary.FileUploadService;
 import com.orion.infrastructure.tenant.ConfigSystem;
-import com.orion.mapper.LocationMapper;
 import com.orion.repository.BrandRepository;
-import com.orion.repository.LocationRepository;
 import com.orion.service.BaseService;
 import com.orion.service.model.ModelService;
 import com.orion.service.user.TenantService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.bouncycastle.math.raw.Mod;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 @Log4j2
 public class BrandService extends BaseService {
     private final TenantService tenantService;
     private final BrandRepository brandRepository;
     private final FileUploadService fileUploadService;
-    private final ModelService modelService;
+
+    @Autowired
+    @Lazy
+    private ModelService modelService;
+
+    public BrandService(TenantService tenantService, BrandRepository brandRepository, FileUploadService fileUploadService) {
+        this.tenantService = tenantService;
+        this.brandRepository = brandRepository;
+        this.fileUploadService = fileUploadService;
+    }
 
     public Brand findById(Long id){
         Optional<Brand> brand = brandRepository.findById(id);
@@ -40,6 +45,9 @@ public class BrandService extends BaseService {
     }
     public void setLogoBrand(Brand brand,BrandDto brandDto){
         try {
+            if(brandDto.getLogo() == null){
+                return;
+            }
             String logo = fileUploadService.uploadFile(brandDto.getLogo());
             brand.setLogo(logo);
         }catch (Exception e){
@@ -65,13 +73,15 @@ public class BrandService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject get(Long locationId) {
+    public ResponseObject get(Long locationId,String currentEmail) {
         String methodName = "getLocation";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
         Optional<BrandDto> brand = brandRepository.findBrandByIdAndByTenant(locationId, ConfigSystem.getTenant().getId());
         isPresent(brand);
+        List<ModelDto> modelDtoList = modelService.findModelsFromBrand(brand.get().getId(),currentEmail);
+        brand.get().setModelDtoList(modelDtoList);
 
         responseObject.setData(brand.get());
         responseObject.prepareHttpStatus(HttpStatus.OK);
@@ -85,10 +95,9 @@ public class BrandService extends BaseService {
         Long tenantId = ConfigSystem.getTenant().getId();
 
         List<BrandDto> brandDtoList = brandRepository.findAllBrandsByTenant(tenantId,currentEmail);
-
-        if(!brandDtoList.isEmpty()){
-            brandDtoList.forEach(
-                    brandDto -> modelService.findModelsFromBrand(brandDto.getId()));
+        for(BrandDto brandDto :  brandDtoList){
+            List<ModelDto> modelDtoList = modelService.findModelsFromBrand(brandDto.getId(),currentEmail);
+            brandDto.setModelDtoList(modelDtoList);
         }
         responseObject.setData(Optional.of(brandDtoList).orElseGet(Collections::emptyList));
         responseObject.prepareHttpStatus(HttpStatus.OK);

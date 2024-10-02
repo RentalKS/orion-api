@@ -2,11 +2,14 @@ package com.orion.controller;
 
 import com.orion.dto.model.ModelDto;
 import com.orion.generics.ResponseObject;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.model.ModelService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +21,7 @@ public class ModelController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PostMapping
-    public ResponseEntity<ResponseObject> createModel(@RequestBody ModelDto modelDto) {
+    public ResponseEntity<ResponseObject> createModel(@Valid @RequestBody ModelDto modelDto) {
         String methodName = "createModel";
 
         log.info("{} -> Create model", methodName);
@@ -28,11 +31,11 @@ public class ModelController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/all")
-    public ResponseEntity<ResponseObject> getAllModel() {
+    public ResponseEntity<ResponseObject> getAllModel(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getAllModel";
 
         log.info("{} -> Get all model", methodName);
-        ResponseObject response = modelService.getAllModels();
+        ResponseObject response = modelService.getAllModels(customUserDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

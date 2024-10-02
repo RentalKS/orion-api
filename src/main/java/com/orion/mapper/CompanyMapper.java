@@ -38,6 +38,9 @@ public class CompanyMapper {
 
     public void setCompanyLogo(MultipartFile logo, Company company){
         try {
+            if(logo == null){
+                return;
+            }
             String logoUrl = fileUploadService.uploadFile(logo);
             company.setCompanyLogo(logoUrl);
         } catch (Exception e) {

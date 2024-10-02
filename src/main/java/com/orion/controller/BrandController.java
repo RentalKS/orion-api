@@ -29,15 +29,15 @@ public class BrandController {
     }
 
     @GetMapping("/{brandId}")
-    public ResponseEntity<ResponseObject> get(@PathVariable Long brandId) {
+    public ResponseEntity<ResponseObject> get(@PathVariable Long brandId,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getBrand";
 
         log.info("{} -> Get brand", methodName);
-        ResponseObject response = brandService.get(brandId);
+        ResponseObject response = brandService.get(brandId,customUserDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     @GetMapping
-    public ResponseEntity<ResponseObject> getAllLocations(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ResponseObject> getAll(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "getAll";
 
         log.info("{} -> Get all brand", methodName);
