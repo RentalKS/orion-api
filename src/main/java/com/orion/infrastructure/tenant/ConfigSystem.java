@@ -9,7 +9,6 @@ public class ConfigSystem {
     public static Request getTenant() {
         return currentTenant.get();
     }
-
     public static UserDetails getApplicationUser(){
         return applicationUser.get();
     }
