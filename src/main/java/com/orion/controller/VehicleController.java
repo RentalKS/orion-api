@@ -2,7 +2,8 @@ package com.orion.controller;
 
 import com.orion.dto.filter.VehicleFilter;
 import com.orion.dto.reservation.ReservationDto;
-import com.orion.dto.vehicle.VehicleDto;
+import com.orion.dto.vehicle.VehicleCreateDto;
+import com.orion.dto.vehicle.VehicleViewDto;
 import com.orion.generics.ResponseObject;
 import com.orion.service.vehicle.VehicleService;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +16,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Log4j2
 public class VehicleController {
-    private final VehicleService vehicleService;
+    private final VehicleService service;
 
     @PostMapping
-    public ResponseEntity<ResponseObject> createVehicle(@RequestBody VehicleDto vehicleDto) {
+    public ResponseEntity<ResponseObject> createVehicle(@RequestBody VehicleCreateDto vehicleDto) {
         String methodName = "createVehicle";
 
         log.info("{} -> Create vehicle", methodName);
-        ResponseObject response = vehicleService.createVehicle(vehicleDto);
+        ResponseObject response = service.createVehicle(vehicleDto);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -31,7 +32,7 @@ public class VehicleController {
         String methodName = "createReservation";
 
         log.info("{} -> Create reservation", methodName);
-        ResponseObject response = vehicleService.createReservation(reservationDto);
+        ResponseObject response = service.createReservation(reservationDto);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     @GetMapping("/all")
@@ -39,7 +40,7 @@ public class VehicleController {
         String methodName = "getAllVehicles";
 
         log.info("{} -> Get all vehicles", methodName);
-        ResponseObject response = vehicleService.getAllVehicles();
+        ResponseObject response = service.getAllVehicles();
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -48,7 +49,7 @@ public class VehicleController {
         String methodName = "getVehicle";
 
         log.info("{} -> Get vehicle", methodName);
-        ResponseObject response = vehicleService.getVehicle(vehicleId);
+        ResponseObject response = service.getVehicle(vehicleId);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -58,16 +59,16 @@ public class VehicleController {
         String methodName = "filterForOrders";
 
         log.info("{} -> Filter vehicles", methodName);
-        ResponseObject response = vehicleService.filterVehicles(page, size, filter);
+        ResponseObject response = service.filterVehicles(page, size, filter);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping("/update/{vehicleId}")
-    public ResponseEntity<ResponseObject> updateVehicle(@PathVariable Long vehicleId, @RequestBody VehicleDto vehicleDto) {
+    public ResponseEntity<ResponseObject> updateVehicle(@PathVariable Long vehicleId, @RequestBody VehicleCreateDto updateDto) {
         String methodName = "updateVehicle";
 
         log.info("{} -> update vehicle", methodName);
-        ResponseObject response = vehicleService.updateVehicle(vehicleId, vehicleDto);
+        ResponseObject response = service.updateVehicle(vehicleId, updateDto);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -76,7 +77,7 @@ public class VehicleController {
         String methodName = "deleteVehicle";
 
         log.info("{} -> Delete vehicle", methodName);
-        ResponseObject response = vehicleService.deleteVehicle(vehicleId);
+        ResponseObject response = service.deleteVehicle(vehicleId);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

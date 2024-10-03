@@ -28,9 +28,9 @@ public class InsurancePolicy extends BaseEntity {
 
     @Column(name = "coverage_details")
     private String coverageDetails;
+    @OneToOne(fetch = FetchType.LAZY)
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
+    @JoinColumn(name = "vehicle_id", referencedColumnName = "id", unique = true)
     private Vehicle vehicle;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -22,7 +22,8 @@ public class CompanyMapper {
         Tenant tenant = tenantService.findById();
         User user = userService.findById(companyDto.getUserId());
 
-        setCompanyLogo(companyDto.getLogo(),companyToUpdate);
+        String logoUrl = fileUploadService.setFile(companyDto.getLogo());
+        companyToUpdate.setCompanyLogo(logoUrl);
         companyToUpdate.setCompanyName(companyDto.getName());
         companyToUpdate.setCompanyEmail(companyDto.getEmail());
         companyToUpdate.setUser(user);
@@ -34,17 +35,5 @@ public class CompanyMapper {
         companyToUpdate.setTenant(tenant);
 
         return companyToUpdate;
-    }
-
-    public void setCompanyLogo(MultipartFile logo, Company company){
-        try {
-            if(logo == null){
-                return;
-            }
-            String logoUrl = fileUploadService.uploadFile(logo);
-            company.setCompanyLogo(logoUrl);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

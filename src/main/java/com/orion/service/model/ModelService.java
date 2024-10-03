@@ -54,24 +54,15 @@ public class ModelService extends BaseService {
         model.setType(modelDto.getType());
         model.setSeatingCapacity(modelDto.getSeatingCapacity());
         model.setFuelEfficiency(modelDto.getFuelEfficiency());
-        setModelImage(modelDto.getModelImage(),model);
+        String imageUrl = fileUploadService.setFile(modelDto.getModelImage());
+        model.setModelImage(imageUrl);
+
         model.setTenant(tenant);
 
         responseObject.setData(modelRepository.save(model));
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
 
         return responseObject;
-    }
-    public void setModelImage(MultipartFile modelImage, Model model){
-        try {
-            if(modelImage == null){
-                return;
-            }
-            String modelUrl =  fileUploadService.uploadFile(modelImage);
-            model.setModelImage(modelUrl);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
     }
 
     public ResponseObject getModel(Long modelId) {
@@ -96,13 +87,13 @@ public class ModelService extends BaseService {
 
         Model modelToUpdate = findModelById(modelId);
         Brand brand = brandService.findById(modelDto.getBrandId());
-
+        String imageUrl = fileUploadService.setFile(modelDto.getModelImage());
+        modelToUpdate.setModelImage(imageUrl);
         modelToUpdate.setBrand(brand);
         modelToUpdate.setName(modelDto.getName());
         modelToUpdate.setType(modelDto.getType());
         modelToUpdate.setSeatingCapacity(modelDto.getSeatingCapacity());
         modelToUpdate.setFuelEfficiency(modelDto.getFuelEfficiency());
-        setModelImage(modelDto.getModelImage(),modelToUpdate);
 
         responseObject.setData(modelRepository.save(modelToUpdate));
         responseObject.prepareHttpStatus(HttpStatus.OK);

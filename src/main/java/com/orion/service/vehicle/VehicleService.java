@@ -2,6 +2,7 @@ package com.orion.service.vehicle;
 
 import com.orion.dto.filter.VehicleFilter;
 import com.orion.dto.reservation.ReservationDto;
+import com.orion.dto.vehicle.VehicleCreateDto;
 import com.orion.entity.*;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
@@ -9,14 +10,14 @@ import com.orion.exception.ErrorCode;
 import com.orion.exception.ThrowException;
 import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.tenant.ConfigSystem;
-import com.orion.dto.vehicle.VehicleDto;
+import com.orion.dto.vehicle.VehicleViewDto;
 import com.orion.mapper.VehicleMapper;
 import com.orion.repository.*;
 import com.orion.repository.nativeQuery.NativeQueryRepository;
 import com.orion.service.BaseService;
 import com.orion.service.bookingService.BookingService;
 import com.orion.service.notification.NotificationService;
-import com.orion.service.rental.RateDatesService;
+import com.orion.service.policyVehicle.InsurancePolicyService;
 import com.orion.service.rental.RentalService;
 import com.orion.service.user.TenantService;
 import com.orion.service.user.UserService;
@@ -51,27 +52,27 @@ public class VehicleService extends BaseService {
     private final BookingService bookingService;
     private final CustomerService customerService;
     private final RentalService rentalService;
-    private final RateDatesService rateDateService;
     private final UserService userService;
     private final VehicleMapper vehicleMapper;
+    private final InsurancePolicyService insurancePolicyService;
 
-    public ResponseObject createVehicle(VehicleDto vehicleDto) {
+    public ResponseObject createVehicle(VehicleCreateDto vehicleDto) {
         String methodName = "createVehicle";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
-
 
         Vehicle vehicle = vehicleMapper.toEntity(vehicleDto, new Vehicle());
         User user = userService.findByEmail(vehicle.getCreatedBy());
         vehicle.setUser(user);
         this.save(vehicle);
+        insurancePolicyService.createFromVehicle(vehicle, vehicleDto.getInsurancePolicyDto());
 
         responseObject.setData(vehicle.getId());
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
         return responseObject;
     }
     public Vehicle findById(Long vehicleId) {
-        Optional<Vehicle> vehicle = repository.findById(vehicleId);
+        Optional<Vehicle> vehicle = repository.findVehicleById(vehicleId,ConfigSystem.getTenant().getId());
         isPresent(vehicle);
         return vehicle.get();
     }
@@ -81,7 +82,7 @@ public class VehicleService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
         Tenant tenant = tenantService.findById();
 
-        Optional<VehicleDto> vehicle = repository.findVehicleByIdFromDto(vehicleId, tenant.getId());
+        Optional<VehicleViewDto> vehicle = repository.findVehicleByIdFromDto(vehicleId, tenant.getId());
         isPresent(vehicle);
 
         responseObject.setData(vehicle.get());
@@ -93,8 +94,8 @@ public class VehicleService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        List<VehicleDto> vehicleDtoList = repository.findAllVehicles(ConfigSystem.getTenant().getId());
-        responseObject.setData(Optional.of(vehicleDtoList).orElse(Collections.emptyList()));
+        List<VehicleViewDto> vehicleViewDtoList = repository.findAllVehicles(ConfigSystem.getTenant().getId());
+        responseObject.setData(Optional.of(vehicleViewDtoList).orElse(Collections.emptyList()));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
@@ -117,11 +118,11 @@ public class VehicleService extends BaseService {
                         .map(String::valueOf)
                         .collect(Collectors.joining(",", "(", ")"));
 
-            List<VehicleDto> vehicleList = nativeQueryRepository.filterVehicles(tenantId, page, size, vehicleFilter, memberIdList);
+            List<VehicleViewDto> vehicleList = nativeQueryRepository.filterVehicles(tenantId, page, size, vehicleFilter, memberIdList);
             Long count = nativeQueryRepository.countVehicles(tenantId, vehicleFilter, memberIdList);
 
             Pageable pageable = PageRequest.of(page - 1, size);
-            Page<VehicleDto> vehiclePage = new PageImpl<>(vehicleList, pageable, count);
+            Page<VehicleViewDto> vehiclePage = new PageImpl<>(vehicleList, pageable, count);
 
             responseObject.setData(mapPage(vehiclePage));
             responseObject.prepareHttpStatus(HttpStatus.OK);
@@ -132,13 +133,13 @@ public class VehicleService extends BaseService {
         }
         return responseObject;
     }
-    public ResponseObject updateVehicle(Long vehicleId, VehicleDto vehicleDto) {
+    public ResponseObject updateVehicle(Long vehicleId, VehicleCreateDto vehicleUpdateDto) {
         String methodName = "updateVehicle";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
         Vehicle vehicle = findById(vehicleId);
-        vehicle = vehicleMapper.toEntity(vehicleDto, vehicle);
+        vehicle = vehicleMapper.toEntity(vehicleUpdateDto, vehicle);
         repository.save(vehicle);
 
         responseObject.setData(vehicle.getId());

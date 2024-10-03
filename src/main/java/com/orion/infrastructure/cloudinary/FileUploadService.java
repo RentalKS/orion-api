@@ -22,4 +22,15 @@ public class FileUploadService {
             throw new RuntimeException("Cloudinary upload file error process",e.getCause());
         }
     }
+
+    public String setFile(MultipartFile file){
+        if(file == null || file.isEmpty()){
+            return null;
+        }
+        try {
+            return uploadFile(file);
+        } catch (Exception e) {
+            throw new RuntimeException("Error uploading image");
+        }
+    }
 }

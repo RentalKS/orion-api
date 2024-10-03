@@ -46,7 +46,7 @@ public class LocationController {
     }
 
 
-    @PutMapping("/update/{locationId}")
+    @PutMapping("/{locationId}")
     public ResponseEntity<ResponseObject> updateLocation(@PathVariable Long locationId, @RequestBody LocationDto locationDto) {
         String methodName = "updateLocation";
 

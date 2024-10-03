@@ -27,7 +27,7 @@ public class LocationService extends BaseService {
     private final LocationRepository locationRepository;
 
     public Location findLocationById(Long locationId){
-        Optional<Location> location = locationRepository.findLocationById(locationId);
+        Optional<Location> location = locationRepository.findLocationById(locationId,ConfigSystem.getTenant().getId());
         isPresent(location);
         return location.get();
     }

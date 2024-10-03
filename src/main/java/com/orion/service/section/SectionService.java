@@ -41,15 +41,8 @@ public class SectionService extends BaseService {
         if(sectionDto.getSectionDescription() != null) {
             section.setSectionDescription(sectionDto.getSectionDescription());
         }
-
-        try {
-            if(sectionDto.getSectionImage() != null){
-                fileUploadService.uploadFile(sectionDto.getSectionImage());
-            }
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
+        String imageUrl = fileUploadService.setFile(sectionDto.getSectionImage());
+        section.setSectionImage(imageUrl);
 
         section.setCategory(category);
         section.setTenant(tenant);
@@ -90,6 +83,9 @@ public class SectionService extends BaseService {
 
         Optional<Section> section = sectionRepository.findById(sectionId);
         isPresent(section);
+
+        String imageUrl = fileUploadService.setFile(sectionDto.getSectionImage());
+        section.get().setSectionImage(imageUrl);
 
         if(sectionDto.getSectionName() != null) {
             section.get().setSectionName(sectionDto.getSectionName());

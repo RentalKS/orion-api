@@ -1,19 +1,14 @@
 package com.orion.dto.vehicle;
 
 import com.orion.enums.vehicle.*;
-import com.orion.entity.Model;
-import com.orion.entity.Location;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class VehicleDto {
+public class VehicleViewDto {
     private Long createdAt;;
     private Long id;
     private String registrationNumber;
@@ -39,7 +34,7 @@ public class VehicleDto {
     private Double monthlyRate;
     private Long sectionId;
     private String sectionName;
-    private Long maintenanceDate;
+    private Long maintenanceStartDate;
     private String maintenanceDescription;
     private Double maintenanceCost;
     private DamageType maintenanceDamageType;
@@ -47,7 +42,7 @@ public class VehicleDto {
     private String createdByName;
     private Long createdById;
 
-    public VehicleDto(Long id, String registrationNumber, Long modelId, String year, FuelType fuelType, Long mileage, TransmissionType transmission, String color, String description, String image, long locationId, Long rateId, String name,Double dailyRate, Double weeklyRate, Double monthlyRate) {
+    public VehicleViewDto(Long id, String registrationNumber, Long modelId, String year, FuelType fuelType, Long mileage, TransmissionType transmission, String color, String description, String image, long locationId, Long rateId, String name, Double dailyRate, Double weeklyRate, Double monthlyRate) {
         this.id = id;
         this.registrationNumber = registrationNumber;
         this.modelId = modelId;
@@ -64,7 +59,5 @@ public class VehicleDto {
         this.weeklyRate = weeklyRate;
         this.dailyRate = dailyRate;
         this.monthlyRate = monthlyRate;
-
     }
-
 }

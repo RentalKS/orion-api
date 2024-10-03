@@ -43,17 +43,6 @@ public class BrandService extends BaseService {
         isPresent(brand);
         return brand.get();
     }
-    public void setLogoBrand(Brand brand,BrandDto brandDto){
-        try {
-            if(brandDto.getLogo() == null){
-                return;
-            }
-            String logo = fileUploadService.uploadFile(brandDto.getLogo());
-            brand.setLogo(logo);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
-    }
     public ResponseObject create(BrandDto brandDto) {
         String methodName = "create";
         log.info("Entering: {}", methodName);
@@ -63,7 +52,8 @@ public class BrandService extends BaseService {
         Brand brand = new Brand();
         brand.setName(brandDto.getName());
         brand.setDescription(brandDto.getDescription());
-        setLogoBrand(brand,brandDto);
+        String logoUrl = fileUploadService.setFile(brandDto.getLogo());
+        brand.setLogo(logoUrl);
         brand.setTenant(tenant);
 
         brandRepository.save(brand);
@@ -111,8 +101,8 @@ public class BrandService extends BaseService {
         Brand brandToUpdate = findById(locationId);
         brandToUpdate.setName(brandDto.getName());
         brandToUpdate.setDescription(brandDto.getDescription());
-
-        setLogoBrand(brandToUpdate,brandDto);
+        String logoUrl = fileUploadService.setFile(brandDto.getLogo());
+        brandToUpdate.setLogo(logoUrl);
         brandRepository.save(brandToUpdate);
 
         responseObject.prepareHttpStatus(HttpStatus.OK);

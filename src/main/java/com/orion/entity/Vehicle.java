@@ -69,9 +69,8 @@ public class Vehicle extends BaseEntity {
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
     private List<Rental> rentals;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private List<InsurancePolicy> insurancePolicies;
+    @OneToOne(mappedBy = "vehicle", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private InsurancePolicy insurancePolicy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rate_dates_id", referencedColumnName = "id")
