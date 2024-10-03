@@ -1,5 +1,6 @@
 package com.orion.service.customer;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import com.orion.entity.Rental;
 import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.tenant.ConfigSystem;
@@ -9,12 +10,14 @@ import com.orion.entity.Tenant;
 import com.orion.repository.CustomerRepository;
 import com.orion.repository.TenantRepository;
 import com.orion.service.BaseService;
+import com.orion.service.user.TenantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,26 +25,24 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class CustomerService extends BaseService {
-
-    private final CustomerRepository customerRepository;
-    private final TenantRepository tenantRepository;
+    private final CustomerRepository repository;
+    private final TenantService tenantService;
 
     public ResponseObject createCustomer(CustomerDto customerDto) {
         String methodName = "createCustomer";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Tenant> tenant = tenantRepository.findById(ConfigSystem.getTenant().getId());
-        isPresent(tenant);
+        Tenant tenant = tenantService.findById();
 
         Customer customer = new Customer();
         customer.setName(customerDto.getName());
         customer.setEmail(customerDto.getEmail());
         customer.setPhoneNumber(customerDto.getPhoneNumber());
-        customer.setLicenseNumber(customerDto.getLicenseNumber());
-        customer.setTenant(tenant.get());
+        customer.setLicenseNumber(UlidCreator.getUlid().toString());
+        customer.setTenant(tenant);
 
-        responseObject.setData(customerRepository.save(customer));
+        responseObject.setData(this.save(customer));
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
 
         return responseObject;
@@ -51,18 +52,26 @@ public class CustomerService extends BaseService {
         String methodName = "getCustomer";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
-        Optional<Tenant> tenant = tenantRepository.findTenantById(ConfigSystem.getTenant().getId());
-        isPresent(tenant);
 
-        Optional<CustomerDto> customer = customerRepository.findCustomerByIdFromDto(customerId, tenant.get().getId());
+        Optional<CustomerDto> customer = repository.findCustomerByIdFromDto(customerId, ConfigSystem.getTenant().getId());
         isPresent(customer);
 
-        List<Rental> rentals = customerRepository.findCustomerRentals(customerId);
+        List<Rental> rentals = repository.findCustomerRentals(customerId);
         if(!rentals.isEmpty()){
             customer.get().setRentals(rentals);
         }
 
         responseObject.setData(customer.get());
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        return responseObject;
+    }
+    public ResponseObject getAll(String currentEmail){
+        String methodName = "getAll";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+
+        List<CustomerDto> customers = repository.findAllCustomersFromDto(ConfigSystem.getTenant().getId(),currentEmail);
+        responseObject.setData(Optional.of(customers).orElse(Collections.emptyList()));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
@@ -72,20 +81,12 @@ public class CustomerService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Tenant> tenant = tenantRepository.findTenantById(ConfigSystem.getTenant().getId());
-        isPresent(tenant);
-
-        Optional<Customer> customer = customerRepository.findById(customerDto.getId());
-        isPresent(customer);
-
-        Customer customerToUpdate = customer.get();
+        Customer customerToUpdate = findById(customerId);
         customerToUpdate.setName(customerDto.getName());
         customerToUpdate.setEmail(customerDto.getEmail());
         customerToUpdate.setPhoneNumber(customerDto.getPhoneNumber());
-        customerToUpdate.setLicenseNumber(customerDto.getLicenseNumber());
-        customerToUpdate.setTenant(tenant.get());
 
-        responseObject.setData(customerRepository.save(customerToUpdate));
+        responseObject.setData(this.save(customerToUpdate));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
@@ -95,21 +96,26 @@ public class CustomerService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Tenant> tenant = tenantRepository.findTenantById(ConfigSystem.getTenant().getId());
-        isPresent(tenant);
+        Customer customer = findById(customerId);
+        customer.setDeletedAt(LocalDateTime.now());
+        this.save(customer);
 
-        Optional<Customer> customer = customerRepository.findById(customerId);
-        isPresent(customer);
-
-        customer.get().setDeletedAt(LocalDateTime.now());
-        customerRepository.save(customer.get());
         responseObject.setData(true);
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    public Customer findCustomerById(Long customerId){
-        Optional<Customer> customer = customerRepository.findCustomerByIdAndTenantId(customerId, ConfigSystem.getTenant().getId());
+    public Customer findById(Long customerId){
+        Optional<Customer> customer = repository.findCustomerByIdAndTenantId(customerId, ConfigSystem.getTenant().getId());
         isPresent(customer);
         return customer.get();
+    }
+
+    public Customer save(Customer customer){
+        try {
+            return this.repository.save(customer);
+        } catch (Exception e) {
+            log.error("Error saving customer: {}", e.getMessage());
+        }
+        return null;
     }
 }

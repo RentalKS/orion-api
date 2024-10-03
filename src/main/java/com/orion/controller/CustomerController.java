@@ -2,11 +2,14 @@ package com.orion.controller;
 
 import com.orion.dto.customer.CustomerDto;
 import com.orion.generics.ResponseObject;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.customer.CustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +21,7 @@ public class CustomerController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PostMapping
-    public ResponseEntity<ResponseObject> createCustomer(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ResponseObject> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
         String methodName = "createCustomer";
 
         log.info("{} -> Create customer", methodName);
@@ -35,6 +38,17 @@ public class CustomerController {
         ResponseObject response = customerService.getCustomer(customerId);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
+    @GetMapping
+    public ResponseEntity<ResponseObject> getAll(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        String methodName = "getAllCustomer";
+
+        log.info("{} -> Get all customer", methodName);
+        ResponseObject response = customerService.getAll(customUserDetails.getUsername());
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{customerId}")

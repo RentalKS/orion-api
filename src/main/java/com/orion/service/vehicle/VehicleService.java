@@ -10,12 +10,11 @@ import com.orion.exception.ThrowException;
 import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.tenant.ConfigSystem;
 import com.orion.dto.vehicle.VehicleDto;
+import com.orion.mapper.VehicleMapper;
 import com.orion.repository.*;
 import com.orion.repository.nativeQuery.NativeQueryRepository;
 import com.orion.service.BaseService;
 import com.orion.service.bookingService.BookingService;
-import com.orion.service.location.LocationService;
-import com.orion.service.model.ModelService;
 import com.orion.service.notification.NotificationService;
 import com.orion.service.rental.RateDatesService;
 import com.orion.service.rental.RentalService;
@@ -35,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class VehicleService extends BaseService {
 
-    private final VehicleRepository vehicleRepository;
+    private final VehicleRepository repository;
     private final TenantService tenantService;
     private final NotificationService notificationService;
     private final NativeQueryRepository nativeQueryRepository;
@@ -53,28 +53,25 @@ public class VehicleService extends BaseService {
     private final RentalService rentalService;
     private final RateDatesService rateDateService;
     private final UserService userService;
-    private final ModelService modelService;
-    private final LocationService locationService;
+    private final VehicleMapper vehicleMapper;
 
     public ResponseObject createVehicle(VehicleDto vehicleDto) {
         String methodName = "createVehicle";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Tenant tenant = tenantService.findById();
-        RateDates rateDates = rateDateService.findRateDateById(vehicleDto.getRateId());
 
-        Vehicle vehicle = new Vehicle();
-        vehicle.setRateDates(rateDates);
-        vehicleParameters(vehicleDto, responseObject, tenant, vehicle);
-
+        Vehicle vehicle = vehicleMapper.toEntity(vehicleDto, new Vehicle());
         User user = userService.findByEmail(vehicle.getCreatedBy());
         vehicle.setUser(user);
+        this.save(vehicle);
+
+        responseObject.setData(vehicle.getId());
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
         return responseObject;
     }
     public Vehicle findById(Long vehicleId) {
-        Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
+        Optional<Vehicle> vehicle = repository.findById(vehicleId);
         isPresent(vehicle);
         return vehicle.get();
     }
@@ -84,7 +81,7 @@ public class VehicleService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
         Tenant tenant = tenantService.findById();
 
-        Optional<VehicleDto> vehicle = vehicleRepository.findVehicleByIdFromDto(vehicleId, tenant.getId());
+        Optional<VehicleDto> vehicle = repository.findVehicleByIdFromDto(vehicleId, tenant.getId());
         isPresent(vehicle);
 
         responseObject.setData(vehicle.get());
@@ -95,10 +92,9 @@ public class VehicleService extends BaseService {
         String methodName = "getAllVehicles";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
-        Tenant tenant = tenantService.findById();
 
-
-        responseObject.setData(vehicleRepository.findAllVehicles(tenant.getId()));
+        List<VehicleDto> vehicleDtoList = repository.findAllVehicles(ConfigSystem.getTenant().getId());
+        responseObject.setData(Optional.of(vehicleDtoList).orElse(Collections.emptyList()));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
@@ -141,11 +137,11 @@ public class VehicleService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Tenant tenant = tenantService.findById();
-
         Vehicle vehicle = findById(vehicleId);
+        vehicle = vehicleMapper.toEntity(vehicleDto, vehicle);
+        repository.save(vehicle);
 
-        vehicleParameters(vehicleDto, responseObject, tenant, vehicle);
+        responseObject.setData(vehicle.getId());
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
@@ -155,9 +151,9 @@ public class VehicleService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
 
         Vehicle vehicle = findById(vehicleId);
-
         vehicle.setDeletedAt(LocalDateTime.now());
-        vehicleRepository.save(vehicle);
+        this.save(vehicle);
+
         responseObject.setData(true);
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
@@ -173,7 +169,7 @@ public class VehicleService extends BaseService {
 
         LocalDateTime startDate =  DateUtil.convertToLocalDateTime(reservationDto.getStartDate());
         LocalDateTime endDate = DateUtil.convertToLocalDateTime(reservationDto.getEndDate());
-        Customer customer = customerService.findCustomerById(reservationDto.getCustomerId());
+        Customer customer = customerService.findById(reservationDto.getCustomerId());
 
         boolean isNotAvailable = checkVehicleAvailability(vehicle,startDate,endDate) ;
 
@@ -264,7 +260,7 @@ public class VehicleService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
+        Optional<Vehicle> vehicle = repository.findById(vehicleId);
         isPresent(vehicle);
 
         boolean isNotAvailable = checkVehicleAvailability(vehicle.get(), startDate, endDate);
@@ -272,30 +268,13 @@ public class VehicleService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    private void vehicleParameters(VehicleDto vehicleDto, ResponseObject responseObject, Tenant tenant, Vehicle vehicle) {
-
-        vehicleAttributes(vehicleDto, vehicle);
-        RateDates rateDates = rateDateService.findRateDateById(vehicleDto.getRateId());
-        vehicle.setRateDates(rateDates);
-        vehicle.setTenant(tenant);
-
-        responseObject.setData(vehicleRepository.save(vehicle));
+    public Vehicle save(Vehicle vehicle) {
+        try {
+            return this.repository.save(vehicle);
+        } catch (Exception e) {
+            log.error("Error saving vehicle: {}", e.getMessage());
+            throw new RuntimeException("Error saving vehicle.");
+        }
     }
-    private void vehicleAttributes(VehicleDto vehicleDto, Vehicle vehicle) {
-        vehicle.setRegistrationNumber(vehicleDto.getRegistrationNumber());
 
-        Model model = modelService.findModelById(vehicleDto.getModelId());
-
-        vehicle.setModel(model);
-        vehicle.setYear(vehicleDto.getYear());
-        vehicle.setFuelType(vehicleDto.getFuelType());
-        vehicle.setMileage(vehicleDto.getMileage());
-        vehicle.setTransmission(vehicleDto.getTransmission());
-        vehicle.setColor(vehicleDto.getColor());
-        vehicle.setDescription(vehicleDto.getDescription());
-        vehicle.setImage(vehicleDto.getImage());
-
-        Location location = locationService.findLocationById(vehicleDto.getLocationId());
-        vehicle.setLocation(location);
-    }
 }

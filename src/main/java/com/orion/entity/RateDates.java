@@ -1,4 +1,5 @@
 package com.orion.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class RateDates extends BaseEntity {
     @Column(name = "name", unique = true)
     private String name; // e.g., Economy, Luxury, SUV
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;

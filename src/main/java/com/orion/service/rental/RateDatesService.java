@@ -1,18 +1,21 @@
 package com.orion.service.rental;
 
+import com.orion.entity.Customer;
 import com.orion.infrastructure.tenant.ConfigSystem;
 import com.orion.entity.Tenant;
 import com.orion.generics.ResponseObject;
 import com.orion.dto.rates.RatesDto;
 import com.orion.entity.RateDates;
 import com.orion.repository.RateDatesRepository;
-import com.orion.repository.TenantRepository;
 import com.orion.service.BaseService;
+import com.orion.service.user.TenantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,101 +24,94 @@ import java.util.Optional;
 @Log4j2
 public class RateDatesService extends BaseService {
 
-    private final RateDatesRepository rateDatesRepository;
-    private final TenantRepository tenantRepository;
+    private final RateDatesRepository repository;
+    private final TenantService tenantService;
 
-    public ResponseObject createRateDates(RatesDto rateDatesDto) {
+    public ResponseObject createRateDates(@Valid RatesDto rateDatesDto) {
         String methodName = "createRateDates";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
-        Optional<Tenant> optionalTenant = tenantRepository.findById(ConfigSystem.getTenant().getId());
-        isPresent(optionalTenant);
+        Tenant tenant = tenantService.findById();
 
         RateDates rateDates = new RateDates();
         rateDates.setName(rateDatesDto.getName());
         rateDates.setDailyRate(rateDatesDto.getDailyRate());
         rateDates.setWeeklyRate(rateDatesDto.getWeeklyRate());
         rateDates.setMonthlyRate(rateDatesDto.getMonthlyRate());
-        rateDates.setTenant(optionalTenant.get());
+        rateDates.setTenant(tenant);
 
-
-        responseObject.setData(rateDatesRepository.save(rateDates));
+        responseObject.setData(this.save(rateDates));
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
         return responseObject;
     }
 
-    public ResponseObject getRateDates(Long RateDatesId) {
+    public ResponseObject getRateDates(Long id,String currentEmail) {
         String methodName = "getRateDates";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<RateDates> RateDates = rateDatesRepository.findById(RateDatesId);
-        if (RateDates.isPresent()) {
-            responseObject.setData(RateDates.get());
-            responseObject.prepareHttpStatus(HttpStatus.OK);
-        } else {
-            responseObject.setData("RateDates not found");
-            responseObject.prepareHttpStatus(HttpStatus.NOT_FOUND);
-        }
-
-        return responseObject;
-    }
-
-    public ResponseObject updateRateDates(Long rateDateId, RatesDto RateDatesDto) {
-        String methodName = "updateRateDates";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
-
-        Optional<RateDates> RateDatesOptional = rateDatesRepository.findById(rateDateId);
-        if (RateDatesOptional.isPresent()) {
-            RateDates RateDates = RateDatesOptional.get();
-            RateDates.setName(RateDatesDto.getName());
-            RateDates.setDailyRate(RateDatesDto.getDailyRate());
-            RateDates.setWeeklyRate(RateDatesDto.getWeeklyRate());
-            RateDates.setMonthlyRate(RateDatesDto.getMonthlyRate());
-
-            responseObject.setData(rateDatesRepository.save(RateDates));
-            responseObject.prepareHttpStatus(HttpStatus.OK);
-        } else {
-            responseObject.setData("RateDates not found");
-            responseObject.prepareHttpStatus(HttpStatus.NOT_FOUND);
-        }
-
-        return responseObject;
-    }
-
-    public ResponseObject deleteRateDates(Long RateDatesId) {
-        String methodName = "deleteRateDates";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
-
-        Optional<RateDates> RateDates = rateDatesRepository.findById(RateDatesId);
-        if (RateDates.isPresent()) {
-            rateDatesRepository.delete(RateDates.get());
-            responseObject.setData(true);
-            responseObject.prepareHttpStatus(HttpStatus.OK);
-        } else {
-            responseObject.setData("RateDates not found");
-            responseObject.prepareHttpStatus(HttpStatus.NOT_FOUND);
-        }
-
-        return responseObject;
-    }
-
-    public ResponseObject getAllRateDatess() {
-        String methodName = "getAllRateDatess";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
-
-        List<RateDates> RateDatess = rateDatesRepository.findAll();
-        responseObject.setData(RateDatess);
+        Optional<RatesDto> rateDates = repository.findByRateDates(id,currentEmail);
+        isPresent(rateDates);
+        responseObject.setData(rateDates);
         responseObject.prepareHttpStatus(HttpStatus.OK);
 
         return responseObject;
     }
-    public RateDates findRateDateById(Long rateDateId){
-        Optional<RateDates> optionalRateDates = rateDatesRepository.findRateById(rateDateId, ConfigSystem.getTenant().getId());
+
+    public ResponseObject updateRateDates(Long id, RatesDto rateDatesDto) {
+        String methodName = "updateRateDates";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        RateDates rateDates = findById(id);
+
+        rateDates.setName(rateDatesDto.getName());
+        rateDates.setDailyRate(rateDatesDto.getDailyRate());
+        rateDates.setWeeklyRate(rateDatesDto.getWeeklyRate());
+        rateDates.setMonthlyRate(rateDatesDto.getMonthlyRate());
+
+        responseObject.setData(this.save(rateDates));
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+
+        return responseObject;
+    }
+
+    public ResponseObject deleteRateDates(Long id) {
+        String methodName = "deleteRateDates";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+
+        RateDates rateDates = findById(id);
+        rateDates.setDeletedAt(LocalDateTime.now());
+        this.save(rateDates);
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        responseObject.setData(true);
+
+        return responseObject;
+    }
+
+    public ResponseObject getAllRateDates(String currentEmail) {
+        String methodName = "getAllRateDates";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+
+        List<RatesDto> rateDatesList = repository.findAllRateDates(currentEmail);
+        responseObject.setData(Optional.of(rateDatesList).orElse(Collections.emptyList()));
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+
+        return responseObject;
+    }
+    public RateDates findById(Long rateDateId){
+        Optional<RateDates> optionalRateDates = repository.findRateById(rateDateId, ConfigSystem.getTenant().getId());
         isPresent(optionalRateDates);
         return optionalRateDates.get();
+    }
+
+    public RateDates save(RateDates rateDates){
+        try {
+            return this.repository.save(rateDates);
+        } catch (Exception e) {
+            log.error("Error saving customer: {}", e.getMessage());
+        }
+        return null;
     }
 }

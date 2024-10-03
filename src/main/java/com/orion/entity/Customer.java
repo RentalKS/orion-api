@@ -37,6 +37,4 @@ public class Customer extends BaseEntity {
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Rental> rentals;
-
-    // Additional fields such as address, payment information, etc.
 }
