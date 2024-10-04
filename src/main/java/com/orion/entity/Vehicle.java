@@ -1,6 +1,7 @@
 package com.orion.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.orion.enums.vehicle.VehicleColor;
 import com.orion.enums.vehicle.VehicleStatus;
 import com.orion.enums.vehicle.FuelType;
 import com.orion.enums.vehicle.TransmissionType;
@@ -38,7 +39,8 @@ public class Vehicle extends BaseEntity {
     private TransmissionType transmission;
 
     @Column(name="color")
-    private String color;
+    @Enumerated(EnumType.STRING)
+    private VehicleColor color;
 
     @Column(name="description")
     private String description;

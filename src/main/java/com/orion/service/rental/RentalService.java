@@ -3,6 +3,7 @@ package com.orion.service.rental;
 import com.orion.entity.*;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
+import com.orion.mapper.RentalMapper;
 import com.orion.repository.RentalRepository;
 import com.orion.service.BaseService;
 import lombok.RequiredArgsConstructor;
@@ -15,18 +16,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RentalService extends BaseService {
     private final RentalRepository rentalRepository;
+    private final RentalMapper rentalMapper;
 
-    public void createRental(Vehicle vehicle, Customer customer, LocalDateTime startDate, LocalDateTime endDate, Tenant tenant, double totalCost, Booking booking,RentalStatus rentalStatus, VehicleStatus vehicleStatus) {
-        Rental rental = new Rental();
-        rental.setVehicle(vehicle);
-        rental.setCustomer(customer);
-        rental.setStartDate(startDate);
-        rental.setEndDate(endDate);
-        rental.setStatus(rentalStatus);
-        rental.setTenant(tenant);
-        rental.setTotalCost(totalCost);
-        rental.setBooking(booking);
-        rental.setVehicleStatus(vehicleStatus);
+    public void createRental(Vehicle vehicle, Customer customer, LocalDateTime startDate, LocalDateTime endDate, Tenant tenant, double totalCost, Booking booking) {
+        Rental rental = rentalMapper.toEntity(vehicle, customer, startDate, endDate, tenant, totalCost, booking);
         rentalRepository.save(rental);
     }
     public void updateRentalStatus(Rental rental, RentalStatus status, VehicleStatus vehicleStatus) {

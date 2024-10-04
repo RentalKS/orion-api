@@ -2,8 +2,9 @@ package com.orion.service.vehicle;
 
 import com.orion.dto.filter.VehicleFilter;
 import com.orion.dto.reservation.ReservationDto;
-import com.orion.dto.vehicle.VehicleCreateDto;
+import com.orion.dto.vehicle.VehicleDto;
 import com.orion.entity.*;
+import com.orion.enums.vehicle.DamageType;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
 import com.orion.exception.ErrorCode;
@@ -25,10 +26,7 @@ import com.orion.service.customer.CustomerService;
 import com.orion.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,16 +54,19 @@ public class VehicleService extends BaseService {
     private final VehicleMapper vehicleMapper;
     private final InsurancePolicyService insurancePolicyService;
 
-    public ResponseObject createVehicle(VehicleCreateDto vehicleDto) {
+    public ResponseObject create(VehicleDto vehicleDto, String email) {
         String methodName = "createVehicle";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
         Vehicle vehicle = vehicleMapper.toEntity(vehicleDto, new Vehicle());
-        User user = userService.findByEmail(vehicle.getCreatedBy());
+        User user = userService.findByEmail(email);
         vehicle.setUser(user);
         this.save(vehicle);
-        insurancePolicyService.createFromVehicle(vehicle, vehicleDto.getInsurancePolicyDto());
+
+        InsurancePolicy insurancePolicy = insurancePolicyService.createFromVehicle(vehicle, vehicleDto.getInsurancePolicyDto());
+        vehicle.setInsurancePolicy(insurancePolicy);
+        this.save(vehicle);
 
         responseObject.setData(vehicle.getId());
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
@@ -76,26 +77,32 @@ public class VehicleService extends BaseService {
         isPresent(vehicle);
         return vehicle.get();
     }
-    public ResponseObject getVehicle(Long vehicleId) {
+    public ResponseObject get(Long vehicleId) {
         String methodName = "getVehicle";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
         Tenant tenant = tenantService.findById();
 
-        Optional<VehicleViewDto> vehicle = repository.findVehicleByIdFromDto(vehicleId, tenant.getId());
+        Optional<VehicleViewDto> vehicle = repository.findVehicleDto(vehicleId, tenant.getId());
         isPresent(vehicle);
 
         responseObject.setData(vehicle.get());
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    public ResponseObject getAllVehicles() {
+    public ResponseObject getAll(String currentEmail, Integer page, Integer size) {
         String methodName = "getAllVehicles";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        List<VehicleViewDto> vehicleViewDtoList = repository.findAllVehicles(ConfigSystem.getTenant().getId());
-        responseObject.setData(Optional.of(vehicleViewDtoList).orElse(Collections.emptyList()));
+        Pageable pageable = PageRequest.of(
+                page != null ? page - 1 : 1,
+                size != null ? size : 10,
+                Sort.by("id").descending());
+
+        Page<VehicleViewDto> vehicleViewDtoList = repository.findAllVehicles(ConfigSystem.getTenant().getId(),currentEmail, pageable);
+
+        responseObject.setData(mapPage(vehicleViewDtoList));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
@@ -133,7 +140,7 @@ public class VehicleService extends BaseService {
         }
         return responseObject;
     }
-    public ResponseObject updateVehicle(Long vehicleId, VehicleCreateDto vehicleUpdateDto) {
+    public ResponseObject update(Long vehicleId, VehicleDto vehicleUpdateDto) {
         String methodName = "updateVehicle";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
@@ -146,7 +153,7 @@ public class VehicleService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    public ResponseObject deleteVehicle(Long vehicleId) {
+    public ResponseObject delete(Long vehicleId) {
         String methodName = "deleteVehicle";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
@@ -159,116 +166,7 @@ public class VehicleService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    @Transactional
-    public ResponseObject createReservation(ReservationDto reservationDto) {
-        String methodName = "createReservation";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
 
-        Tenant tenant = tenantService.findById();
-        Vehicle vehicle = findById(reservationDto.getVehicleId());
-
-        LocalDateTime startDate =  DateUtil.convertToLocalDateTime(reservationDto.getStartDate());
-        LocalDateTime endDate = DateUtil.convertToLocalDateTime(reservationDto.getEndDate());
-        Customer customer = customerService.findById(reservationDto.getCustomerId());
-
-        boolean isNotAvailable = checkVehicleAvailability(vehicle,startDate,endDate) ;
-
-        if (isNotAvailable) {
-            responseObject.prepareHttpStatus(HttpStatus.BAD_REQUEST);
-            ThrowException.throwBadRequestApiException(ErrorCode.VEHICLE_NOT_AVAILABLE, List.of("Vehicle is not available for the selected dates."));
-            return responseObject;
-        }
-
-        try {
-
-            long rentalDays = ChronoUnit.DAYS.between(startDate, endDate);
-            double totalCost = calculateTotalCost(vehicle.getRateDates(), rentalDays);
-
-            Booking booking = bookingService.createBooking(vehicle, customer, startDate, endDate, tenant, VehicleStatus.RESERVED);
-            rentalService.createRental(vehicle, customer, startDate, endDate, tenant, totalCost, booking,RentalStatus.PENDING,VehicleStatus.RESERVED);
-
-            notificationService.sendNotification(customer.getId(), "Reservation Confirmation", "Your reservation has been confirmed.");
-
-            responseObject.setData(booking);
-            responseObject.prepareHttpStatus(HttpStatus.CREATED);
-        }catch (Exception e) {
-            log.error("Error creating reservation: {}", e.getMessage());
-            responseObject.prepareHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            responseObject.setData("An error occurred while creating the reservation.");
-        }
-        return responseObject;
-    }
-    private boolean checkVehicleAvailability(Vehicle vehicle, LocalDateTime startDate, LocalDateTime endDate) {
-        return bookingService.findBookingsByVehicleAndDateRange(vehicle.getId(), startDate, endDate);
-    }
-    private double calculateTotalCost(RateDates rateDates, long rentalDays) {
-        double dailyRate = rateDates.getDailyRate();
-        double weeklyRate = rateDates.getWeeklyRate();
-        double monthlyRate = rateDates.getMonthlyRate();
-        double totalCost;
-
-        // Apply weekly rate if rentalDays is more than 7 and less than 30
-        if (rentalDays >= 7 && rentalDays < 30) {
-            totalCost = weeklyRate * ((double) rentalDays / 7);
-        }
-        // Apply monthly rate if rentalDays is more than 30
-        else if (rentalDays >= 30) {
-            totalCost = monthlyRate * ((double) rentalDays / 30);
-        }
-        // Otherwise, apply daily rate
-        else {
-            totalCost = dailyRate * rentalDays;
-        }
-
-        // Apply discounts if applicable
-        if (rentalDays >= 14) {
-            totalCost = applyDiscounts(totalCost, rentalDays);
-        }
-        return totalCost;
-    }
-    private double applyDiscounts(double totalCost, long rentalDays) {
-        if (rentalDays > 14) {
-            totalCost *= 0.90;
-        }
-        return totalCost;
-    }
-    @Transactional
-    public ResponseObject cancelReservation(Long bookingId) {
-        String methodName = "cancelReservation";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
-
-        Booking booking = bookingService.findBookingById(bookingId);
-
-        if (booking.getStatus() != RentalStatus.PENDING) {
-            responseObject.prepareHttpStatus(HttpStatus.BAD_REQUEST);
-            responseObject.setData("Only pending reservations can be cancelled.");
-            return responseObject;
-        }
-
-        bookingService.updateBookingStatus(booking, RentalStatus.CANCELLED, VehicleStatus.AVAILABLE);
-        Rental rental = rentalService.findByBooking(booking);
-        rentalService.updateRentalStatus(rental, RentalStatus.CANCELLED, VehicleStatus.AVAILABLE);
-
-
-        responseObject.setData(booking);
-        responseObject.prepareHttpStatus(HttpStatus.OK);
-        return responseObject;
-    }
-    public ResponseObject checkAvailability(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate) {
-        String methodName = "checkAvailability";
-        log.info("Entering: {}", methodName);
-        ResponseObject responseObject = new ResponseObject();
-
-        Optional<Vehicle> vehicle = repository.findById(vehicleId);
-        isPresent(vehicle);
-
-        boolean isNotAvailable = checkVehicleAvailability(vehicle.get(), startDate, endDate);
-        responseObject.setData(isNotAvailable);
-        responseObject.prepareHttpStatus(HttpStatus.OK);
-        return responseObject;
-    }
     public Vehicle save(Vehicle vehicle) {
         try {
             return this.repository.save(vehicle);
@@ -278,4 +176,7 @@ public class VehicleService extends BaseService {
         }
     }
 
+    public Boolean isVehicleOnMaintenance(Long id, LocalDateTime startDate, LocalDateTime endDate) {
+        return repository.isVehicleOnMaintenance(id, startDate, endDate);
+    }
 }

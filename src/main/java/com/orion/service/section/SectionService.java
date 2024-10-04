@@ -75,26 +75,29 @@ public class SectionService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
+    public Section findById(Long sectionId) {
+        Optional<Section> section = sectionRepository.findById(sectionId);
+        isPresent(section);
+        return section.get();
+    }
 
     public ResponseObject updateSection(Long sectionId,SectionDto sectionDto) {
         String methodName = "updateSection";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<Section> section = sectionRepository.findById(sectionId);
-        isPresent(section);
-
+        Section section = findById(sectionId);
         String imageUrl = fileUploadService.setFile(sectionDto.getSectionImage());
-        section.get().setSectionImage(imageUrl);
+        section.setSectionImage(imageUrl);
 
         if(sectionDto.getSectionName() != null) {
-            section.get().setSectionName(sectionDto.getSectionName());
+            section.setSectionName(sectionDto.getSectionName());
         }
         if(sectionDto.getSectionDescription() != null) {
-            section.get().setSectionDescription(sectionDto.getSectionDescription());
+            section.setSectionDescription(sectionDto.getSectionDescription());
         }
 
-        responseObject.setData(sectionRepository.save(section.get()));
+        responseObject.setData(sectionRepository.save(section));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }

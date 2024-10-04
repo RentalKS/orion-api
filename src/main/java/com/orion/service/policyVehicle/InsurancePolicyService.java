@@ -1,6 +1,5 @@
 package com.orion.service.policyVehicle;
 
-import com.orion.dto.vehicle.VehicleCreateDto;
 import com.orion.entity.Vehicle;
 import com.orion.generics.ResponseObject;
 import com.orion.dto.insurancePolicy.InsurancePolicyDto;
@@ -30,17 +29,16 @@ public class InsurancePolicyService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        InsurancePolicy insurancePolicy = mapper.toEntity(insurancePolicyDto, new InsurancePolicy());
+        InsurancePolicy insurancePolicy = mapper.toEntity(null,insurancePolicyDto, new InsurancePolicy());
 
         responseObject.setData(this.save(insurancePolicy));
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
 
         return responseObject;
     }
-    public void createFromVehicle(Vehicle vehicle, InsurancePolicyDto insurancePolicyDto) {
-        InsurancePolicy insurancePolicy = mapper.toEntity(insurancePolicyDto, new InsurancePolicy());
-        insurancePolicy.setVehicle(vehicle);
-        this.save(insurancePolicy);
+    public InsurancePolicy createFromVehicle(Vehicle vehicle, InsurancePolicyDto insurancePolicyDto) {
+        InsurancePolicy insurancePolicy = mapper.toEntity(vehicle,insurancePolicyDto, new InsurancePolicy());
+        return this.save(insurancePolicy);
     }
     public InsurancePolicy findById(Long id) {
         Optional<InsurancePolicy> insurancePolicy = repository.findById(id, ConfigSystem.getTenant().getId());
@@ -86,7 +84,7 @@ public class InsurancePolicyService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
         InsurancePolicy insurancePolicyToUpdate = findById(updateId);
-        insurancePolicyToUpdate = mapper.toEntity(insurancePolicyDto, insurancePolicyToUpdate);
+        insurancePolicyToUpdate = mapper.toEntity(null,insurancePolicyDto, insurancePolicyToUpdate);
 
         responseObject.setData(this.save(insurancePolicyToUpdate));
         responseObject.prepareHttpStatus(HttpStatus.OK);

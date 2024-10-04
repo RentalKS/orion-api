@@ -37,11 +37,12 @@ public class LocationController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     @GetMapping
-    public ResponseEntity<ResponseObject> getAllLocations(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ResponseObject> getAllLocations(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                          @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         String methodName = "getAll";
 
         log.info("{} -> Get all location", methodName);
-        ResponseObject response = locationService.getAllLocations(customUserDetails.getUsername());
+        ResponseObject response = locationService.getAllLocations(customUserDetails.getUsername(), page, size);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

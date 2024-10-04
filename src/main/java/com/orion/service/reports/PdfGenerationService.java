@@ -52,7 +52,7 @@ public class PdfGenerationService {
                 table.addCell(String.valueOf(vehicle.getId()));
                 table.addCell(vehicle.getRegistrationNumber());
                 table.addCell(vehicle.getModel().getName());
-                table.addCell(vehicle.getColor());
+                table.addCell(String.valueOf(vehicle.getColor()));
                 table.addCell(vehicle.getYear());
                 table.addCell(vehicle.getFuelType().name());
                 table.addCell(vehicle.getTransmission().name());

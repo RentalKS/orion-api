@@ -1,11 +1,12 @@
 package com.orion.mapper;
 
-import com.orion.dto.vehicle.VehicleCreateDto;
+import com.orion.dto.vehicle.VehicleDto;
 import com.orion.entity.*;
 import com.orion.infrastructure.cloudinary.FileUploadService;
 import com.orion.service.location.LocationService;
 import com.orion.service.model.ModelService;
 import com.orion.service.rental.RateDatesService;
+import com.orion.service.section.SectionService;
 import com.orion.service.user.TenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,16 +20,19 @@ public class VehicleMapper {
     private final RateDatesService rateDateService;
     private final TenantService tenantService;
     private final FileUploadService fileUploadService;
-    public Vehicle toEntity(VehicleCreateDto vehicleDto, Vehicle vehicle) {
+    private final SectionService sectionService;
+    public Vehicle toEntity(VehicleDto vehicleDto, Vehicle vehicle) {
         Model model = modelService.findModelById(vehicleDto.getModelId());
         Location location = locationService.findLocationById(vehicleDto.getLocationId());
         RateDates rateDates = rateDateService.findById(vehicleDto.getRateId());
+        Section section = sectionService.findById(vehicleDto.getSectionId());
         Tenant tenant = tenantService.findById();
 
         vehicle.setRateDates(rateDates);
         vehicle.setLocation(location);
         vehicle.setModel(model);
         vehicle.setTenant(tenant);
+        vehicle.setSection(section);
 
         vehicle.setRegistrationNumber(vehicleDto.getRegistrationNumber());
         vehicle.setYear(vehicleDto.getYear());

@@ -18,6 +18,7 @@ import java.util.List;
 @Log4j2
 public class NotificationService {
 
+    private static final String NOTIFICATION_DESTINATION = "/user/queue/notifications";
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
@@ -35,7 +36,7 @@ public class NotificationService {
 
             notificationRepository.save(notification);
 
-            messagingTemplate.convertAndSendToUser(user.getEmail(), "/queue/notifications", notification);
+            messagingTemplate.convertAndSendToUser(user.getEmail(),NOTIFICATION_DESTINATION, notification);
         } catch (RuntimeException e) {
             log.error("Failed to send notification: {}", e.getMessage());
         }

@@ -6,6 +6,7 @@ import com.orion.entity.Tenant;
 import com.orion.entity.Vehicle;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
+import com.orion.mapper.BookingMapper;
 import com.orion.repository.BookingRepository;
 import com.orion.service.BaseService;
 import lombok.RequiredArgsConstructor;
@@ -17,32 +18,27 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BookingService extends BaseService {
-    private final BookingRepository bookingRepository;
+    private final BookingRepository repository;
+    private final BookingMapper bookingMapper;
 
-    public Booking createBooking(Vehicle vehicle, Customer customer, LocalDateTime startDate, LocalDateTime endDate, Tenant tenant,VehicleStatus vehicleStatus) {
-            Booking booking = new Booking();
-            booking.setVehicle(vehicle);
-            booking.setCustomer(customer);
-            booking.setStartDate(startDate);
-            booking.setEndDate(endDate);
-            booking.setBookingStatus(vehicleStatus);
-            booking.setTenant(tenant);
-            bookingRepository.save(booking);
+    public Booking createBooking(Vehicle vehicle, Customer customer, LocalDateTime startDate, LocalDateTime endDate, Tenant tenant) {
+            Booking booking = bookingMapper.toEntity(vehicle, customer, startDate, endDate, tenant);
+            repository.save(booking);
             return booking;
     }
 
-    public boolean findBookingsByVehicleAndDateRange(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate) {
-        return bookingRepository.findBookingsByVehicleAndDateRange(vehicleId, startDate, endDate);
+    public Boolean findBookingsByVehicleAndDateRange(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate) {
+       return repository.findBookingsByVehicleAndDateRange(vehicleId, startDate, endDate);
     }
     public Booking findBookingById(Long bookingId) {
-        Optional<Booking> booking = bookingRepository.findById(bookingId);
+        Optional<Booking> booking = repository.findById(bookingId);
         isPresent(booking);
         return booking.get();
     }
     public void updateBookingStatus(Booking booking, RentalStatus status, VehicleStatus vehicleStatus) {
         booking.setStatus(status);
         booking.setBookingStatus(vehicleStatus);
-        bookingRepository.save(booking);
+        repository.save(booking);
     }
 
 

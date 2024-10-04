@@ -36,6 +36,13 @@ public class InsurancePolicyDto {
         this.coverageDetails = coverageDetails;
         this.vehicleId = vehicleId;
     }
+    public InsurancePolicyDto(Long id, String policyNumber, String providerName, String coverageDetails, Long vehicleId) {
+        this.id = id;
+        this.policyNumber = policyNumber;
+        this.providerName = providerName;
+        this.coverageDetails = coverageDetails;
+        this.vehicleId = vehicleId;
+    }
     public LocalDateTime getStartDate(){
         if(startDate == null){
             return null;

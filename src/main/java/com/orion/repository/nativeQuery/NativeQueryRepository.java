@@ -138,22 +138,22 @@ public class NativeQueryRepository {
                 Timestamp createdAt = (Timestamp) objects[1];
                 vehicleViewDto.setCreatedAt(createdAt.getTime());
             }
-
-            if (objects[2] != null) {
-                vehicleViewDto.setRateName(String.valueOf(objects[2]));
-            }
-
-            if (objects[3] != null) {
-                vehicleViewDto.setDailyRate(Double.valueOf(String.valueOf(objects[3])));
-            }
-
-            if (objects[4] != null) {
-                vehicleViewDto.setWeeklyRate(Double.valueOf(String.valueOf(objects[4])));
-            }
-
-            if (objects[5] != null) {
-                vehicleViewDto.setMonthlyRate(Double.valueOf(String.valueOf(objects[5])));
-            }
+//
+//            if (objects[2] != null) {
+//                vehicleViewDto.setRateName(String.valueOf(objects[2]));
+//            }
+//
+//            if (objects[3] != null) {
+//                vehicleViewDto.setDailyRate(Double.valueOf(String.valueOf(objects[3])));
+//            }
+//
+//            if (objects[4] != null) {
+//                vehicleViewDto.setWeeklyRate(Double.valueOf(String.valueOf(objects[4])));
+//            }
+//
+//            if (objects[5] != null) {
+//                vehicleViewDto.setMonthlyRate(Double.valueOf(String.valueOf(objects[5])));
+//            }
 
             if (objects[6] != null) {
                 vehicleViewDto.setRegistrationNumber(String.valueOf(objects[6]));
@@ -180,7 +180,7 @@ public class NativeQueryRepository {
             }
 
             if (objects[12] != null) {
-                vehicleViewDto.setColor(String.valueOf(objects[12]));
+                vehicleViewDto.setColor(VehicleColor.valueOf(String.valueOf(objects[12])));
             }
 
             if (objects[13] != null) {
@@ -188,7 +188,7 @@ public class NativeQueryRepository {
             }
 
             if (objects[14] != null) {
-                vehicleViewDto.setImage(String.valueOf(objects[14]));
+                vehicleViewDto.setImageUrl(String.valueOf(objects[14]));
             }
 
             if (objects[15] != null) {
@@ -199,53 +199,53 @@ public class NativeQueryRepository {
                 vehicleViewDto.setSectionId(Long.valueOf(String.valueOf(objects[16])));
             }
 
-            if (objects[17] != null) {
-                vehicleViewDto.setSectionName(String.valueOf(objects[17]));
-            }
+//            if (objects[17] != null) {
+//                vehicleViewDto.setSectionName(String.valueOf(objects[17]));
+//            }
+//
+//            if (objects[18] != null) {
+//                vehicleViewDto.setModelName(String.valueOf(objects[18]));
+//            }
+//
+//            if (objects[19] != null) {
+//                vehicleViewDto.setModelBrand(String.valueOf(objects[19]));
+//            }
+//
+//            if (objects[20] != null) {
+//                vehicleViewDto.setModelType(String.valueOf(objects[20]));
+//            }
+//
+//            if (objects[21] != null) {
+//                vehicleViewDto.setModelImage(String.valueOf(objects[21]));
+//            }
+//
+//            if (objects[22] != null) {
+//                vehicleViewDto.setLocationName(String.valueOf(objects[22]));
+//            }
 
-            if (objects[18] != null) {
-                vehicleViewDto.setModelName(String.valueOf(objects[18]));
-            }
-
-            if (objects[19] != null) {
-                vehicleViewDto.setModelBrand(String.valueOf(objects[19]));
-            }
-
-            if (objects[20] != null) {
-                vehicleViewDto.setModelType(String.valueOf(objects[20]));
-            }
-
-            if (objects[21] != null) {
-                vehicleViewDto.setModelImage(String.valueOf(objects[21]));
-            }
-
-            if (objects[22] != null) {
-                vehicleViewDto.setLocationName(String.valueOf(objects[22]));
-            }
-
-            if (objects[23] != null) {
-                vehicleViewDto.setLocationAddress(String.valueOf(objects[23]));
-            }
-
-            if(objects[24] != null){
-                vehicleViewDto.setRentalStatus(RentalStatus.valueOf(String.valueOf(objects[24])));
-            }
-
-            if (objects[25] != null) {
-                vehicleViewDto.setMaintenanceStartDate(DateUtil.localDateTimeToMilliseconds((LocalDateTime) objects[25]));
-            }
-
-            if (objects[26] != null) {
-                vehicleViewDto.setMaintenanceDescription(String.valueOf(objects[26]));
-            }
-
-            if (objects[27] != null) {
-                vehicleViewDto.setMaintenanceCost(Double.valueOf(String.valueOf(objects[27])));
-            }
-
-            if (objects[28] != null) {
-                vehicleViewDto.setMaintenanceDamageType(DamageType.valueOf(String.valueOf(objects[28])));
-            }
+//            if (objects[23] != null) {
+//                vehicleViewDto.setLocationAddress(String.valueOf(objects[23]));
+//            }
+//
+//            if(objects[24] != null){
+//                vehicleViewDto.setRentalStatus(RentalStatus.valueOf(String.valueOf(objects[24])));
+//            }
+//
+//            if (objects[25] != null) {
+//                vehicleViewDto.setMaintenanceStartDate(DateUtil.localDateTimeToMilliseconds((LocalDateTime) objects[25]));
+//            }
+//
+//            if (objects[26] != null) {
+//                vehicleViewDto.setMaintenanceDescription(String.valueOf(objects[26]));
+//            }
+//
+//            if (objects[27] != null) {
+//                vehicleViewDto.setMaintenanceCost(Double.valueOf(String.valueOf(objects[27])));
+//            }
+//
+//            if (objects[28] != null) {
+//                vehicleViewDto.setMaintenanceDamageType(DamageType.valueOf(String.valueOf(objects[28])));
+//            }
 
             if (objects[29] != null) {
                 vehicleViewDto.setCreatedByName(String.valueOf(objects[29]));

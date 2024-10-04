@@ -1,6 +1,7 @@
 package com.orion.service.reports;
 
 import com.orion.entity.Vehicle;
+import com.orion.enums.vehicle.VehicleColor;
 import com.orion.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,7 +38,7 @@ public class ExcelGenerationService {
                 row.createCell(0).setCellValue(vehicle.getId());
                 row.createCell(1).setCellValue(vehicle.getRegistrationNumber());
                 row.createCell(2).setCellValue(vehicle.getModel().getName());
-                row.createCell(3).setCellValue(vehicle.getColor());
+                row.createCell(3).setCellValue(String.valueOf(vehicle.getColor()));
                 row.createCell(4).setCellValue(vehicle.getYear());
                 row.createCell(5).setCellValue(vehicle.getFuelType().name());
                 row.createCell(6).setCellValue(vehicle.getTransmission().name());

@@ -2,45 +2,40 @@ package com.orion.controller;
 
 import com.orion.dto.filter.VehicleFilter;
 import com.orion.dto.reservation.ReservationDto;
-import com.orion.dto.vehicle.VehicleCreateDto;
-import com.orion.dto.vehicle.VehicleViewDto;
+import com.orion.dto.vehicle.VehicleDto;
 import com.orion.generics.ResponseObject;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.vehicle.VehicleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("${base.url}/vehicles")
+@RequestMapping("${base.url}/vehicle")
 @RequiredArgsConstructor
 @Log4j2
 public class VehicleController {
     private final VehicleService service;
 
     @PostMapping
-    public ResponseEntity<ResponseObject> createVehicle(@RequestBody VehicleCreateDto vehicleDto) {
+    public ResponseEntity<ResponseObject> createVehicle(@Valid @RequestBody VehicleDto vehicleDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "createVehicle";
 
         log.info("{} -> Create vehicle", methodName);
-        ResponseObject response = service.createVehicle(vehicleDto);
+        ResponseObject response = service.create(vehicleDto, customUserDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PostMapping("/create-reservation")
-    public ResponseEntity<ResponseObject> createReservation(@RequestBody ReservationDto reservationDto) {
-        String methodName = "createReservation";
-
-        log.info("{} -> Create reservation", methodName);
-        ResponseObject response = service.createReservation(reservationDto);
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
-    @GetMapping("/all")
-    public ResponseEntity<ResponseObject> getAllVehicles() {
+    @GetMapping
+    public ResponseEntity<ResponseObject> getAllVehicles(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                         @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         String methodName = "getAllVehicles";
 
         log.info("{} -> Get all vehicles", methodName);
-        ResponseObject response = service.getAllVehicles();
+        ResponseObject response = service.getAll(customUserDetails.getUsername(),page,size);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -49,7 +44,7 @@ public class VehicleController {
         String methodName = "getVehicle";
 
         log.info("{} -> Get vehicle", methodName);
-        ResponseObject response = service.getVehicle(vehicleId);
+        ResponseObject response = service.get(vehicleId);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -64,11 +59,11 @@ public class VehicleController {
     }
 
     @PutMapping("/update/{vehicleId}")
-    public ResponseEntity<ResponseObject> updateVehicle(@PathVariable Long vehicleId, @RequestBody VehicleCreateDto updateDto) {
+    public ResponseEntity<ResponseObject> updateVehicle(@PathVariable Long vehicleId, @RequestBody VehicleDto updateDto) {
         String methodName = "updateVehicle";
 
         log.info("{} -> update vehicle", methodName);
-        ResponseObject response = service.updateVehicle(vehicleId, updateDto);
+        ResponseObject response = service.update(vehicleId, updateDto);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -77,7 +72,7 @@ public class VehicleController {
         String methodName = "deleteVehicle";
 
         log.info("{} -> Delete vehicle", methodName);
-        ResponseObject response = service.deleteVehicle(vehicleId);
+        ResponseObject response = service.delete(vehicleId);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }
