@@ -1,5 +1,6 @@
 package com.orion.service.bookingService;
-
+import com.orion.dto.booking.BookingViewDto;
+import com.orion.dto.filter.BookingFilter;
 import com.orion.entity.Booking;
 import com.orion.entity.Customer;
 import com.orion.entity.Tenant;
@@ -10,9 +11,14 @@ import com.orion.mapper.BookingMapper;
 import com.orion.repository.BookingRepository;
 import com.orion.service.BaseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,6 +46,28 @@ public class BookingService extends BaseService {
         booking.setBookingStatus(vehicleStatus);
         repository.save(booking);
     }
+    public Page<BookingViewDto> findBookingList(String currentEmail, BookingFilter filter, Integer page, Integer size, String search) {
 
+        Pageable pageable = PageRequest.of(
+                page != null ? page - 1 : 1,
+                size != null ? size : 10,
+                Sort.by("id").descending());
 
+        return repository.findBookingsByCustomer(
+                currentEmail,
+                filter.getStartDate(),
+                filter.getEndDate(),
+                filter.getStatus(),
+                filter.getVehicleStatus(),
+                filter.getVehicleId(),
+                filter.getCustomerId(),
+                search,
+                pageable
+        );
+    }
+    public BookingViewDto findBookingDtoById(Long bookingId) {
+        Optional<BookingViewDto> booking = repository.findBookingDto(bookingId);
+        isPresent(booking);
+        return booking.get();
+    }
 }

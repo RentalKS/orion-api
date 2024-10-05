@@ -29,11 +29,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,14 +39,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class VehicleService extends BaseService {
-
     private final VehicleRepository repository;
     private final TenantService tenantService;
-    private final NotificationService notificationService;
     private final NativeQueryRepository nativeQueryRepository;
-    private final BookingService bookingService;
-    private final CustomerService customerService;
-    private final RentalService rentalService;
     private final UserService userService;
     private final VehicleMapper vehicleMapper;
     private final InsurancePolicyService insurancePolicyService;
@@ -166,7 +158,6 @@ public class VehicleService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-
     public Vehicle save(Vehicle vehicle) {
         try {
             return this.repository.save(vehicle);
@@ -175,7 +166,6 @@ public class VehicleService extends BaseService {
             throw new RuntimeException("Error saving vehicle.");
         }
     }
-
     public Boolean isVehicleOnMaintenance(Long id, LocalDateTime startDate, LocalDateTime endDate) {
         return repository.isVehicleOnMaintenance(id, startDate, endDate);
     }

@@ -27,21 +27,10 @@ public class CustomerDto {
     private String contactAgent;
     private List<Rental> rentals;
 
-    public CustomerDto(Long id, String name,String lastName, String email, String phoneNumber, String licenseNumber, List<Rental> rentals, String contactAgent) {
+    public CustomerDto(Long id, String name, String lastName, String email, String phoneNumber, String licenseNumber, String contactAgent) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.licenseNumber = licenseNumber;
-        this.rentals = rentals;
-        this.contactAgent= contactAgent;
-    }
-
-        public CustomerDto(Long id, String name,String lastName, String email, String phoneNumber, String licenseNumber, String contactAgent) {
-        this.id = id;
-        this.name = name;
-        this.lastName= lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.licenseNumber = licenseNumber;

@@ -1,5 +1,6 @@
 package com.orion.service.rental;
 
+import com.orion.dto.rental.RentalDto;
 import com.orion.entity.*;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
@@ -28,8 +29,13 @@ public class RentalService extends BaseService {
         rentalRepository.save(rental);
     }
 
-    public Rental findByBooking(Booking booking) {
-        Optional<Rental> optionalRental =  rentalRepository.findByBooking(booking);
+    public Rental findByBooking(Long bookingId) {
+        Optional<Rental> optionalRental =  rentalRepository.findByBooking(bookingId);
+        isPresent(optionalRental);
+        return optionalRental.get();
+    }
+    public RentalDto findByBookingDto(Long bookingId) {
+        Optional<RentalDto> optionalRental =  rentalRepository.findByBookingDto(bookingId);
         isPresent(optionalRental);
         return optionalRental.get();
     }

@@ -1,7 +1,9 @@
 package com.orion.repository;
 
+import com.orion.dto.rental.RentalDto;
 import com.orion.entity.Booking;
 import com.orion.entity.Rental;
+import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,8 +33,15 @@ List<Rental> findRentalsWithinDateRange(@Param("startDate") LocalDateTime startD
     Double findTotalRevenueByBookingId(@Param("bookingId") Long bookingId);
 
     @Query("Select r from Rental r where r.booking.id = :bookingId and r.deletedAt is null")
-    Optional<Rental> findByBooking(Booking booking);
+    Optional<Rental> findByBooking(@Param("bookingId") Long bookingId);
 
     @Query("Select r from Rental r where r.status = :vehicleStatus and r.deletedAt is null")
     List<Rental> findRentalsWaitingToStart(VehicleStatus vehicleStatus);
+
+    @Query("SELECT new com.orion.dto.rental.RentalDto(r.id, r.startDate, r.endDate, r.status, r.totalCost, r.vehicle.id, " +
+            "c.id, c.name, c.lastName, c.email, c.phoneNumber, c.licenseNumber, c.createdBy) " +
+            "FROM Rental r JOIN r.customer c " +
+            "WHERE r.booking.id = :bookingId " +
+            "AND r.deletedAt IS NULL AND r.booking.deletedAt IS NULL")
+    Optional<RentalDto> findByBookingDto(@Param("bookingId") Long bookingId);
 }

@@ -1,6 +1,10 @@
 package com.orion.service;
 
+import com.orion.dto.booking.BookingViewDto;
+import com.orion.dto.filter.BookingFilter;
+import com.orion.dto.rental.RentalDto;
 import com.orion.dto.reservation.ReservationDto;
+import com.orion.dto.vehicle.Available;
 import com.orion.entity.*;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
@@ -16,6 +20,7 @@ import com.orion.service.vehicle.VehicleService;
 import com.orion.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +29,12 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ReservationService {
+public class ReservationService extends BaseService {
     private final VehicleService vehicleService;
     private final BookingService bookingService;
     private final RentalService rentalService;
@@ -66,7 +72,6 @@ public class ReservationService {
 
             Booking booking = bookingService.createBooking(vehicle, customer, startDate, endDate, tenant);
             rentalService.createRental(vehicle, customer, startDate, endDate, tenant, totalCost, booking);
-
             notificationService.sendNotification(customer.getId(), reservationConfirmation, reservationConfirmed);
 
             responseObject.setData(booking.getId());
@@ -121,7 +126,7 @@ public class ReservationService {
         }
 
         bookingService.updateBookingStatus(booking, RentalStatus.CANCELLED, VehicleStatus.AVAILABLE);
-        Rental rental = rentalService.findByBooking(booking);
+        Rental rental = rentalService.findByBooking(booking.getId());
         rentalService.updateRentalStatus(rental, RentalStatus.CANCELLED, VehicleStatus.AVAILABLE);
 
 
@@ -129,16 +134,59 @@ public class ReservationService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    public ResponseObject checkAvailability(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseObject checkAvailability(Available available) {
         String methodName = "checkAvailability";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Vehicle vehicle = vehicleService.findById(vehicleId);
+        Vehicle vehicle = vehicleService.findById(available.getVehicleId());
 
-        boolean isNotAvailable = checkVehicleAvailability(vehicle, startDate, endDate);
+        boolean isNotAvailable = checkVehicleAvailability(vehicle, available.getStartDate(), available.getEndDate());
         responseObject.setData(isNotAvailable);
         responseObject.prepareHttpStatus(HttpStatus.OK);
+        return responseObject;
+    }
+
+    public ResponseObject getReservations(String currentEmail, BookingFilter filter, Integer page, Integer size,String search) {
+        String methodName = "getReservations";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+
+        try {
+            Page<BookingViewDto> bookings = bookingService.findBookingList(currentEmail,filter,page, size,search);
+
+            responseObject.setData(mapPage(bookings));
+            responseObject.prepareHttpStatus(HttpStatus.OK);
+        }catch (Exception e) {
+            log.error("Error getting reservations: {}", e.getMessage());
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
+        return responseObject;
+    }
+
+    public ResponseObject getReservationFromBookingId(Long bookingId) {
+        String methodName = "getReservation";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        BookingViewDto booking = bookingService.findBookingDtoById(bookingId);
+
+        responseObject.setData(booking);
+        responseObject.prepareHttpStatus(HttpStatus.OK);
+        return responseObject;
+    }
+
+    public ResponseObject getDetails(Long bookingId) {
+        String methodName = "details";
+        log.info("Entering: {}", methodName);
+        ResponseObject responseObject = new ResponseObject();
+        try {
+            RentalDto rental = rentalService.findByBookingDto(bookingId);
+            responseObject.setData(rental);
+            responseObject.prepareHttpStatus(HttpStatus.OK);
+        }catch (Exception e) {
+            log.error("Error getting reservation details: {}", e.getMessage());
+            throw new RuntimeException(e.getLocalizedMessage());
+        }
         return responseObject;
     }
 }
