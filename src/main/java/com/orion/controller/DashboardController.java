@@ -22,7 +22,7 @@ public class DashboardController {
         String methodName = "dashboard";
 
         log.info("{} -> Process dashboard", methodName);
-        ResponseObject response = dashboardService.getDashboardData(userDetails, infoDashboard);
+        ResponseObject response = dashboardService.getDashboardRentalData(userDetails, infoDashboard);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

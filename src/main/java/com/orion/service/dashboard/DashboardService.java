@@ -10,13 +10,14 @@ import com.orion.repository.UserRepository;
 import com.orion.repository.nativeQuery.DashboardNativeQueryRepository;
 import com.orion.security.CustomUserDetails;
 import com.orion.service.BaseService;
+import com.orion.service.customer.CustomerService;
+import com.orion.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,68 +25,42 @@ import java.util.Optional;
 @Log4j2
 @RequiredArgsConstructor
 public class DashboardService extends BaseService {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final DashboardNativeQueryRepository dashboardNativeQueryRepository;
+    private final CustomerService customerService;
 
-    public ResponseObject getDashboardData(CustomUserDetails userDetails, InfoDashboard fromTo) {
+    public ResponseObject getDashboardRentalData(CustomUserDetails userDetails, InfoDashboard fromTo) {
         String methodName = "getDashboardData";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<User> user = userRepository.findByEmail(userDetails.getUsername());
-        isPresent(user);
+        User user = userService.findByEmail(userDetails.getUsername());
 
         try {
-            List<Long> roleIds = new ArrayList<>();
-            roleIds.add(1L);
-            roleIds.add(2L);
-            roleIds.add(3L);
-            roleIds.add(4L);
-            roleIds.add(5L);
-            roleIds.add(6L);
-            Long userId;
-            List<Long> userIds = new ArrayList<>();
-            if(user.get().getRole().getName().equals("ADMIN)") || user.get().getRole().getName().equals("TENANT") || user.get().getRole().getName().equals("AGENCY") || user.get().getRole().getName().equals("AGENT") || user.get().getRole().getName().equals("CUSTOMER") || user.get().getRole().equals("DRIVER") || user.get().getRole().equals("MANAGER") || user.get().getRole().equals("OWNER") || user.get().getRole().equals("SUPERVISOR")) {
-                userIds.add(user.get().getId());
-            }
+            List<Long> userIds = userService.getUserIdsBasedOnRole(user);
+            List<ReservationDashboard> rentalInfo = dashboardNativeQueryRepository.getRentalDashboard(fromTo, userIds);
 
-            List<ReservationDashboard> leaderBoardList = dashboardNativeQueryRepository.getDashboard(fromTo, userIds);
-
-            responseObject.setData(leaderBoardList);
+            responseObject.setData(rentalInfo);
             responseObject.prepareHttpStatus(HttpStatus.OK);
 
-        }catch (Exception e) {
-            log.error("{} -> Total Rental And Dashboard For Tenant", methodName);
+        } catch (Exception e) {
+            log.error("{} -> Error fetching dashboard data: {}", methodName, e.getMessage(), e);
             throw new InternalException(e.getLocalizedMessage(), e.getCause());
         }
-        log.info("{} -> Total Rental Dashboard And Sales For Tenant, response status: {}", methodName,
-                responseObject.getCode());
+
+        log.info("{} -> Total Rental Dashboard And Sales For Tenant, response status: {}", methodName, responseObject.getCode());
         return responseObject;
     }
-
     public ResponseObject getVehiclesDashboardData(CustomUserDetails userDetails, InfoDashboard fromTo) {
         String methodName = "getDashboardData";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Optional<User> user = userRepository.findByEmail(userDetails.getUsername());
-        isPresent(user);
+        User user = userService.findByEmail(userDetails.getUsername());
 
         try {
-            List<Long> roleIds = new ArrayList<>();
-            roleIds.add(1L);
-            roleIds.add(2L);
-            roleIds.add(3L);
-            roleIds.add(4L);
-            roleIds.add(5L);
-            roleIds.add(6L);
-            Long userId;
-            List<Long> userIds = new ArrayList<>();
-            if(user.get().getRole().getName().equals("ADMIN)") || user.get().getRole().getName().equals("TENANT") || user.get().getRole().getName().equals("AGENCY") || user.get().getRole().getName().equals("AGENT") || user.get().getRole().getName().equals("CUSTOMER") || user.get().getRole().equals("DRIVER") || user.get().getRole().equals("MANAGER") || user.get().getRole().equals("OWNER") || user.get().getRole().equals("SUPERVISOR")) {
-                userIds.add(user.get().getId());
-            }
-
-//            List<VehicleDashboard> leaderBoardList = dashboardNativeQueryRepository.getVehicleDashboard(fromTo, userIds);
+            List<Long> userIds = userService.getUserIdsBasedOnRole(user);
+            List<VehicleDashboard> leaderBoardList = dashboardNativeQueryRepository.getVehicleDashboard(fromTo, userIds);
 
             responseObject.setData(null);
             responseObject.prepareHttpStatus(HttpStatus.OK);

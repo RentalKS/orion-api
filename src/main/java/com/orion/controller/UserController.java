@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,25 @@ public class UserController {
         ResponseObject responseObject = service.myProfile(applicationUserDetails.getUsername());
 
         log.info("{} -> Get my profile, response status: {}",methodName, responseObject.getCode());
+        return ResponseEntity.status(responseObject.getStatus()).body(responseObject);
+    }
+
+    @Operation(summary = "Get my users", description = "Returns my users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = UserData.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
+    @PreAuthorize("hasAuthority(@securityService.roleTenant)")
+    @GetMapping("/members")
+    public ResponseEntity getAgencyMembersForTenant() {
+        String methodName = "getAgencyMembersForTenant";
+
+        log.info("{} -> Get my users", methodName);
+        ResponseObject responseObject = service.myMembers();
+
+        log.info("{} -> Get my users, response status: {}",methodName, responseObject.getCode());
         return ResponseEntity.status(responseObject.getStatus()).body(responseObject);
     }
 }

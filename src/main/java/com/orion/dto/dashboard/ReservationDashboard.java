@@ -17,4 +17,7 @@ public class ReservationDashboard {
     private Long completedReservations;
     private Long pendingReservations;
     private Long canceledReservations;
+    private Double completedAmount;
+    private Double pendingAmount;
+    private Long waitingForPayment;
 }

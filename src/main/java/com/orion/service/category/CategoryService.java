@@ -102,7 +102,7 @@ public class CategoryService extends BaseService {
         List<String> emails = new ArrayList<>(Collections.singletonList(currentEmail));
 
         if(user.getRole().getName().equals(getRoleTenant())){
-           List<String> emailsOfAgencies = userService.findAgenciesOfTenant(user.getId());
+           List<String> emailsOfAgencies = userService.findUsersIdsByTenant(user.getId());
            emails.addAll(emailsOfAgencies);
         }
 

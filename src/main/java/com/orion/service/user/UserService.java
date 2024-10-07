@@ -10,6 +10,8 @@ import com.orion.repository.CompanyRepository;
 import com.orion.repository.UserRepository;
 import com.orion.dto.user.ChangePasswordRequest;
 import com.orion.service.BaseService;
+import com.orion.service.customer.CustomerService;
+import com.sun.jdi.InternalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +33,7 @@ public class UserService extends BaseService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
     private final CompanyRepository  companyRepository;
+    private final CustomerService customerService;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -64,8 +68,17 @@ public class UserService extends BaseService {
         return responseObject;
     }
 
-    public List<Long> getAgencyMembers(Long agencyId) {
-        return repository.findAllIdsByAgency(agencyId);
+    public ResponseObject myMembers(){
+        ResponseObject responseObject = new ResponseObject();
+        try {
+            List<UserData> users = repository.findUsersIdsByTenant(ConfigSystem.getTenant().getId());
+            responseObject.setData(Optional.ofNullable(users).orElse(List.of()));
+            responseObject.prepareHttpStatus(HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error fetching users: {}", e.getMessage(), e);
+            throw new InternalException(e.getLocalizedMessage());
+        }
+        return responseObject;
     }
 
     public UserData findUserDataByEmail(String email){
@@ -85,11 +98,25 @@ public class UserService extends BaseService {
         return user.get();
     }
 
-    public List<String> findAgenciesOfTenant(Long id) {
-        List<String> emailsOfAgencies = repository.findEmailsAgenciesByTenant(id);
-        if(emailsOfAgencies == null || emailsOfAgencies.isEmpty()){
+    public List<String> findUsersIdsByTenant(Long id) {
+        List<String> userEmails = repository.findEmailsOfUsersByTenant(id);
+        if(userEmails == null || userEmails.isEmpty()){
             return Collections.emptyList();
         }
-        return emailsOfAgencies;
+        return userEmails;
+    }
+    public List<Long> getUserIdsBasedOnRole(User user) {
+        List<Long> userIds = new ArrayList<>();
+
+        if (isTenant(user)) {
+            List<String> usersEmailsByTenant = findUsersIdsByTenant(user.getTenant().getId());
+            List<Long> customersFromUser = customerService.findCustomerIdsFromAgencies(usersEmailsByTenant);
+            userIds.addAll(customersFromUser);
+        } else if (isAgency(user)) {
+            List<Long> customersOfCurrentAgency = customerService.findCustomerIdsFromAgencies(Collections.singletonList(user.getEmail()));
+            userIds.addAll(customersOfCurrentAgency);
+        }
+
+        return userIds;
     }
 }

@@ -27,9 +27,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT ut FROM User ut WHERE ut.id=?1 AND ut.tenant.id=?2 AND ut.deletedAt IS null ")
     Optional<User> findByUserIdAndTenantIdAndDeletedAtIsNull(Long userId, Long tenantId);
 
-    @Query("SELECT u.id FROM User u WHERE u.id = :agencyId and u.role.name = 'AGENCY' and u.deletedAt is null")
-    List<Long> findAllIdsByAgency(Long agencyId);
-
     @Query("SELECT u.email from User u where u.tenant.id = :id and u.deactivatedAt is null and u.deletedAt is null ")
-    List<String> findEmailsAgenciesByTenant(Long id);
+    List<String> findEmailsOfUsersByTenant(Long id);
+
+    @Query("SELECT u.email from User u where u.tenant.id = :tenantId and u.deactivatedAt is null and u.deletedAt is null ")
+    List<String> findAgencyIdsByTenant(@Param("tenantId") Long tenantId);
+
+    @Query("SELECT new com.orion.dto.user.UserData(u.id, u.firstname,u.lastname, u.email,u.createdAt,u.role.name) " +
+            "FROM User u WHERE u.tenant.id = :id" +
+            " and u.deactivatedAt is null and u.deletedAt is null ")
+    List<UserData> findUsersIdsByTenant(@Param("tenantId") Long tenantId);
+
 }

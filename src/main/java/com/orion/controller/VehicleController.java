@@ -30,12 +30,12 @@ public class VehicleController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseObject> getAllVehicles(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                         @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+    public ResponseEntity<ResponseObject> getAllVehicles(@RequestBody VehicleFilter filter, @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                         @RequestParam("page") Integer page, @RequestParam("size") Integer size, @RequestParam("search") String search) {
         String methodName = "getAllVehicles";
 
         log.info("{} -> Get all vehicles", methodName);
-        ResponseObject response = service.getAll(customUserDetails.getUsername(),page,size);
+        ResponseObject response = service.getAll(filter,customUserDetails.getUsername(),page,size,search);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -45,16 +45,6 @@ public class VehicleController {
 
         log.info("{} -> Get vehicle", methodName);
         ResponseObject response = service.get(vehicleId);
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
-
-    @PostMapping("/filter-vehicles")
-    public ResponseEntity filterForOrders(@PathVariable("page") Integer page, @PathVariable("size") Integer size,
-                                          @RequestBody VehicleFilter filter) {
-        String methodName = "filterForOrders";
-
-        log.info("{} -> Filter vehicles", methodName);
-        ResponseObject response = service.filterVehicles(page, size, filter);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

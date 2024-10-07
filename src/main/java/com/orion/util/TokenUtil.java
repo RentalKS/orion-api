@@ -10,24 +10,28 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 
 public class TokenUtil {
 
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Use a strong secret key
+    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final String OBJECT_ID = "objectId";
+    private static final String TRANSACTION_ID = "transactionId";
 
     /**
      * Generates a JWT token containing rental ID and expiration time.
      *
-     * @param rentalId the rental ID to include in the token
+     * @param objectId the rental ID to include in the token
      * @param expirationMinutes the token's validity duration in minutes
      * @return a JWT token as a String
      */
-    public static String generateToken(Long rentalId, int expirationMinutes) {
+    public static String generateToken(Long objectId, int expirationMinutes,String transactionId) {
         Instant now = Instant.now();
-        Instant expiration = now.plusSeconds(expirationMinutes * 60);
+        Instant expiration = now.plusSeconds(expirationMinutes * 60L);
 
         return Jwts.builder()
-                .claim("rentalId", rentalId)
+                .claim(OBJECT_ID, objectId)
+                .claim(TRANSACTION_ID, transactionId)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiration))
                 .signWith(SECRET_KEY)
@@ -40,14 +44,24 @@ public class TokenUtil {
      * @param token the JWT token to validate
      * @return true if the token is valid, false otherwise
      */
-    public static boolean validateToken(String token) {
+    public static boolean validateToken(String token, Long objectId) {
         try {
-            Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
-            return true;
+            Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+
+            Date expirationDate = claims.getExpiration();
+
+            if (expirationDate.before(new Date())) {
+                return false;
+            }
+
+            Long compareObject = claims.get(OBJECT_ID, Long.class);
+
+            return objectId.equals(compareObject);
         } catch (Exception e) {
             return false;
         }
     }
+
 
     /**
      * Extracts the rental ID from a valid JWT token.
@@ -61,7 +75,16 @@ public class TokenUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.get("rentalId", Long.class);
+        return claims.get(OBJECT_ID, Long.class);
+    }
+
+    public static String extractTransactionId(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get(TRANSACTION_ID, String.class);
     }
 
     /**
@@ -73,4 +96,8 @@ public class TokenUtil {
     public static LocalDateTime getTokenExpirationTime(int minutes) {
         return LocalDateTime.now().plusMinutes(minutes);
     }
+    public static String generateTransactionId() {
+        return UUID.randomUUID().toString();
+    }
+
 }

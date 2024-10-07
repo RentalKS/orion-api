@@ -1,5 +1,6 @@
 package com.orion.generics;
 
+import com.orion.entity.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -41,4 +42,12 @@ public class SecurityService {
     public String getRoleEmployee() {
         return roleEmployee;
     }
+    protected boolean isTenant(User user) {
+        return user.getRole().getName().equals(getRoleTenant());
+    }
+
+    protected boolean isAgency(User user) {
+        return user.getRole().getName().equals(getRoleAgency());
+    }
+
 }

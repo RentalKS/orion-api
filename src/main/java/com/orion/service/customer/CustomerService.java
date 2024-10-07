@@ -118,4 +118,12 @@ public class CustomerService extends BaseService {
         }
         return null;
     }
+    public List<Long> findCustomerIdsFromAgencies(List<String> agencyEmails){
+        List<Long> customerIds = repository.findCustomerIdsFromAgencies(agencyEmails);
+
+        if(customerIds == null || customerIds.isEmpty()){
+            return Collections.emptyList();
+        }
+        return customerIds;
+    }
 }

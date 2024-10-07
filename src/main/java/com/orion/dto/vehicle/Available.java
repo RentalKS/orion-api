@@ -12,17 +12,9 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class Available {
-    @NotNull
     private Long vehicleId;
     private Long startDate;
     private Long endDate;
-
-    public Available(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate) {
-        this.vehicleId = vehicleId;
-        this.startDate = startDate != null ? DateUtil.localDateTimeToMilliseconds(startDate) : null;
-        this.endDate = endDate != null ? DateUtil.localDateTimeToMilliseconds(endDate) : null;
-    }
-
     public LocalDateTime getStartDate() {
         if(startDate == null) {
             return null;

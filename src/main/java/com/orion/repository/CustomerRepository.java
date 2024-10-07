@@ -31,4 +31,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT new com.orion.dto.customer.CustomerDto(c.id, c.name,c.lastName, c.email, c.phoneNumber, c.licenseNumber,c.createdBy) " +
             "FROM Customer c WHERE c.tenant.id = :tenantId and c.createdBy = :email and c.deletedAt is null")
     List<CustomerDto> findAllCustomersFromDto(@Param("tenantId") Long tenantId,@Param("email") String email);
+
+    @Query("SELECT c.id FROM Customer c WHERE c.createdBy IN :agencyEmails and c.deletedAt is null")
+    List<Long> findCustomerIdsFromAgencies(@Param("agencyEmails") List<String> agencyEmails);
 }

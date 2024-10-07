@@ -2,7 +2,10 @@ package com.orion.dto.vehicle;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.orion.dto.category.CategoryDto;
+import com.orion.dto.company.CompanyDto;
 import com.orion.dto.insurancePolicy.InsurancePolicyDto;
+import com.orion.dto.location.LocationDto;
 import com.orion.dto.maintenanceRecord.MaintenanceRecordDto;
 import com.orion.dto.model.ModelDto;
 import com.orion.dto.rates.RatesDto;
@@ -29,6 +32,8 @@ public class VehicleViewDto extends VehicleDto {
     private SectionDto section;
     private List<MaintenanceRecordDto> maintenanceRecord;
     private RentalStatus rentalStatus;
+    private CategoryDto category;
+    private LocationDto location;
     private String createdByName;
     private Long createdById;
     private Long insuranceId;
@@ -38,7 +43,10 @@ public class VehicleViewDto extends VehicleDto {
                           Double dailyRate, Double weeklyRate, Double monthlyRate, Long insuranceId, String policyNumber,
                           String providerName, String coverageDetails, Long vehicleId,
                           Long sectionId, LocalDateTime createdAtSection, String sectionName, String sectionDescription,
-                          String sectionImageUrl, Long categoryId,String createdByName, Long createdById) {
+                          String sectionImageUrl, Long categoryId,String createdByName, Long createdById,Long idCategory,
+                          LocalDateTime createdAtCategory,String categoryName,String categoryDescription,Long companyId,
+                          Long idLocation, LocalDateTime createdAtLocation, String address, String city, String state,
+                          String zipCode, String country, String tables) {
 
         this.createdAt = DateUtil.localDateTimeToMilliseconds(createdAt);
         this.id = id;
@@ -48,6 +56,8 @@ public class VehicleViewDto extends VehicleDto {
         this.section = new SectionDto(sectionId,createdAtSection,sectionName,sectionDescription,sectionImageUrl,categoryId);
         this.createdByName = createdByName;
         this.createdById = createdById;
+        this.category = new CategoryDto(idCategory,createdAtCategory,categoryName,categoryDescription,companyId);
+        this.location = new LocationDto(idLocation,createdAtLocation,address,city,state,zipCode,country,tables);
     }
 
     public VehicleViewDto(Long id, String registrationNumber, Long modelId, String year, FuelType fuelType, Long mileage, TransmissionType transmission, VehicleColor color, String description, String imageUrl, long locationId, Long rateId, String name, Double dailyRate, Double weeklyRate, Double monthlyRate,Long insuranceId,Long sectionId) {

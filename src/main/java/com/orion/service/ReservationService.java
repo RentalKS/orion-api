@@ -35,15 +35,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class ReservationService extends BaseService {
+    private final static String reservationConfirmation = "Reservation Confirmation";
+    private final static String reservationConfirmed = "Your reservation has been confirmed.";
+
     private final VehicleService vehicleService;
     private final BookingService bookingService;
     private final RentalService rentalService;
     private final CustomerService customerService;
     private final TenantService tenantService;
     private final NotificationService notificationService;
-
-    private final static String reservationConfirmation = "Reservation Confirmation";
-    private final static String reservationConfirmed = "Your reservation has been confirmed.";
     @Transactional
     public ResponseObject create(ReservationDto reservationDto) {
         String methodName = "createReservation";
@@ -110,7 +110,6 @@ public class ReservationService extends BaseService {
         double discountPercentage = 0.10;
         return totalCost * discountPercentage;
     }
-
     @Transactional
     public ResponseObject cancelReservation(Long bookingId) {
         String methodName = "cancelReservation";
@@ -142,7 +141,7 @@ public class ReservationService extends BaseService {
         Vehicle vehicle = vehicleService.findById(available.getVehicleId());
 
         boolean isNotAvailable = checkVehicleAvailability(vehicle, available.getStartDate(), available.getEndDate());
-        responseObject.setData(isNotAvailable);
+        responseObject.setData(!isNotAvailable);
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }

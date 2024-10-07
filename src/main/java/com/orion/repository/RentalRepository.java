@@ -44,4 +44,7 @@ List<Rental> findRentalsWithinDateRange(@Param("startDate") LocalDateTime startD
             "WHERE r.booking.id = :bookingId " +
             "AND r.deletedAt IS NULL AND r.booking.deletedAt IS NULL")
     Optional<RentalDto> findByBookingDto(@Param("bookingId") Long bookingId);
+
+    @Query("SELECT r FROM Rental r WHERE r.id = :rentalId AND r.tenant.id = :tenantId")
+    Optional<Rental> findById(@Param("rentalId") Long rentalId, @Param("tenantId") Long tenantId);
 }

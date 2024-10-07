@@ -32,6 +32,9 @@ public class Payment extends BaseEntity {
     @Column(name = "transaction_id", unique = true)
     private String transactionId;
 
+    @Column(name = "signature")
+    private String signature;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;

@@ -65,7 +65,7 @@ public class ReservationController {
     }
 
     @PostMapping("/availability")
-    public ResponseEntity<ResponseObject> checkAvailability(@Valid @RequestBody Available available) {
+    public ResponseEntity<ResponseObject> checkAvailability(@RequestBody Available available) {
         String methodName = "checkAvailability";
         log.info("{} -> Check availability", methodName);
         ResponseObject response = service.checkAvailability(available);
