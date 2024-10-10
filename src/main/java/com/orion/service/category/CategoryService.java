@@ -1,5 +1,6 @@
 package com.orion.service.category;
 
+import com.orion.dto.section.SectionDto;
 import com.orion.entity.User;
 import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.tenant.ConfigSystem;
@@ -10,10 +11,13 @@ import com.orion.entity.Tenant;
 import com.orion.repository.CategoryRepository;
 import com.orion.service.BaseService;
 import com.orion.service.company.CompanyService;
+import com.orion.service.section.SectionService;
 import com.orion.service.user.TenantService;
 import com.orion.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +32,10 @@ public class CategoryService extends BaseService {
     private final CategoryRepository categoryRepository;
     private final CompanyService companyService;
     private final UserService userService;
+
+    @Autowired
+    @Lazy
+    private SectionService sectionService;
 
     public ResponseObject createCategory(CategoryDto categoryDto) {
         String methodName = "createCategory";
@@ -57,6 +65,8 @@ public class CategoryService extends BaseService {
 
         Optional<CategoryDto> category = categoryRepository.findCategoryByIdFromDto(categoryId,ConfigSystem.getTenant().getId(),currentEmail);
         isPresent(category);
+        List<SectionDto> sectionList = sectionService.findSectionsFromCategory(categoryId);
+        category.get().setSectionList(Optional.ofNullable(sectionList).orElse(Collections.emptyList()));
 
         responseObject.setData(category.get());
         responseObject.prepareHttpStatus(HttpStatus.OK);
@@ -107,8 +117,14 @@ public class CategoryService extends BaseService {
         }
 
         List<CategoryDto> categoryDto = categoryRepository.findAllCategory(ConfigSystem.getTenant().getId(),emails);
+        if(!categoryDto.isEmpty()){
+            for(CategoryDto category:categoryDto){
+                List<SectionDto> sectionList = sectionService.findSectionsFromCategory(category.getId());
+                category.setSectionList(Optional.ofNullable(sectionList).orElse(Collections.emptyList()));
+            }
+        }
 
-        responseObject.setData(Optional.ofNullable(categoryDto).orElse(Collections.emptyList()));
+        responseObject.setData(Optional.of(categoryDto).orElse(Collections.emptyList()));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }

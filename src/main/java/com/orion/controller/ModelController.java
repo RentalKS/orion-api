@@ -31,11 +31,13 @@ public class ModelController {
 
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/all")
-    public ResponseEntity<ResponseObject> getAllModel(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ResponseObject> getAllModel(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                      @RequestParam(defaultValue = "1") int page,
+                                                      @RequestParam(defaultValue = "10") int size) {
         String methodName = "getAllModel";
 
         log.info("{} -> Get all model", methodName);
-        ResponseObject response = modelService.getAllModels(customUserDetails.getUsername());
+        ResponseObject response = modelService.getAllModels(customUserDetails.getUsername(), page, size);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

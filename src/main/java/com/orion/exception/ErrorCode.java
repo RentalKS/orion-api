@@ -22,7 +22,8 @@ public enum ErrorCode {
     WRONG_STATUS(2011, "The order status type is incorrect."),
     ONLY_PUBLISHED_OR_DRAFT(2012, "The template status must be either published or draft."),
     VEHICLE_NOT_AVAILABLE(2013, "The vehicle is not available."),
-    PAYMENT_STATUS_ERROR(2013, "The vehicle status is incorrect.");
+    PAYMENT_STATUS_ERROR(2013, "The vehicle status is incorrect."),
+    BRAND_NOT_FOUND(2014, "The brand could not be found.");
 
     @Getter
     private final int code;

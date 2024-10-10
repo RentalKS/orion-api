@@ -64,15 +64,13 @@ public class LocationService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject getAllLocations(String currentEmail, Integer page, Integer size) {
+    public ResponseObject getAllLocations(String currentEmail, int page, int size) {
         String methodName = "getAllLocations";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
         Long tenantId = ConfigSystem.getTenant().getId();
 
-        Pageable pageable = PageRequest.of(
-                page != null ? page - 1 : 1,
-                size != null ? size : 10,
+        Pageable pageable = PageRequest.of(page-1,size,
                 Sort.by("id").descending());
 
         Page<LocationDto> locationDtoList = locationRepository.findAllLocationsByTenant(tenantId,currentEmail,pageable);

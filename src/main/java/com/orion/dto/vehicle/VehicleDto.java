@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @NoArgsConstructor
 public class VehicleDto {
+    private Long id;
     @NotNull
     private Long modelId;
     @NotNull
@@ -38,12 +39,28 @@ public class VehicleDto {
 //    @NotBlank
     private MultipartFile image;
     @NotNull
-    private InsurancePolicyDto insurancePolicyDto;
+    private InsurancePolicyDto insurancePolicyList;
 
     private String description;
     private String imageUrl;
 
     public VehicleDto(Long locationId, Long rateId, Long sectionId, String registrationNumber, String year, FuelType fuelType, Long mileage, TransmissionType transmission, VehicleColor color, String description, String imageUrl) {
+        this.locationId = locationId;
+        this.rateId = rateId;
+        this.sectionId = sectionId;
+        this.registrationNumber = registrationNumber;
+        this.year = year;
+        this.fuelType = fuelType;
+        this.mileage = mileage;
+        this.transmission = transmission;
+        this.color = color;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
+
+    public VehicleDto(Long id,Long locationId, Long rateId, Long sectionId, String registrationNumber, String year, FuelType fuelType, Long mileage, TransmissionType transmission, VehicleColor color, String description, String imageUrl) {
+        this.id = id;
         this.locationId = locationId;
         this.rateId = rateId;
         this.sectionId = sectionId;

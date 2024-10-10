@@ -1,10 +1,10 @@
 package com.orion.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.orion.enums.BrandAccess;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 import java.util.List;
 
 @Entity
@@ -14,7 +14,8 @@ import java.util.List;
 public class Brand extends BaseEntity {
 
     @Column(name = "name", nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private BrandAccess name;
 
     @Column(name = "logo")
     private String logo;
@@ -31,10 +32,10 @@ public class Brand extends BaseEntity {
     private Tenant tenant;
 
     public String getName() {
-        return name;
+        return name.name();
     }
 
-    public void setName(String name) {
+    public void setName(BrandAccess name) {
         this.name = name;
     }
 

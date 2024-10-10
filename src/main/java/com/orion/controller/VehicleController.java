@@ -31,7 +31,8 @@ public class VehicleController {
 
     @PostMapping("/all")
     public ResponseEntity<ResponseObject> getAllVehicles(@RequestBody VehicleFilter filter, @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                         @RequestParam("page") Integer page, @RequestParam("size") Integer size, @RequestParam("search") String search) {
+                                                         @RequestParam(value = "page",defaultValue = "1") Integer page,
+                                                         @RequestParam(value = "size",defaultValue = "10") Integer size, @RequestParam("search") String search) {
         String methodName = "getAllVehicles";
 
         log.info("{} -> Get all vehicles", methodName);

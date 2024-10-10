@@ -31,8 +31,8 @@ public class ReservationController {
     @PostMapping("/all")
     public ResponseEntity<ResponseObject> getReservations(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                           @RequestBody BookingFilter filter,
-                                                          @RequestParam(required = false) Integer page,
-                                                          @RequestParam(required = false) Integer size,
+                                                          @RequestParam(defaultValue = "1") int page,
+                                                          @RequestParam(defaultValue = "10") int size,
                                                           @RequestParam(required = false) String search) {
         String methodName = "getReservations";
         log.info("{} -> Get reservations", methodName);

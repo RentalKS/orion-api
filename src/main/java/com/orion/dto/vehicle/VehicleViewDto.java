@@ -10,6 +10,7 @@ import com.orion.dto.maintenanceRecord.MaintenanceRecordDto;
 import com.orion.dto.model.ModelDto;
 import com.orion.dto.rates.RatesDto;
 import com.orion.dto.section.SectionDto;
+import com.orion.enums.model.ModelAccess;
 import com.orion.enums.vehicle.*;
 import com.orion.util.DateUtil;
 import lombok.Getter;
@@ -39,13 +40,13 @@ public class VehicleViewDto extends VehicleDto {
     private Long createdById;
     private Long insuranceId;
 
-    public VehicleViewDto(LocalDateTime createdAt, Long id, Long modelId, String modelName, Long brandId, String type,
+    public VehicleViewDto(LocalDateTime createdAt, Long id, Long modelId, ModelAccess modelName, Long brandId, String type,
                           Long seatingCapacity, String fuelEfficiency, String modelImageUrl, Long rateId, String name,
                           Double dailyRate, Double weeklyRate, Double monthlyRate, Long insuranceId, String policyNumber,
                           String providerName, String coverageDetails, Long vehicleId,
                           Long sectionId, LocalDateTime createdAtSection, String sectionName, String sectionDescription,
-                          String sectionImageUrl, Long categoryId,String createdByName, Long createdById,Long idCategory,
-                          LocalDateTime createdAtCategory,String categoryName,String categoryDescription,Long companyId,
+                          String sectionImageUrl, Long categoryId, String createdByName, Long createdById, Long idCategory,
+                          LocalDateTime createdAtCategory, String categoryName, String categoryDescription, Long companyId,
                           Long idLocation, LocalDateTime createdAtLocation, String address, String city, String state,
                           String zipCode, String country, String tables) {
 
@@ -65,7 +66,7 @@ public class VehicleViewDto extends VehicleDto {
                           String year, FuelType fuelType, Long mileage,
                           TransmissionType transmission, VehicleColor color,
                           String description, String imageUrl,
-                          long locationId, Long rateId, Long insuranceId,Long sectionId, VehicleStatus vehicleStatus,Long idModel, String name, Long brandId, String type, Long seatingCapacity, String fuelEfficiency,String modelImageUrl) {
+                          long locationId, Long rateId, Long insuranceId,Long sectionId, VehicleStatus vehicleStatus,Long idModel, ModelAccess name, Long brandId, String type, Long seatingCapacity, String fuelEfficiency,String modelImageUrl) {
         super(locationId, rateId,sectionId, registrationNumber, year, fuelType, mileage, transmission, color, description, imageUrl);
         this.id = id;
         this.insuranceId = insuranceId;

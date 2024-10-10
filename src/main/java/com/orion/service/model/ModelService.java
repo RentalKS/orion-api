@@ -1,5 +1,6 @@
 package com.orion.service.model;
 
+import com.orion.dto.vehicle.VehicleDto;
 import com.orion.entity.Brand;
 import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.cloudinary.FileUploadService;
@@ -8,18 +9,20 @@ import com.orion.dto.model.ModelDto;
 import com.orion.entity.Model;
 import com.orion.entity.Tenant;
 import com.orion.repository.ModelRepository;
-import com.orion.repository.TenantRepository;
 import com.orion.service.BaseService;
 import com.orion.service.brand.BrandService;
 import com.orion.service.user.TenantService;
-import com.orion.util.DtoUtils;
+import com.orion.service.vehicle.VehicleService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -27,13 +30,24 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+
 @Log4j2
 public class ModelService extends BaseService {
     private final ModelRepository modelRepository;
     private final TenantService tenantService;
     private final BrandService brandService;
     private final FileUploadService fileUploadService;
+
+    @Autowired
+    @Lazy
+    private VehicleService vehicleService;
+
+    public ModelService(ModelRepository modelRepository, TenantService tenantService, BrandService brandService, FileUploadService fileUploadService) {
+        this.modelRepository = modelRepository;
+        this.tenantService = tenantService;
+        this.brandService = brandService;
+        this.fileUploadService = fileUploadService;
+    }
 
     public Model findModelById(Long modelId){
          Optional<Model> model = modelRepository.findModelById(modelId,ConfigSystem.getTenant().getId());
@@ -46,7 +60,7 @@ public class ModelService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
         
         Tenant tenant = tenantService.findById();
-        Brand brand = brandService.findById(modelDto.getBrandId());
+        Brand brand = brandService.findByModelName(modelDto.getName());
 
         Model model = new Model();
         model.setName(modelDto.getName());
@@ -70,10 +84,10 @@ public class ModelService extends BaseService {
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Tenant tenant = tenantService.findById();
-
-        Optional<ModelDto> model = modelRepository.findModelByIdFromDto(modelId, tenant.getId());
+        Optional<ModelDto> model = modelRepository.findModelByIdFromDto(modelId, ConfigSystem.getTenant().getId());
         isPresent(model);
+        List<VehicleDto> vehicleDtoList = vehicleService.findVehiclesFromModel(modelId);
+        model.get().setVehicles(vehicleDtoList);
 
         responseObject.setData(model.get());
         responseObject.prepareHttpStatus(HttpStatus.OK);
@@ -114,15 +128,25 @@ public class ModelService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject getAllModels(String currentEmail) {
+    public ResponseObject getAllModels(String currentEmail,Integer page,Integer size) {
         String methodName = "getAllModels";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
         Tenant tenant = tenantService.findById();
 
-        List<ModelDto> models = modelRepository.findAllModelsByTenantId(tenant.getId(),currentEmail);
-        responseObject.setData(models);
+        Pageable pageable = PageRequest.of(page -1, size,
+                Sort.by("id").descending());
+
+
+        Page<ModelDto> models = modelRepository.findAllModelsByTenantId(tenant.getId(),currentEmail,pageable);
+        if(!models.isEmpty()){
+            models.forEach(modelDto -> {
+                List<VehicleDto> vehicleDtoList = vehicleService.findVehiclesFromModel(modelDto.getId());
+                modelDto.setVehicles(vehicleDtoList);
+            });
+        }
+        responseObject.setData(mapPage(models));
         responseObject.prepareHttpStatus(HttpStatus.OK);
 
         return responseObject;

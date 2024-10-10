@@ -1,6 +1,7 @@
 package com.orion.repository;
 
 import com.orion.dto.maintenanceRecord.MaintenanceRecordDto;
+import com.orion.dto.vehicle.VehicleDto;
 import com.orion.dto.vehicle.VehicleViewDto;
 import com.orion.entity.Vehicle;
 import com.orion.enums.vehicle.VehicleStatus;
@@ -120,4 +121,13 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
             "from MaintenanceRecord m " +
             "where m.vehicle.id = :vehicleId")
     List<MaintenanceRecordDto> findMaintenanceRecord(Long vehicleId);
+
+
+    @Query("SELECT new com.orion.dto.vehicle.VehicleDto(v.id,v.location.id,v.rateDates.id,v.section.id,v.registrationNumber,v.year,v.fuelType,v.mileage,v.transmission,v.color,v.description,v.image)" +
+            " from Vehicle v where v.model.id = :modelId and v.tenant.id = :tenantId and v.deletedAt is null and v.deactivatedAt is null")
+    List<VehicleDto> findVehiclesFromModel(@Param("modelId") Long modelId, @Param("tenantId") Long tenantId);
+
+    @Query("SELECT new com.orion.dto.vehicle.VehicleDto(v.id,v.location.id,v.rateDates.id,v.section.id,v.registrationNumber,v.year,v.fuelType,v.mileage,v.transmission,v.color,v.description,v.image)" +
+            " from Vehicle v where v.section.id = :sectionId and v.tenant.id = :tenantId and v.deletedAt is null and v.deactivatedAt is null")
+    List<VehicleDto> findVehiclesFromSection(@Param("sectionId") Long sectionId, @Param("tenantId") Long tenantId);
 }

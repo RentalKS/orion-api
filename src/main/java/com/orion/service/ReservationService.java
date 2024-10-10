@@ -140,7 +140,7 @@ public class ReservationService extends BaseService {
         return responseObject;
     }
 
-    public ResponseObject getReservations(String currentEmail, BookingFilter filter, Integer page, Integer size,String search) {
+    public ResponseObject getReservations(String currentEmail, BookingFilter filter, int page, int size,String search) {
         String methodName = "getReservations";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();

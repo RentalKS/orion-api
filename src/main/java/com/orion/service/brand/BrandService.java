@@ -3,6 +3,9 @@ import com.orion.dto.brand.BrandDto;
 import com.orion.dto.model.ModelDto;
 import com.orion.entity.Brand;
 import com.orion.entity.Tenant;
+import com.orion.enums.model.ModelAccess;
+import com.orion.exception.ErrorCode;
+import com.orion.exception.ThrowException;
 import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.cloudinary.FileUploadService;
 import com.orion.infrastructure.tenant.ConfigSystem;
@@ -119,5 +122,11 @@ public class BrandService extends BaseService {
         responseObject.setData(true);
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
+    }
+
+    public Brand findByModelName(ModelAccess model) {
+        Optional<Brand> brand = brandRepository.findBrandIdByModelName(model.getBrand(), ConfigSystem.getTenant().getId());
+        ThrowException.throwNotFoundApiException(ErrorCode.BRAND_NOT_FOUND);
+        return brand.get();
     }
 }

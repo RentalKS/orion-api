@@ -44,9 +44,7 @@ public class BookingService extends BaseService {
     }
     public Page<BookingViewDto> findBookingList(String currentEmail, BookingFilter filter, Integer page, Integer size, String search) {
 
-        Pageable pageable = PageRequest.of(
-                page != null ? page - 1 : 1,
-                size != null ? size : 10,
+        Pageable pageable = PageRequest.of(page - 1,size,
                 Sort.by("id").descending());
 
         return repository.findBookingsByCustomer(

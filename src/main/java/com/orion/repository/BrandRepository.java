@@ -2,6 +2,8 @@ package com.orion.repository;
 
 import com.orion.dto.brand.BrandDto;
 import com.orion.entity.Brand;
+import com.orion.enums.BrandAccess;
+import com.orion.enums.model.ModelAccess;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +20,7 @@ public interface BrandRepository extends JpaRepository<Brand,Long> {
 
     @Query("SELECT new com.orion.dto.brand.BrandDto(b.id,b.name,b.logo,b.description) from Brand b where b.tenant.id = ?1 and b.createdBy = ?2")
     List<BrandDto> findAllBrandsByTenant(Long tenantId, String currentEmail);
+
+    @Query("SELECT b from Brand b where b.name = ?1 and b.tenant.id = ?2 and b.deletedAt is null")
+    Optional<Brand> findBrandIdByModelName(@Param("brandName") BrandAccess brandName, @Param("tenantId") Long tenantId);
 }

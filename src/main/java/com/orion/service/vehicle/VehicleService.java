@@ -41,7 +41,7 @@ public class VehicleService extends BaseService {
         vehicle.setUser(user);
         this.save(vehicle);
 
-        InsurancePolicy insurancePolicy = insurancePolicyService.createFromVehicle(vehicle, vehicleDto.getInsurancePolicyDto());
+        InsurancePolicy insurancePolicy = insurancePolicyService.createFromVehicle(vehicle, vehicleDto.getInsurancePolicyList());
         vehicle.setInsurancePolicy(insurancePolicy);
         this.save(vehicle);
 
@@ -67,14 +67,12 @@ public class VehicleService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    public ResponseObject getAll(VehicleFilter vehicleFilter,String currentEmail, Integer page, Integer size,String search) {
+    public ResponseObject getAll(VehicleFilter vehicleFilter,String currentEmail, int page, int size,String search) {
         String methodName = "getAllVehicles";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        Pageable pageable = PageRequest.of(
-                page != null ? page - 1 : 1,
-                size != null ? size : 10,
+        Pageable pageable = PageRequest.of(page -1, size,
                 Sort.by("id").descending());
         User user = userService.findByEmail(currentEmail);
 
@@ -169,5 +167,21 @@ public class VehicleService extends BaseService {
     }
     public Boolean isVehicleOnMaintenance(Long id, LocalDateTime startDate, LocalDateTime endDate) {
         return repository.isVehicleOnMaintenance(id, startDate, endDate);
+    }
+
+    public List<VehicleDto> findVehiclesFromModel(Long modelId) {
+        List<VehicleDto> vehicleDtoList= repository.findVehiclesFromModel(modelId,ConfigSystem.getTenant().getId());
+        if(vehicleDtoList.isEmpty()){
+            return List.of();
+        }
+        return vehicleDtoList;
+    }
+
+    public List<VehicleDto> findVehiclesFromSection(Long sectionId) {
+        List<VehicleDto> vehicleDtoList= repository.findVehiclesFromSection(sectionId,ConfigSystem.getTenant().getId());
+        if(vehicleDtoList.isEmpty()){
+            return List.of();
+        }
+        return vehicleDtoList;
     }
 }

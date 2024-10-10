@@ -38,7 +38,8 @@ public class LocationController {
     }
     @GetMapping
     public ResponseEntity<ResponseObject> getAllLocations(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                          @RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+                                                          @RequestParam(value = "page",defaultValue = "1") Integer page,
+                                                          @RequestParam(value = "size",defaultValue = "10") Integer size) {
         String methodName = "getAll";
 
         log.info("{} -> Get all location", methodName);

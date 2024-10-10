@@ -17,4 +17,9 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
     @Query("select new com.orion.dto.section.SectionDto(s.id, s.createdAt, s.sectionName, s.sectionDescription, s.sectionImage, s.category.id) " +
             "from Section s where s.deletedAt is null and s.tenant.id = :tenantId and s.createdBy = :email ")
     List<SectionDto> findAllSections(@Param("tenantId") Long tenantId,@Param("email") String email);
+
+
+    @Query("select new com.orion.dto.section.SectionDto(s.id, s.createdAt, s.sectionName, s.sectionDescription, s.sectionImage, s.category.id) " +
+            "from Section s where s.category.id = :id and s.deletedAt is null and s.tenant.id = :id1")
+    List<SectionDto> findSectionsFromCategory(Long id, Long id1);
 }

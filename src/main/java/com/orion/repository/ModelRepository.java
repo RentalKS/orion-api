@@ -2,6 +2,8 @@ package com.orion.repository;
 
 import com.orion.dto.model.ModelDto;
 import com.orion.entity.Model;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +18,7 @@ public interface ModelRepository extends JpaRepository<Model, Long> {
 
     @Query("SELECT new com.orion.dto.model.ModelDto(m.id, m.name, m.brand.id, m.type, m.seatingCapacity, m.fuelEfficiency,m.modelImage) " +
            "FROM Model m WHERE m.tenant.id = :tenantId and m.createdBy = :email")
-    List<ModelDto> findAllModelsByTenantId(@Param("tenantId") Long tenantId, @Param("email") String email);
+    Page<ModelDto> findAllModelsByTenantId(@Param("tenantId") Long tenantId, @Param("email") String email, Pageable pageable);
 
     @Query("SELECT m FROM Model m WHERE m.id = :modelId and m.tenant.id = :tenantId")
     Optional<Model> findModelById(@Param("modelId") Long modelId, @Param("tenantId") Long tenantId);

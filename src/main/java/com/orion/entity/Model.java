@@ -1,11 +1,14 @@
 package com.orion.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.orion.enums.model.ModelAccess;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -14,7 +17,8 @@ import lombok.Setter;
 public class Model extends BaseEntity {
 
     @Column(name = "name", nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private ModelAccess name;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,15 +40,20 @@ public class Model extends BaseEntity {
     @Column(name = "model_image")
     private String modelImage;
 
+    @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Vehicle> vehicles;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
 
     public String getName() {
-        return name;
+        return name.getModelName();
     }
 
-    public void setName(String name) {
+    public void setName(ModelAccess name) {
         this.name = name;
     }
 
@@ -102,5 +111,13 @@ public class Model extends BaseEntity {
 
     public void setTenant(Tenant tenant) {
         this.tenant = tenant;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
     }
 }
