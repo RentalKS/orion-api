@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,4 +57,9 @@ public class RentalService extends BaseService {
             return null;
         }
     }
+    public List<Rental> findRentalsWaitingToStart(){
+        List<Rental> rentalsStartingNow = repository.findRentalsWaitingToStart(RentalStatus.WAITING_FOR_START,VehicleStatus.WAITING_TO_START);
+        return Optional.ofNullable(rentalsStartingNow).orElse(List.of());
+    }
+
 }

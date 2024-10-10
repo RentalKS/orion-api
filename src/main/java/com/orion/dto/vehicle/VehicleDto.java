@@ -43,8 +43,7 @@ public class VehicleDto {
     private String description;
     private String imageUrl;
 
-    public VehicleDto(Long modelId, Long locationId, Long rateId, Long sectionId, String registrationNumber, String year, FuelType fuelType, Long mileage, TransmissionType transmission, VehicleColor color, String description, String imageUrl) {
-        this.modelId = modelId;
+    public VehicleDto(Long locationId, Long rateId, Long sectionId, String registrationNumber, String year, FuelType fuelType, Long mileage, TransmissionType transmission, VehicleColor color, String description, String imageUrl) {
         this.locationId = locationId;
         this.rateId = rateId;
         this.sectionId = sectionId;

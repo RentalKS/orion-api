@@ -57,6 +57,9 @@ public class DashboardMapper {
             if (objects[12] != null)
                 dashboard.setWaitingForPayment(Long.valueOf(String.valueOf(objects[12])));
 
+            if (objects[13] != null)
+                dashboard.setOnGoing(Long.valueOf(String.valueOf(objects[13])));
+
             rentalDashboardList.add(dashboard);
         }
 

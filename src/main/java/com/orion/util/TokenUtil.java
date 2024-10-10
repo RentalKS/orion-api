@@ -1,9 +1,11 @@
 package com.orion.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
@@ -70,20 +72,46 @@ public class TokenUtil {
      * @return the rental ID if present, null otherwise
      */
     public static Long extractRentalId(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims;
+        try {
+            claims = Jwts.parserBuilder()
+                    .setSigningKey(SECRET_KEY)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (SignatureException e) {
+            System.err.println("Invalid JWT signature: " + e.getMessage());
+            throw new RuntimeException("Invalid signature", e);
+        } catch (ExpiredJwtException e) {
+            System.err.println("JWT token is expired: " + e.getMessage());
+            throw new RuntimeException("Token expired", e);
+        } catch (Exception e) {
+            System.err.println("Error parsing JWT token: " + e.getMessage());
+            throw new RuntimeException("Error parsing token", e);
+        }
+
         return claims.get(OBJECT_ID, Long.class);
     }
 
     public static String extractTransactionId(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims;
+        try {
+            claims = Jwts.parserBuilder()
+                    .setSigningKey(SECRET_KEY)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (SignatureException e) {
+            System.err.println("Invalid JWT signature: " + e.getMessage());
+            throw new RuntimeException("Invalid signature", e);
+        } catch (ExpiredJwtException e) {
+            System.err.println("JWT token is expired: " + e.getMessage());
+            throw new RuntimeException("Token expired", e);
+        } catch (Exception e) {
+            System.err.println("Error parsing JWT token: " + e.getMessage());
+            throw new RuntimeException("Error parsing token", e);
+        }
+
         return claims.get(TRANSACTION_ID, String.class);
     }
 

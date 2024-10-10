@@ -75,8 +75,9 @@ public class ReportingService {
                 })
             ));
 
+        //TODO: Implement overdue rentals
         List<String> overdueRentals = bookings.stream()
-                .filter(b -> b.getEndDate().isBefore(LocalDateTime.now()) && b.getStatus() != RentalStatus.COMPLETED)
+                .filter(b -> b.getEndDate().isBefore(LocalDateTime.now()))
                 .map(b -> "Booking ID: " + b.getId() + ", Customer: " + b.getCustomer().getName())
                 .collect(Collectors.toList());
 

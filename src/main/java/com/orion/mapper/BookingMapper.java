@@ -17,7 +17,6 @@ public class BookingMapper {
         booking.setCustomer(customer);
         booking.setStartDate(startDate);
         booking.setEndDate(endDate);
-        booking.setBookingStatus(VehicleStatus.RESERVED);
         booking.setTenant(tenant);
         return booking;
     }

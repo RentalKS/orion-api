@@ -11,6 +11,7 @@ import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.cloudinary.FileUploadService;
 import com.orion.mapper.PaymentMapper;
 import com.orion.service.BaseService;
+import com.orion.service.bookingService.BookingService;
 import com.orion.service.rental.RentalService;
 import com.orion.util.mail.EmailService;
 import com.orion.repository.*;
@@ -35,6 +36,7 @@ public class PaymentService extends BaseService {
     private final RentalService rentalService;
     private final EmailService emailService;
     private final PaymentMapper paymentMapper;
+    private final BookingService bookingService;
     private final FileUploadService fileUploadService;
 
     @Transactional
@@ -45,6 +47,7 @@ public class PaymentService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
         String transactionId = generateTransactionId();
         Rental rental = rentalService.findById(paymentDto.getRentalId());
+        validateVehicleStatus(rental.getVehicleStatus());
         Payment payment = paymentMapper.createPayment(rental, paymentDto.getPaymentMethod(),transactionId);
 
         try {
@@ -60,6 +63,11 @@ public class PaymentService extends BaseService {
         return responseObject;
     }
 
+    private void validateVehicleStatus(VehicleStatus status) {
+        if (status != VehicleStatus.RESERVED) {
+            ThrowException.throwBadRequestApiException(ErrorCode.PAYMENT_STATUS_ERROR, List.of("Vehicle is not reserved."));
+        }
+    }
     private Payment save(Payment payment) {
         try {
             return this.repository.save(payment);
@@ -75,6 +83,8 @@ public class PaymentService extends BaseService {
         LocalDateTime expirationTime = TokenUtil.getTokenExpirationTime(TOKEN_EXPIRATION_MINUTES);
 
         emailService.sendAgreementEmail(confirmationEmail, token, expirationTime);
+        log.info("Agreement email sent to {}. Transaction ID: {}", confirmationEmail, transactionId);
+        log.info("Token: {}", token);
         payment.setStatus(PaymentStatus.PENDING);
         payment = this.save(payment);
 
@@ -102,26 +112,32 @@ public class PaymentService extends BaseService {
         isStatusCompleted(rental.getStatus());
 
         try {
-            rentalService.updateRentalStatus(rental, RentalStatus.ONGOING, VehicleStatus.RENTED);
-            updatePaymentStatus(transactionId, paymentDto.getSignature());
+            rentalService.updateRentalStatus(rental, RentalStatus.WAITING_FOR_START, VehicleStatus.WAITING_TO_START);
+            updatePaymentStatus(transactionId, paymentDto.getSignature(),PaymentStatus.SUCCESS);
 
             responseObject.setData("Rental agreement successfully signed and completed.");
             responseObject.prepareHttpStatus(HttpStatus.OK);
 
         }catch (Exception e){
-            log.error("Failed to complete rental agreement. Error: {}", e.getMessage());
-            rentalService.updateRentalStatus(rental, RentalStatus.WAITING_FOR_PAYMENT, VehicleStatus.RESERVED);
-            responseObject.setData("Failed to complete rental agreement. Please try again.");
-            responseObject.prepareHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            failPayment(rental, transactionId);
+            throw new RuntimeException("Failed to complete rental agreement. Error: " + e.getMessage());
         }
 
         log.info("Exiting: {}", methodName);
         return responseObject;
     }
-    private void updatePaymentStatus(String transactionId, String signature) {
+    private void failPayment(Rental rental, String transactionId) {
+        rentalService.updateRentalStatus(rental, RentalStatus.WAITING_FOR_PAYMENT, VehicleStatus.RESERVED);
+        updatePaymentStatus(transactionId, null,PaymentStatus.FAILED);
+    }
+    private void updatePaymentStatus(String transactionId, String signature,PaymentStatus status) {
         Payment payment = findByTransactionId(transactionId);
-        payment.setStatus(PaymentStatus.SUCCESS);
-        String signatureUrl = fileUploadService.uploadSignatureToCloudinary(signature);
+        String signatureUrl = null;
+        if(signature !=null){
+            signatureUrl = fileUploadService.uploadSignatureToCloudinary(signature);
+        }
+
+        payment.setStatus(status);
         payment.setSignature(signatureUrl);
         this.save(payment);
     }

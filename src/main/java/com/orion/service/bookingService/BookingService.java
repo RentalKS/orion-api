@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,11 +41,6 @@ public class BookingService extends BaseService {
         Optional<Booking> booking = repository.findById(bookingId);
         isPresent(booking);
         return booking.get();
-    }
-    public void updateBookingStatus(Booking booking, RentalStatus status, VehicleStatus vehicleStatus) {
-        booking.setStatus(status);
-        booking.setBookingStatus(vehicleStatus);
-        repository.save(booking);
     }
     public Page<BookingViewDto> findBookingList(String currentEmail, BookingFilter filter, Integer page, Integer size, String search) {
 

@@ -26,14 +26,6 @@ public class Booking extends BaseEntity {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "vehicle_status")
-    @Enumerated(EnumType.STRING)
-    private VehicleStatus bookingStatus;
-
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private RentalStatus status;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id")
     @JsonIgnore

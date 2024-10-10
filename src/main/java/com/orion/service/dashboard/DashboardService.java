@@ -6,7 +6,6 @@ import com.orion.dto.vehicle.VehicleDashboard;
 import com.orion.entity.User;
 import com.orion.exception.InternalException;
 import com.orion.generics.ResponseObject;
-import com.orion.repository.UserRepository;
 import com.orion.repository.nativeQuery.DashboardNativeQueryRepository;
 import com.orion.security.CustomUserDetails;
 import com.orion.service.BaseService;
@@ -16,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Log4j2
@@ -37,7 +33,7 @@ public class DashboardService extends BaseService {
         User user = userService.findByEmail(userDetails.getUsername());
 
         try {
-            List<Long> userIds = userService.getUserIdsBasedOnRole(user);
+            List<Long> userIds = userService.getCustomerIdsBasedOnRole(user);
             List<ReservationDashboard> rentalInfo = dashboardNativeQueryRepository.getRentalDashboard(fromTo, userIds);
 
             responseObject.setData(rentalInfo);
@@ -59,7 +55,7 @@ public class DashboardService extends BaseService {
         User user = userService.findByEmail(userDetails.getUsername());
 
         try {
-            List<Long> userIds = userService.getUserIdsBasedOnRole(user);
+            List<Long> userIds = userService.getCustomerIdsBasedOnRole(user);
             List<VehicleDashboard> leaderBoardList = dashboardNativeQueryRepository.getVehicleDashboard(fromTo, userIds);
 
             responseObject.setData(null);

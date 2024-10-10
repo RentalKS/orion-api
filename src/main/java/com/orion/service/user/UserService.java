@@ -98,23 +98,43 @@ public class UserService extends BaseService {
         return user.get();
     }
 
-    public List<String> findUsersIdsByTenant(Long id) {
+    public List<String> findUserEmailsByTenant(Long id) {
         List<String> userEmails = repository.findEmailsOfUsersByTenant(id);
         if(userEmails == null || userEmails.isEmpty()){
             return Collections.emptyList();
         }
         return userEmails;
     }
-    public List<Long> getUserIdsBasedOnRole(User user) {
+    public List<Long> findUserIdsByTenant(Long id) {
+        List<Long> userEmails = repository.findUsersByTenant(id);
+        if(userEmails == null || userEmails.isEmpty()){
+            return Collections.emptyList();
+        }
+        return userEmails;
+    }
+    public List<Long> getCustomerIdsBasedOnRole(User user) {
         List<Long> userIds = new ArrayList<>();
 
         if (isTenant(user)) {
-            List<String> usersEmailsByTenant = findUsersIdsByTenant(user.getTenant().getId());
+            List<String> usersEmailsByTenant = findUserEmailsByTenant(user.getTenant().getId());
             List<Long> customersFromUser = customerService.findCustomerIdsFromAgencies(usersEmailsByTenant);
             userIds.addAll(customersFromUser);
         } else if (isAgency(user)) {
             List<Long> customersOfCurrentAgency = customerService.findCustomerIdsFromAgencies(Collections.singletonList(user.getEmail()));
             userIds.addAll(customersOfCurrentAgency);
+        }
+
+        return userIds;
+    }
+
+    public List<Long> getUserIdsBasedOnRole(User user) {
+        List<Long> userIds = new ArrayList<>();
+
+        if (isTenant(user)) {
+            List<Long> users = findUserIdsByTenant(user.getTenant().getId());
+            userIds.addAll(users);
+        } else if (isAgency(user)) {
+            userIds.add(user.getId());
         }
 
         return userIds;

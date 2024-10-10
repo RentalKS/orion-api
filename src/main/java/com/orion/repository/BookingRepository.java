@@ -20,31 +20,23 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b WHERE b.vehicle.id = :vehicleId")
     List<Booking> findByVehicleId(@Param("vehicleId") Long vehicleId);
-
-    @Query("SELECT b FROM Booking b WHERE b.status = 'PENDING' AND " +
-            "(b.startDate <= :endDate AND b.endDate >= :startDate)")
-    List<Booking> findActiveBookings(@Param("startDate") LocalDateTime startDate,
-                                     @Param("endDate") LocalDateTime endDate);
-
     @Query("Select count(b.id) > 0 from Booking b " +
             " where b.vehicle.id = :vehicleId and b.deletedAt is null " +
             " AND (b.startDate <= :endDate AND b.endDate >= :startDate)")
     Boolean findBookingsByVehicleAndDateRange(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("Select b from Booking b where b.status = :status ")
-    List<Booking> findByStatus(@Param("status") RentalStatus status);
-
-    @Query("Select b from Booking b where b.status = 'PENDING' and b.bookingStatus = 'RESERVED' and " +
+    @Query("Select b from Booking b left join Rental  r where r.status = 'PENDING' and r.vehicleStatus = 'RESERVED' and " +
             "(b.startDate <= :endDate AND b.endDate >= :startDate)")
     List<Booking> findBookingsBetweenDates(LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,b.bookingStatus,b.status,b.vehicle.id,b.customer.id) FROM Booking b  " +
+    @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,r.vehicleStatus,r.status,b.vehicle.id,b.customer.id) " +
+            "FROM Booking b left join Rental r " +
             "WHERE b.deletedAt is null " +
             "and  b.createdBy = :currentEmail " +
             "AND (:startDate IS NULL OR b.startDate >= :startDate) " +
             "AND (:endDate IS NULL OR b.endDate <= :endDate) " +
-            "AND (:status IS NULL OR b.status = :status) " +
-            "AND (:vehicleStatus IS NULL OR b.bookingStatus = :vehicleStatus) " +
+            "AND (:status IS NULL OR r.status = :status) " +
+            "AND (:vehicleStatus IS NULL OR r.vehicleStatus = :vehicleStatus) " +
             "AND (:vehicleId IS NULL OR b.vehicle.id = :vehicleId) " +
             "AND (:customerId IS NULL OR b.customer.id = :customerId) " +
             "AND (:searchTerm IS NULL OR " +
@@ -56,7 +48,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                 RentalStatus status, VehicleStatus vehicleStatus, String vehicleId,
                                                 String customerId, String searchTerm, Pageable pageable);
 
-    @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,b.bookingStatus,b.status,b.vehicle.id,b.customer.id) " +
+    @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,b.vehicle.id,b.customer.id) " +
             "FROM Booking  b  " +
             "where b.id = :bookingId and b.deletedAt is null ")
     Optional<BookingViewDto> findBookingDto(@Param("bookingId") Long bookingId);

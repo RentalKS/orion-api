@@ -29,7 +29,7 @@ public class VehicleController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping
+    @PostMapping("/all")
     public ResponseEntity<ResponseObject> getAllVehicles(@RequestBody VehicleFilter filter, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                          @RequestParam("page") Integer page, @RequestParam("size") Integer size, @RequestParam("search") String search) {
         String methodName = "getAllVehicles";

@@ -6,4 +6,6 @@ public enum VehicleStatus {
     UNDER_MAINTENANCE,
     RESERVED,
     OUT_OF_SERVICE,
+
+    WAITING_TO_START,
 }

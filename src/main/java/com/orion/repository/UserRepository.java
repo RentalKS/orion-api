@@ -33,8 +33,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.email from User u where u.tenant.id = :tenantId and u.deactivatedAt is null and u.deletedAt is null ")
     List<String> findAgencyIdsByTenant(@Param("tenantId") Long tenantId);
 
+    @Query("SELECT u.id from User u where u.tenant.id = :tenantId and u.deactivatedAt is null and u.deletedAt is null and u.role.name = 'CUSTOMER'")
+    List<Long> findUsersByTenant(@Param("tenantId") Long tenantId);
+
     @Query("SELECT new com.orion.dto.user.UserData(u.id, u.firstname,u.lastname, u.email,u.createdAt,u.role.name) " +
-            "FROM User u WHERE u.tenant.id = :id" +
+            "FROM User u WHERE u.tenant.id = :tenantId" +
             " and u.deactivatedAt is null and u.deletedAt is null ")
     List<UserData> findUsersIdsByTenant(@Param("tenantId") Long tenantId);
 

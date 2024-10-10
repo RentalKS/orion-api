@@ -20,4 +20,5 @@ public class ReservationDashboard {
     private Double completedAmount;
     private Double pendingAmount;
     private Long waitingForPayment;
+    private Long onGoing;
 }

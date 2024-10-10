@@ -8,7 +8,9 @@ import com.orion.dto.vehicle.Available;
 import com.orion.entity.*;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
+import com.orion.exception.ConflictException;
 import com.orion.exception.ErrorCode;
+import com.orion.exception.InternalException;
 import com.orion.exception.ThrowException;
 import com.orion.generics.ResponseObject;
 import com.orion.service.bookingService.BookingService;
@@ -24,12 +26,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,16 +52,14 @@ public class ReservationService extends BaseService {
         Tenant tenant = tenantService.findById();
         Vehicle vehicle = vehicleService.findById(reservationDto.getVehicleId());
 
-        LocalDateTime startDate =  DateUtil.convertToLocalDateTime(reservationDto.getStartDate());
+        LocalDateTime startDate = DateUtil.convertToLocalDateTime(reservationDto.getStartDate());
         LocalDateTime endDate = DateUtil.convertToLocalDateTime(reservationDto.getEndDate());
         Customer customer = customerService.findById(reservationDto.getCustomerId());
 
-        Boolean isNotAvailable = checkVehicleAvailability(vehicle,startDate,endDate);
+        Boolean isNotAvailable = checkVehicleAvailability(vehicle, startDate, endDate);
 
         if (Boolean.TRUE.equals(isNotAvailable)) {
-            responseObject.prepareHttpStatus(HttpStatus.BAD_REQUEST);
-            ThrowException.throwBadRequestApiException(ErrorCode.VEHICLE_NOT_AVAILABLE, List.of("Vehicle is not available for the selected dates."));
-            return responseObject;
+            ThrowException.throwConflictException(ErrorCode.VEHICLE_NOT_AVAILABLE,"dates");
         }
 
         try {
@@ -78,7 +75,7 @@ public class ReservationService extends BaseService {
             responseObject.prepareHttpStatus(HttpStatus.CREATED);
         }catch (Exception e) {
             log.error("Error creating reservation: {}", e.getMessage());
-            throw new RuntimeException(e.getLocalizedMessage());
+            throw new InternalException(e.getLocalizedMessage(), e.getCause());
         }
         return responseObject;
     }
@@ -117,17 +114,14 @@ public class ReservationService extends BaseService {
         ResponseObject responseObject = new ResponseObject();
 
         Booking booking = bookingService.findBookingById(bookingId);
+        Rental rental = rentalService.findByBooking(booking.getId());
 
-        if (booking.getStatus() != RentalStatus.PENDING) {
+        if (rental.getStatus() != RentalStatus.PENDING) {
             responseObject.prepareHttpStatus(HttpStatus.BAD_REQUEST);
             responseObject.setData("Only pending reservations can be cancelled.");
             return responseObject;
         }
-
-        bookingService.updateBookingStatus(booking, RentalStatus.CANCELLED, VehicleStatus.AVAILABLE);
-        Rental rental = rentalService.findByBooking(booking.getId());
         rentalService.updateRentalStatus(rental, RentalStatus.CANCELLED, VehicleStatus.AVAILABLE);
-
 
         responseObject.setData(booking);
         responseObject.prepareHttpStatus(HttpStatus.OK);

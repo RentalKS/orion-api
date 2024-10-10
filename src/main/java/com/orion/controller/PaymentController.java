@@ -18,7 +18,7 @@ public class PaymentController {
     private final PaymentService service;
 
     @PostMapping("/process")
-    public ResponseEntity<ResponseObject> processPayment(@Valid @RequestBody PaymentDto paymentDto) {
+    public ResponseEntity<ResponseObject> processPayment(@RequestBody PaymentDto paymentDto) {
         String methodName = "processPayment";
 
         log.info("{} -> Process payment", methodName);

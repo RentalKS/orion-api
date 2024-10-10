@@ -1,7 +1,7 @@
 package com.orion.service.vehicle;
 
 import com.orion.dto.filter.VehicleFilter;
-import com.orion.dto.reservation.ReservationDto;
+import com.orion.dto.maintenanceRecord.MaintenanceRecordDto;
 import com.orion.dto.vehicle.VehicleDto;
 import com.orion.entity.*;
 import com.orion.generics.ResponseObject;
@@ -13,7 +13,6 @@ import com.orion.service.BaseService;
 import com.orion.service.policyVehicle.InsurancePolicyService;
 import com.orion.service.user.TenantService;
 import com.orion.service.user.UserService;
-import com.orion.service.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
@@ -59,9 +58,9 @@ public class VehicleService extends BaseService {
         String methodName = "getVehicle";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
-        Tenant tenant = tenantService.findById();
-
-        Optional<VehicleViewDto> vehicle = repository.findVehicleDto(vehicleId, tenant.getId());
+        Optional<VehicleViewDto> vehicle = repository.findVehicleDto(vehicleId, ConfigSystem.getTenant().getId());
+        List<MaintenanceRecordDto> maintenanceRecord = repository.findMaintenanceRecord(vehicleId);
+        vehicle.get().setMaintenanceRecord(Optional.ofNullable(maintenanceRecord).orElse(List.of()));
         isPresent(vehicle);
 
         responseObject.setData(vehicle.get());
@@ -78,13 +77,13 @@ public class VehicleService extends BaseService {
                 size != null ? size : 10,
                 Sort.by("id").descending());
         User user = userService.findByEmail(currentEmail);
+
         List<Long> userIds = userService.getUserIdsBasedOnRole(user);
 
         Page<VehicleViewDto> vehicleViewDtoList =
                 repository.findAllVehicles(
                         ConfigSystem.getTenant().getId(),
                         userIds,
-                        vehicleFilter.getUserId(),
                         vehicleFilter.getFrom(),
                         vehicleFilter.getTo(),
                         vehicleFilter.getLocationId(),

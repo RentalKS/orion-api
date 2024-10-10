@@ -32,6 +32,7 @@ public class VehicleViewDto extends VehicleDto {
     private SectionDto section;
     private List<MaintenanceRecordDto> maintenanceRecord;
     private RentalStatus rentalStatus;
+    private VehicleStatus vehicleStatus;
     private CategoryDto category;
     private LocationDto location;
     private String createdByName;
@@ -60,9 +61,15 @@ public class VehicleViewDto extends VehicleDto {
         this.location = new LocationDto(idLocation,createdAtLocation,address,city,state,zipCode,country,tables);
     }
 
-    public VehicleViewDto(Long id, String registrationNumber, Long modelId, String year, FuelType fuelType, Long mileage, TransmissionType transmission, VehicleColor color, String description, String imageUrl, long locationId, Long rateId, String name, Double dailyRate, Double weeklyRate, Double monthlyRate,Long insuranceId,Long sectionId) {
-        super(modelId, locationId, rateId,sectionId, registrationNumber, year, fuelType, mileage, transmission, color, description, imageUrl);
+    public VehicleViewDto(Long id, String registrationNumber,
+                          String year, FuelType fuelType, Long mileage,
+                          TransmissionType transmission, VehicleColor color,
+                          String description, String imageUrl,
+                          long locationId, Long rateId, Long insuranceId,Long sectionId, VehicleStatus vehicleStatus,Long idModel, String name, Long brandId, String type, Long seatingCapacity, String fuelEfficiency,String modelImageUrl) {
+        super(locationId, rateId,sectionId, registrationNumber, year, fuelType, mileage, transmission, color, description, imageUrl);
         this.id = id;
         this.insuranceId = insuranceId;
+        this.vehicleStatus = vehicleStatus;
+        this.model = new ModelDto(idModel,name,brandId,type,seatingCapacity,fuelEfficiency,modelImageUrl);
     }
 }

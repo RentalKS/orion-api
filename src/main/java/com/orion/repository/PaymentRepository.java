@@ -15,11 +15,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT p FROM Payment p WHERE p.rental.id = :rentalId")
     List<Payment> findByRentalId(@Param("rentalId") Long rentalId);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Payment p SET p.status = :status  WHERE p.rental.id = :rentalId")
-    void updatePaymentStatusByRentalId(@Param("rentalId") Long rentalId, @Param("status") PaymentStatus status, @Param("signature") String signature);
-
     @Query("SELECT p FROM Payment p WHERE p.transactionId = :transactionId")
     Optional<Payment> findByTransactionId(String transactionId);
 }

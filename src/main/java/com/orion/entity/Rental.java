@@ -30,11 +30,11 @@ public class Rental extends BaseEntity {
     private Double totalCost;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status",length = 20)
     private RentalStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "vehicle_status")
+    @Column(name = "vehicle_status",length = 20)
     private VehicleStatus vehicleStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -56,6 +56,7 @@ public class DashboardNativeQueryRepository {
                 "SUM(CASE WHEN r.status = '" + RentalStatus.COMPLETED + "' THEN r.total_cost ELSE 0 END) as completedAmount, " +
                 "SUM(CASE WHEN r.status = '" + RentalStatus.PENDING + "' THEN r.total_cost ELSE 0 END) as pendingAmount, " +
                 "SUM(CASE WHEN r.status = '" + RentalStatus.WAITING_FOR_PAYMENT + "' THEN 1 ELSE 0 END) as waitingForPayment " +
+                "SUM(CASE WHEN r.status = '" + RentalStatus.ONGOING + "' THEN 1 ELSE 0 END) as onGoing " +
                 "FROM customers c " +
                 "LEFT JOIN rentals r ON c.id = r.customer_id " +
                 "WHERE " + where +
