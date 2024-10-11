@@ -4,6 +4,9 @@ import com.orion.dto.customer.CustomerDto;
 import com.orion.generics.ResponseObject;
 import com.orion.security.CustomUserDetails;
 import com.orion.service.customer.CustomerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +22,13 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerController {
     private final CustomerService customerService;
 
+    @Operation(summary = "Create customer", description = "Create customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation"),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PostMapping
     public ResponseEntity<ResponseObject> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
@@ -29,6 +39,13 @@ public class CustomerController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Get customer by id", description = "Get customer by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation"),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{customerId}")
     public ResponseEntity<ResponseObject> getCustomer(@PathVariable Long customerId) {
@@ -39,6 +56,13 @@ public class CustomerController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Get all customer", description = "Get all customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation"),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping
     public ResponseEntity<ResponseObject> getAll(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -49,7 +73,13 @@ public class CustomerController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-
+    @Operation(summary = "Update customer", description = "Update customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation"),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{customerId}")
     public ResponseEntity<ResponseObject> updateCustomer(@PathVariable Long customerId, @RequestBody CustomerDto customerDto) {
@@ -60,6 +90,13 @@ public class CustomerController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Delete customer", description = "Delete customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation"),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/delete/{customerId}")
     public ResponseEntity<ResponseObject> deleteCustomer(@PathVariable Long customerId) {

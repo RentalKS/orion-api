@@ -2,8 +2,7 @@ package com.orion.repository;
 
 import com.orion.dto.brand.BrandDto;
 import com.orion.entity.Brand;
-import com.orion.enums.BrandAccess;
-import com.orion.enums.model.ModelAccess;
+import com.orion.enums.brand.BrandAccess;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

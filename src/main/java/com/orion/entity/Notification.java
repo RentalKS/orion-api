@@ -23,7 +23,7 @@ public class Notification extends BaseEntity {
     @Column(name = "message")
     private String message;
 
-    @Column(name = "is_tread")
+    @Column(name = "is_read")
     private boolean read;
 
     @Column(name = "timestamp")

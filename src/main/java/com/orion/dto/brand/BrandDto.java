@@ -1,8 +1,7 @@
 package com.orion.dto.brand;
 
 import com.orion.dto.model.ModelDto;
-import com.orion.enums.BrandAccess;
-import jakarta.validation.constraints.NotBlank;
+import com.orion.enums.brand.BrandAccess;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -4,6 +4,11 @@ import com.orion.dto.model.ModelDto;
 import com.orion.generics.ResponseObject;
 import com.orion.security.CustomUserDetails;
 import com.orion.service.model.ModelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +24,13 @@ import org.springframework.web.bind.annotation.*;
 public class ModelController {
     private final ModelService modelService;
 
+    @Operation(summary = "Create model", description = "Create model")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = ModelDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PostMapping
     public ResponseEntity<ResponseObject> createModel(@Valid @RequestBody ModelDto modelDto) {
@@ -29,6 +41,13 @@ public class ModelController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Get all model", description = "Get all model")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = ModelDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/all")
     public ResponseEntity<ResponseObject> getAllModel(@AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -41,6 +60,13 @@ public class ModelController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Get model by id", description = "Get model by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = ModelDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping("/{modelId}")
     public ResponseEntity<ResponseObject> getModel(@PathVariable Long modelId) {
@@ -51,6 +77,13 @@ public class ModelController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Update model", description = "Update model")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = ModelDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/update/{modelId}")
     public ResponseEntity<ResponseObject> updateModel(@PathVariable Long modelId, @RequestBody ModelDto modelDto) {
@@ -61,6 +94,13 @@ public class ModelController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Delete model", description = "Delete model")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = ModelDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PutMapping("/delete/{modelId}")
     public ResponseEntity<ResponseObject> deleteModel(@PathVariable Long modelId) {

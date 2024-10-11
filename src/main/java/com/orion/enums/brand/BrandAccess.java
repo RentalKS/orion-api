@@ -1,6 +1,4 @@
-package com.orion.enums;
-
-import com.orion.enums.model.ModelAccess;
+package com.orion.enums.brand;
 
 import java.util.Arrays;
 import java.util.List;

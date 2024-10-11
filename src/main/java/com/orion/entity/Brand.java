@@ -1,6 +1,6 @@
 package com.orion.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.orion.enums.BrandAccess;
+import com.orion.enums.brand.BrandAccess;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

@@ -69,8 +69,7 @@ public class SecurityConfiguration {
                 .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .permitAll()
+                        req.requestMatchers(WHITE_LIST_URL).permitAll()
                                 .requestMatchers("/api/v1/user/**").hasAnyRole(Role.ADMIN.getName(),Role.TENANT.getName())
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(Role.ADMIN.getName(), Role.AGENCY.getName())
                                 .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(Permission.ADMIN_READ.name(), Permission.MANAGER_READ.name())

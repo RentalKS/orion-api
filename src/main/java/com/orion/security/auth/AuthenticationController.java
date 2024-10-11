@@ -1,5 +1,9 @@
 package com.orion.security.auth;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,14 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(service.register(request));
     }
+
+    @Operation(summary = "Authenticate user",
+            description = "Authenticate the user with username and password",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully authenticated",
+                            content = @Content(schema = @Schema(implementation = AuthenticationResponse.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
+            })
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request

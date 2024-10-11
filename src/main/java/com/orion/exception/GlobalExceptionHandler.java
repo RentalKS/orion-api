@@ -1,6 +1,6 @@
 package com.orion.exception;
 
-import com.orion.enums.BrandAccess;
+import com.orion.enums.brand.BrandAccess;
 import com.orion.enums.model.ModelAccess;
 import com.orion.generics.ResponseObject;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -20,6 +19,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final String COMPANY_NAME_CONSTRAINT = "uk_company_name";
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -83,5 +83,4 @@ public class GlobalExceptionHandler {
     private boolean isClassNameInExceptionMessage(HttpMessageNotReadableException ex, Class<?> clazz) {
         return ex.getMessage() != null && ex.getMessage().contains(clazz.getName());
     }
-
 }

@@ -1,6 +1,6 @@
 package com.orion.enums.model;
 
-import com.orion.enums.BrandAccess;
+import com.orion.enums.brand.BrandAccess;
 
 import java.util.Arrays;
 import java.util.HashMap;

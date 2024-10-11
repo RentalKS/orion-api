@@ -6,6 +6,11 @@ import com.orion.dto.vehicle.VehicleDto;
 import com.orion.generics.ResponseObject;
 import com.orion.security.CustomUserDetails;
 import com.orion.service.vehicle.VehicleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +25,13 @@ import org.springframework.web.bind.annotation.*;
 public class VehicleController {
     private final VehicleService service;
 
+    @Operation(summary = "Create vehicle", description = "Create vehicle")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = VehicleDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PostMapping
     public ResponseEntity<ResponseObject> createVehicle(@Valid @RequestBody VehicleDto vehicleDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String methodName = "createVehicle";
@@ -29,6 +41,13 @@ public class VehicleController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Get all vehicles", description = "Get all vehicles")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = VehicleDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PostMapping("/all")
     public ResponseEntity<ResponseObject> getAllVehicles(@RequestBody VehicleFilter filter, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                          @RequestParam(value = "page",defaultValue = "1") Integer page,
@@ -40,6 +59,13 @@ public class VehicleController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Get vehicle", description = "Get vehicle")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = VehicleDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @GetMapping("/{vehicleId}")
     public ResponseEntity<ResponseObject> getVehicle(@PathVariable Long vehicleId) {
         String methodName = "getVehicle";
@@ -49,6 +75,13 @@ public class VehicleController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Update vehicle", description = "Update vehicle")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = VehicleDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PutMapping("/update/{vehicleId}")
     public ResponseEntity<ResponseObject> updateVehicle(@PathVariable Long vehicleId, @RequestBody VehicleDto updateDto) {
         String methodName = "updateVehicle";
@@ -58,6 +91,13 @@ public class VehicleController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Delete vehicle", description = "Delete vehicle")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = VehicleDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PutMapping("/delete/{vehicleId}")
     public ResponseEntity<ResponseObject> deleteVehicle(@PathVariable Long vehicleId) {
         String methodName = "deleteVehicle";
