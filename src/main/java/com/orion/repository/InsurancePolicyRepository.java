@@ -15,11 +15,11 @@ public interface InsurancePolicyRepository extends JpaRepository<InsurancePolicy
     @Query("SELECT i FROM InsurancePolicy i WHERE i.id = :id AND i.tenant.id = :tenantId")
     Optional<InsurancePolicy> findById(@Param("id") Long id, @Param("tenantId") Long tenantId);
 
-    @Query("SELECT new com.orion.dto.insurancePolicy.InsurancePolicyDto(i.id, i.policyNumber, i.providerName, i.startDate, i.endDate, i.coverageDetails, i.vehicle.id) " +
+    @Query("SELECT new com.orion.dto.insurancePolicy.InsurancePolicyDto(i.id, i.policyNumber, i.providerName,i.coverageDetails, i.vehicle.id) " +
             "FROM InsurancePolicy i WHERE i.id = :id AND i.tenant.id = :tenantId")
     Optional<InsurancePolicyDto> findDtoById(@Param("id") Long id, @Param("tenantId") Long tenantId);
 
-    @Query("SELECT new com.orion.dto.insurancePolicy.InsurancePolicyDto(i.id, i.policyNumber, i.providerName, i.startDate, i.endDate, i.coverageDetails, i.vehicle.id) " +
+    @Query("SELECT new com.orion.dto.insurancePolicy.InsurancePolicyDto(i.id, i.policyNumber, i.providerName, i.coverageDetails, i.vehicle.id) " +
             "FROM InsurancePolicy i WHERE i.tenant.id = :tenantId AND i.createdBy = :email")
     List<InsurancePolicyDto> findAllByTenant(@Param("tenantId") Long tenantId, @Param("email") String email);
 }

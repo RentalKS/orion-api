@@ -20,16 +20,10 @@ public class InsurancePolicy extends BaseEntity {
     @Column(name = "provider_name", nullable = false)
     private String providerName;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
-
-    @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
-
     @Column(name = "coverage_details")
     private String coverageDetails;
-    @OneToOne(fetch = FetchType.LAZY)
 
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", referencedColumnName = "id", unique = true)
     private Vehicle vehicle;
 

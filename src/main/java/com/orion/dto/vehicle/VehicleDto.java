@@ -39,7 +39,7 @@ public class VehicleDto {
 //    @NotBlank
     private MultipartFile image;
     @NotNull
-    private InsurancePolicyDto insurancePolicyList;
+    private InsurancePolicyDto insurancePolicy;
 
     private String description;
     private String imageUrl;

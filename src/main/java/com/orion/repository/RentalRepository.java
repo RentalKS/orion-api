@@ -47,4 +47,10 @@ List<Rental> findRentalsWithinDateRange(@Param("startDate") LocalDateTime startD
 
     @Query("SELECT r FROM Rental r WHERE r.id = :rentalId AND r.tenant.id = :tenantId")
     Optional<Rental> findById(@Param("rentalId") Long rentalId, @Param("tenantId") Long tenantId);
+
+    @Query("SELECT new com.orion.dto.rental.RentalDto(r.id, r.startDate, r.endDate, r.status, r.totalCost, r.vehicle.id,r.vehicleStatus) " +
+            "FROM Rental r JOIN r.customer c " +
+            "WHERE c.id = :customerId " +
+            "AND r.deletedAt IS NULL AND r.customer.deletedAt IS NULL")
+    List<RentalDto> findCustomerRentals(@Param("customerId") Long customerId);
 }

@@ -13,7 +13,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByEmail(String email);
+    @Query("SELECT u FROM User u WHERE u.email = :email and u.deletedAt is null and u.deactivatedAt is null")
+    Optional<User> findByEmail(@Param("email") String email);
 
     @Query("SELECT new com.orion.dto.user.UserData(u.id, u.firstname,u.lastname, u.email,u.createdAt,u.role.name) FROM User u WHERE u.email = :email and u.deletedAt is null and u.deactivatedAt is null ")
     Optional<UserData> findUserDataById(@Param("email") String email);

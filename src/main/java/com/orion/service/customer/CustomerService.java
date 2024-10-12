@@ -1,6 +1,7 @@
 package com.orion.service.customer;
 
 import com.github.f4b6a3.ulid.UlidCreator;
+import com.orion.dto.rental.RentalDto;
 import com.orion.entity.Rental;
 import com.orion.generics.ResponseObject;
 import com.orion.infrastructure.tenant.ConfigSystem;
@@ -10,9 +11,16 @@ import com.orion.entity.Tenant;
 import com.orion.repository.CustomerRepository;
 import com.orion.repository.TenantRepository;
 import com.orion.service.BaseService;
+import com.orion.service.rental.RentalService;
 import com.orion.service.user.TenantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +36,10 @@ public class CustomerService extends BaseService {
     private final CustomerRepository repository;
     private final TenantService tenantService;
 
+    @Autowired
+    @Lazy
+    private RentalService rentalService;
+
     public ResponseObject createCustomer(CustomerDto customerDto) {
         String methodName = "createCustomer";
         log.info("Entering: {}", methodName);
@@ -41,8 +53,8 @@ public class CustomerService extends BaseService {
         customer.setPhoneNumber(customerDto.getPhoneNumber());
         customer.setLicenseNumber(UlidCreator.getUlid().toString());
         customer.setTenant(tenant);
-
-        responseObject.setData(this.save(customer));
+        this.save(customer);
+        responseObject.setData(customer.getId());
         responseObject.prepareHttpStatus(HttpStatus.CREATED);
 
         return responseObject;
@@ -56,7 +68,7 @@ public class CustomerService extends BaseService {
         Optional<CustomerDto> customer = repository.findCustomerByIdFromDto(customerId, ConfigSystem.getTenant().getId());
         isPresent(customer);
 
-        List<Rental> rentals = repository.findCustomerRentals(customerId);
+        List<RentalDto> rentals = rentalService.findCustomerRentals(customerId);
         if(!rentals.isEmpty()){
             customer.get().setRentals(rentals);
         }
@@ -65,13 +77,25 @@ public class CustomerService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    public ResponseObject getAll(String currentEmail){
+    public ResponseObject getAll(String currentEmail, Integer page, Integer size, String search) {
         String methodName = "getAll";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
 
-        List<CustomerDto> customers = repository.findAllCustomersFromDto(ConfigSystem.getTenant().getId(),currentEmail);
-        responseObject.setData(Optional.of(customers).orElse(Collections.emptyList()));
+
+        Pageable pageable = PageRequest.of(page -1, size,
+                Sort.by("id").descending());
+
+        Page<CustomerDto> customers = repository.findAllCustomersFromDto(ConfigSystem.getTenant().getId(),currentEmail,search,pageable);
+        if(!customers.isEmpty()){
+            customers.forEach(customer -> {
+                List<RentalDto> rentals = rentalService.findCustomerRentals(customer.getId());
+                if(!rentals.isEmpty()){
+                    customer.setRentals(rentals);
+                }
+            });
+        }
+        responseObject.setData(mapPage(customers));
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }

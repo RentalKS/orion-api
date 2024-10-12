@@ -11,6 +11,7 @@ import com.orion.mapper.BookingMapper;
 import com.orion.repository.BookingRepository;
 import com.orion.service.BaseService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor
 public class BookingService extends BaseService {
     private final BookingRepository repository;
@@ -30,7 +32,7 @@ public class BookingService extends BaseService {
 
     public Booking createBooking(Vehicle vehicle, Customer customer, LocalDateTime startDate, LocalDateTime endDate, Tenant tenant) {
             Booking booking = bookingMapper.toEntity(vehicle, customer, startDate, endDate, tenant);
-            repository.save(booking);
+            this.save(booking);
             return booking;
     }
 
@@ -63,5 +65,15 @@ public class BookingService extends BaseService {
         Optional<BookingViewDto> booking = repository.findBookingDto(bookingId);
         isPresent(booking);
         return booking.get();
+    }
+
+    private Booking save(Booking booking) {
+        try {
+            booking = repository.save(booking);
+        } catch (Exception e) {
+            log.error("Error saving booking: {}", e.getMessage());
+            throw e;
+        }
+        return booking;
     }
 }

@@ -56,7 +56,7 @@ public class CustomerController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @Operation(summary = "Get all customer", description = "Get all customer")
+    @Operation(summary = "Get all customer", description = "Get all page size and search customer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation"),
             @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
@@ -65,11 +65,14 @@ public class CustomerController {
     })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @GetMapping
-    public ResponseEntity<ResponseObject> getAll(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ResponseObject> getAll(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                 @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                 @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                 @RequestParam(value = "search", required = false) String search) {
         String methodName = "getAllCustomer";
 
         log.info("{} -> Get all customer", methodName);
-        ResponseObject response = customerService.getAll(customUserDetails.getUsername());
+        ResponseObject response = customerService.getAll(customUserDetails.getUsername(), page, size, search);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

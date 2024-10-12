@@ -63,18 +63,18 @@ public class ReservationService extends BaseService {
         }
 
         try {
-
             long rentalDays = ChronoUnit.DAYS.between(startDate, endDate);
             double totalCost = calculateTotalCost(vehicle.getRateDates(), rentalDays);
 
             Booking booking = bookingService.createBooking(vehicle, customer, startDate, endDate, tenant);
             rentalService.createRental(vehicle, customer, startDate, endDate, tenant, totalCost, booking);
-            notificationService.sendNotification(customer.getId(), reservationConfirmation, reservationConfirmed);
+            notificationService.sendNotification(customer.getCreatedBy(), reservationConfirmation, reservationConfirmed);
 
             responseObject.setData(booking.getId());
             responseObject.prepareHttpStatus(HttpStatus.CREATED);
         }catch (Exception e) {
             log.error("Error creating reservation: {}", e.getMessage());
+            e.printStackTrace();
             throw new InternalException(e.getLocalizedMessage(), e.getCause());
         }
         return responseObject;

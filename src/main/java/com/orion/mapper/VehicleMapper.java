@@ -10,7 +10,6 @@ import com.orion.service.section.SectionService;
 import com.orion.service.user.TenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor

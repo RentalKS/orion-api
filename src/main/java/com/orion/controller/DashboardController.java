@@ -14,14 +14,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
-@RequestMapping("${base.url}/dashboard")
+@RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 @Log4j2
 public class DashboardController {
-    private final DashboardService dashboardService;
 
+    private final DashboardService dashboardService;
     @Operation(summary = "Get dashboard data", description = "Get dashboard data")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = InfoDashboard.class))),
@@ -46,11 +45,25 @@ public class DashboardController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @PostMapping("/vehicles")
-    public ResponseEntity<ResponseObject> vehicleDashboard(@RequestBody InfoDashboard infoDashboard, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        String methodName = "dashboard";
+    public ResponseEntity<ResponseObject> getVehicleDashboard(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody InfoDashboard fromTo) {
 
-        log.info("{} -> Process dashboard", methodName);
-        ResponseObject response = dashboardService.getVehiclesDashboardData(userDetails, infoDashboard);
+        ResponseObject response = dashboardService.getVehiclesDashboardData(userDetails, fromTo);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    @Operation(summary = "Get payment dashboard data", description = "Get payment dashboard data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = InfoDashboard.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
+    @PostMapping("/payments")
+    public ResponseEntity<ResponseObject> getPaymentDashboard(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody InfoDashboard fromTo) {
+        ResponseObject response = dashboardService.getPaymentDashboardData(userDetails, fromTo);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

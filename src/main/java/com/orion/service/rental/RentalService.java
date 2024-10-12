@@ -53,8 +53,8 @@ public class RentalService extends BaseService {
         try {
             return this.repository.save(rental);
         } catch (Exception e) {
-            log.error("Failed to save payment. Error: {}", e.getMessage());
-            return null;
+            log.error("Failed to save rental. Error: {}", e.getMessage());
+            throw new RuntimeException("Failed to save rental",e.getCause());
         }
     }
     public List<Rental> findRentalsWaitingToStart(){
@@ -62,4 +62,8 @@ public class RentalService extends BaseService {
         return Optional.ofNullable(rentalsStartingNow).orElse(List.of());
     }
 
+    public List<RentalDto> findCustomerRentals(Long customerId) {
+        List<RentalDto> rentals = repository.findCustomerRentals(customerId);
+        return Optional.ofNullable(rentals).orElse(List.of());
+    }
 }

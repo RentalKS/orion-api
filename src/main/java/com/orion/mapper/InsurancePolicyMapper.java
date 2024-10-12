@@ -28,8 +28,6 @@ public class InsurancePolicyMapper {
         Tenant tenant = tenantService.findById();
         insurancePolicy.setPolicyNumber(insurancePolicyDto.getPolicyNumber());
         insurancePolicy.setProviderName(insurancePolicyDto.getProviderName());
-        insurancePolicy.setStartDate(insurancePolicyDto.getStartDate());
-        insurancePolicy.setEndDate(insurancePolicyDto.getEndDate());
         insurancePolicy.setCoverageDetails(insurancePolicyDto.getCoverageDetails());
         insurancePolicy.setVehicle(vehicle);
         insurancePolicy.setTenant(tenant);

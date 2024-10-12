@@ -25,9 +25,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             " AND (b.startDate <= :endDate AND b.endDate >= :startDate)")
     Boolean findBookingsByVehicleAndDateRange(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("Select b from Booking b left join Rental  r where r.status = 'PENDING' and r.vehicleStatus = 'RESERVED' and " +
-            "(b.startDate <= :endDate AND b.endDate >= :startDate)")
-    List<Booking> findBookingsBetweenDates(LocalDateTime startDate, LocalDateTime endDate);
+    @Query("Select b from Booking b " +
+            "LEFT join Rental r on r.booking.id = b.id " +
+            " where b.createdBy in :email " +
+            "and (:rentalStatus is null or r.status = :rentalStatus) " +
+            "and (:vehicleStatus is null or r.vehicleStatus = :vehicleStatus) " +
+            "and (b.startDate <= :endDate AND b.endDate >= :startDate) " +
+            "and b.deletedAt is null")
+    List<Booking> findBookingsBetweenDates(@Param("startDate") LocalDateTime startDate,
+                                           @Param("endDate") LocalDateTime endDate,
+                                           @Param("rentalStatus") RentalStatus rentalStatus,
+                                           @Param("vehicleStatus") VehicleStatus vehicleStatus,
+                                           @Param("email") List<String> email);
 
     @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,r.vehicleStatus,r.status,b.vehicle.id,b.customer.id) " +
             "FROM Booking b left join Rental r " +
@@ -47,9 +56,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<BookingViewDto> findBookingsByCustomer(String currentEmail, LocalDateTime startDate, LocalDateTime endDate,
                                                 RentalStatus status, VehicleStatus vehicleStatus, String vehicleId,
                                                 String customerId, String searchTerm, Pageable pageable);
-
-    @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,b.vehicle.id,b.customer.id) " +
-            "FROM Booking  b  " +
+    @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,b.vehicle.id,c.id,c.name,c.lastName,c.email,c.phoneNumber,c.licenseNumber,c.createdBy) " +
+            "FROM Booking  b  left join b.customer c " +
             "where b.id = :bookingId and b.deletedAt is null ")
     Optional<BookingViewDto> findBookingDto(@Param("bookingId") Long bookingId);
 }

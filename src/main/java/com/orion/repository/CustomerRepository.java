@@ -3,6 +3,8 @@ package com.orion.repository;
 import com.orion.dto.customer.CustomerDto;
 import com.orion.entity.Customer;
 import com.orion.entity.Rental;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,13 +26,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT c " +
             "FROM Customer c WHERE  c.id = :customerId and c.tenant.id = :tenantId and c.deletedAt is null")
     Optional<Customer> findCustomerByIdAndTenantId(@Param("customerId") Long customerId, @Param("tenantId") Long tenantId);
-
-    @Query("SELECT r FROM Rental r WHERE r.customer.id = :customerId and r.deletedAt is null and r.customer.deletedAt is null and r.vehicle.deletedAt is null")
-    List<Rental> findCustomerRentals(@Param("customerId") Long customerId);
-
     @Query("SELECT new com.orion.dto.customer.CustomerDto(c.id, c.name,c.lastName, c.email, c.phoneNumber, c.licenseNumber,c.createdBy) " +
-            "FROM Customer c WHERE c.tenant.id = :tenantId and c.createdBy = :email and c.deletedAt is null")
-    List<CustomerDto> findAllCustomersFromDto(@Param("tenantId") Long tenantId,@Param("email") String email);
+            "FROM Customer c WHERE c.tenant.id = :tenantId and c.createdBy = :email and c.deletedAt is null " +
+            "AND (:searchTerm IS NULL OR " +
+            "LOWER(c.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))" +
+            "OR LOWER(c.email) LIKE LOWER(CONCAT('%', :searchTerm, '%'))" +
+            "OR LOWER(c.phoneNumber) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            ")")
+    Page<CustomerDto> findAllCustomersFromDto(@Param("tenantId") Long tenantId, @Param("email") String email, @Param("searchTerm") String searchTerm, Pageable pageable);
 
     @Query("SELECT c.id FROM Customer c WHERE c.createdBy IN :agencyEmails and c.deletedAt is null")
     List<Long> findCustomerIdsFromAgencies(@Param("agencyEmails") List<String> agencyEmails);

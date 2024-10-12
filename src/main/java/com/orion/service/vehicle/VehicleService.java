@@ -18,6 +18,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +28,11 @@ import java.util.Optional;
 @Log4j2
 public class VehicleService extends BaseService {
     private final VehicleRepository repository;
-    private final TenantService tenantService;
     private final UserService userService;
     private final VehicleMapper vehicleMapper;
     private final InsurancePolicyService insurancePolicyService;
 
+    @Transactional
     public ResponseObject create(VehicleDto vehicleDto, String email) {
         String methodName = "createVehicle";
         log.info("Entering: {}", methodName);
@@ -41,7 +43,7 @@ public class VehicleService extends BaseService {
         vehicle.setUser(user);
         this.save(vehicle);
 
-        InsurancePolicy insurancePolicy = insurancePolicyService.createFromVehicle(vehicle, vehicleDto.getInsurancePolicyList());
+        InsurancePolicy insurancePolicy = insurancePolicyService.createFromVehicle(vehicle, vehicleDto.getInsurancePolicy());
         vehicle.setInsurancePolicy(insurancePolicy);
         this.save(vehicle);
 
@@ -67,7 +69,7 @@ public class VehicleService extends BaseService {
         responseObject.prepareHttpStatus(HttpStatus.OK);
         return responseObject;
     }
-    public ResponseObject getAll(VehicleFilter vehicleFilter,String currentEmail, int page, int size,String search) {
+    public ResponseObject getAll(VehicleFilter vehicleFilter,String currentEmail, Integer page, Integer size,String search) {
         String methodName = "getAllVehicles";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
@@ -162,7 +164,7 @@ public class VehicleService extends BaseService {
             return this.repository.save(vehicle);
         } catch (Exception e) {
             log.error("Error saving vehicle: {}", e.getMessage());
-            throw new RuntimeException("Error saving vehicle.");
+            throw new RuntimeException("Error saving vehicle.",e.getCause());
         }
     }
     public Boolean isVehicleOnMaintenance(Long id, LocalDateTime startDate, LocalDateTime endDate) {

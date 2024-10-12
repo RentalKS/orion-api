@@ -1,21 +1,23 @@
-package com.orion.dto.dashboard;
+package com.orion.dto.raportData;
 
+import com.orion.enums.vehicle.RentalStatus;
+import com.orion.enums.vehicle.VehicleStatus;
 import com.orion.util.DateUtil;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class InfoDashboard {
+public class ReportInfo {
+    @NotNull
     private Long from;
-
+    @NotNull
     private Long to;
+    private VehicleStatus vehicleStatus;
+    private RentalStatus rentalStatus;
 
     public LocalDateTime getFrom() {
         if(from == null) {

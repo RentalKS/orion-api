@@ -1,5 +1,6 @@
 package com.orion.dto.customer;
 
+import com.orion.dto.rental.RentalDto;
 import com.orion.entity.Rental;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class CustomerDto {
     private String phoneNumber;
     private String licenseNumber;
     private String contactAgent;
-    private List<Rental> rentals;
+    private List<RentalDto> rentals;
 
     public CustomerDto(Long id, String name, String lastName, String email, String phoneNumber, String licenseNumber, String contactAgent) {
         this.id = id;

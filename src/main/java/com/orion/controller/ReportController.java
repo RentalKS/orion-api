@@ -1,16 +1,21 @@
 package com.orion.controller;
 
+import com.orion.dto.dashboard.InfoDashboard;
+import com.orion.dto.raportData.ReportData;
+import com.orion.dto.raportData.ReportInfo;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.reports.ExcelGenerationService;
 import com.orion.service.reports.PdfGenerationService;
 import com.orion.service.reports.ReportingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/reports")
@@ -38,9 +43,10 @@ public class ReportController {
         return new ResponseEntity<>(excelContent, headers, HttpStatus.OK);
     }
 
-    @GetMapping("/monthly/excel")
-    public ResponseEntity<byte[]> generateMonthlyExcelReport() {
-        byte[] excelContent = reportingService.generateMonthlyReportExcel();
+    @Operation(summary = "Generate a monthly report in Excel format")
+    @PostMapping("/monthly/excel")
+    public ResponseEntity<byte[]> generateMonthlyExcelReport(@RequestBody ReportInfo reportInfo, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        byte[] excelContent = reportingService.generateMonthlyReportExcel(reportInfo,customUserDetails.getUsername());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDispositionFormData("attachment", "monthly-report.xlsx");

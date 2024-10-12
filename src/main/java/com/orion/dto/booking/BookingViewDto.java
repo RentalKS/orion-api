@@ -1,5 +1,6 @@
 package com.orion.dto.booking;
 
+import com.orion.dto.customer.CustomerDto;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ public class BookingViewDto {
     private VehicleStatus bookingStatus;
     private RentalStatus status;
     private Long vehicleId;
-    private Long customerId;
+    private CustomerDto customer;
 
     public BookingViewDto(Long id, LocalDateTime startDate, LocalDateTime endDate, VehicleStatus bookingStatus, RentalStatus status, Long vehicleId, Long customerId) {
         this.id = id;
@@ -27,14 +28,13 @@ public class BookingViewDto {
         this.bookingStatus = bookingStatus;
         this.status = status;
         this.vehicleId = vehicleId;
-        this.customerId = customerId;
     }
 
-    public BookingViewDto(Long id, LocalDateTime startDate, LocalDateTime endDate, Long vehicleId, Long customerId) {
+    public BookingViewDto(Long id, LocalDateTime startDate, LocalDateTime endDate, Long vehicleId, Long customerId, String name, String lastName, String email, String phoneNumber, String licenseNumber, String contactAgent) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.vehicleId = vehicleId;
-        this.customerId = customerId;
+        this.customer = new CustomerDto(customerId, name, lastName, email, phoneNumber, licenseNumber, contactAgent);
     }
 }

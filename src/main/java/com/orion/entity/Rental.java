@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -55,4 +56,8 @@ public class Rental extends BaseEntity {
     @JoinColumn(name = "booking_id", referencedColumnName = "id")
     @JsonIgnore
     private Booking booking;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Payment> paymentList;
 }

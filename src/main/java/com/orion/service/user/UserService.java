@@ -114,14 +114,18 @@ public class UserService extends BaseService {
     }
     public List<Long> getCustomerIdsBasedOnRole(User user) {
         List<Long> userIds = new ArrayList<>();
-
-        if (isTenant(user)) {
-            List<String> usersEmailsByTenant = findUserEmailsByTenant(user.getTenant().getId());
-            List<Long> customersFromUser = customerService.findCustomerIdsFromAgencies(usersEmailsByTenant);
-            userIds.addAll(customersFromUser);
-        } else if (isAgency(user)) {
-            List<Long> customersOfCurrentAgency = customerService.findCustomerIdsFromAgencies(Collections.singletonList(user.getEmail()));
-            userIds.addAll(customersOfCurrentAgency);
+        try {
+            if (isTenant(user)) {
+                List<String> usersEmailsByTenant = findUserEmailsByTenant(user.getTenant().getId());
+                List<Long> customersFromUser = customerService.findCustomerIdsFromAgencies(usersEmailsByTenant);
+                userIds.addAll(customersFromUser);
+            } else if (isAgency(user)) {
+                List<Long> customersOfCurrentAgency = customerService.findCustomerIdsFromAgencies(Collections.singletonList(user.getEmail()));
+                userIds.addAll(customersOfCurrentAgency);
+            }
+        } catch (Exception e) {
+            log.error("Error fetching customers: {}", e.getMessage(), e);
+            throw new InternalException(e.getLocalizedMessage());
         }
 
         return userIds;
@@ -129,12 +133,16 @@ public class UserService extends BaseService {
 
     public List<Long> getUserIdsBasedOnRole(User user) {
         List<Long> userIds = new ArrayList<>();
-
-        if (isTenant(user)) {
-            List<Long> users = findUserIdsByTenant(user.getTenant().getId());
-            userIds.addAll(users);
-        } else if (isAgency(user)) {
-            userIds.add(user.getId());
+        try {
+            if (isTenant(user)) {
+                List<Long> users = findUserIdsByTenant(user.getTenant().getId());
+                userIds.addAll(users);
+            } else if (isAgency(user)) {
+                userIds.add(user.getId());
+            }
+        } catch (Exception e) {
+            log.error("Error fetching customers: {}", e.getMessage(), e);
+            throw new InternalException(e.getLocalizedMessage());
         }
 
         return userIds;

@@ -92,6 +92,8 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.scheduling: DEBUG
     com.orion.service.schedule: DEBUG
+    com.orion: DEBUG
+    org.springframework.web: DEBUG
 # port
 server:
   port: ${SERVER_PORT:8080}
