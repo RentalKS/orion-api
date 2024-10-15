@@ -57,7 +57,7 @@ spring:
   datasource:
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:shpatvata}
-    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3306/orion}
+    url: ${DATASOURCE_URL:jdbc:mysql://mysql-sql:3306/orion}
 
 application:
   security:

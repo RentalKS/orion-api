@@ -5,10 +5,11 @@ import com.orion.entity.MaintenanceRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRecord, Long> {
     @Query("SELECT new com.orion.dto.maintenanceRecord.MaintenanceRecordDto(m.id,m.maintenanceStartDate,m.maintenanceEndDate,m.description,m.cost,m.damageType,m.vehicle.id)  " +
             "FROM MaintenanceRecord m WHERE m.id = :id and m.deletedAt is null and m.tenant.id = :tenantId ")

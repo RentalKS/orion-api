@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  mysql:
+    container_name: mysql-sql
+    image: mysql:8.2.0
+    environment:
+      MYSQL_ROOT_PASSWORD: shpatvata
+      MYSQL_DATABASE: orion
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - spring-boot-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  spring-boot-app:
+    container_name: orion-rent
+    image: spring/orionrent
+    ports:
+      - "8080:8080"
+    networks:
+      - spring-boot-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql:
+
+networks:
+  spring-boot-network:
+    driver: bridge

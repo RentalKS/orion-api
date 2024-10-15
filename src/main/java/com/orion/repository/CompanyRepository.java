@@ -6,10 +6,11 @@ import com.orion.entity.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface CompanyRepository extends JpaRepository<Company, Long> {
     @Query("select new com.orion.dto.company.CompanyDto(c.createdAt, c.createdBy, c.id, c.companyName, c.companyAddress, c.companyEmail, c.companyPhone, c.companyLogo, c.zipCode, c.city, c.state,c.user.id) " +
             "from Company c where c.id = :companyId and c.deletedAt is null and c.deactivatedAt is null and c.tenant.id = :tenantId")
