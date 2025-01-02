@@ -49,6 +49,7 @@ public class CustomerService extends BaseService {
 
         Customer customer = new Customer();
         customer.setName(customerDto.getName());
+        customer.setLastName(customerDto.getLastName());
         customer.setEmail(customerDto.getEmail());
         customer.setPhoneNumber(customerDto.getPhoneNumber());
         customer.setLicenseNumber(UlidCreator.getUlid().toString());
