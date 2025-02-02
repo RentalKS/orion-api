@@ -40,7 +40,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                            @Param("email") List<String> email);
 
     @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,r.vehicleStatus,r.status,b.vehicle.id,b.customer.id) " +
-            "FROM Booking b left join Rental r " +
+            "FROM Rental r left join r.booking b " +
             "WHERE b.deletedAt is null " +
             "and  b.createdBy = :currentEmail " +
             "AND (:startDate IS NULL OR b.startDate >= :startDate) " +

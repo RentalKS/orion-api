@@ -29,7 +29,7 @@ public class CustomerController {
             @ApiResponse(responseCode = "404", description = "Files not found"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
-    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
+//    @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
     @PostMapping
     public ResponseEntity<ResponseObject> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
         String methodName = "createCustomer";
