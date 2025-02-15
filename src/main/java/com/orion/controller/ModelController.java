@@ -49,7 +49,7 @@ public class ModelController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @PreAuthorize("hasAnyRole(@securityService.roleTenant) or hasAnyRole(@securityService.roleAgency)")
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<ResponseObject> getAllModel(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                       @RequestParam(defaultValue = "1") int page,
                                                       @RequestParam(defaultValue = "10") int size) {
