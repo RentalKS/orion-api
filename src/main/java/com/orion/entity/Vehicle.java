@@ -48,6 +48,9 @@ public class Vehicle extends BaseEntity {
     @Column(name="image")
     private String image;
 
+    @Column(name= "contract_number")
+    private String contractNumber;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "model_id", referencedColumnName = "id")
     @JsonIgnore

@@ -40,7 +40,7 @@ List<Rental> findRentalsWithinDateRange(@Param("startDate") LocalDateTime startD
     List<Rental> findRentalsWaitingToStart(@Param("rentalStatus") RentalStatus rentalStatus,@Param("vehicleStatus") VehicleStatus vehicleStatus);
 
     @Query("SELECT new com.orion.dto.rental.RentalDto(r.id, r.startDate, r.endDate, r.status, r.totalCost, r.vehicle.id, " +
-            "c.id, c.name, c.lastName, c.email, c.phoneNumber, c.licenseNumber, c.createdBy,r.vehicleStatus) " +
+            "c.id, c.name, c.lastName, c.email, c.phoneNumber, c.licenseNumber, c.createdBy,r.vehicleStatus,r.vehicle.contractNumber) " +
             "FROM Rental r JOIN r.customer c " +
             "WHERE r.booking.id = :bookingId " +
             "AND r.deletedAt IS NULL AND r.booking.deletedAt IS NULL")

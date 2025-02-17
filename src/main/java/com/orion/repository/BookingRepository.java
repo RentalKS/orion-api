@@ -39,7 +39,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                            @Param("vehicleStatus") VehicleStatus vehicleStatus,
                                            @Param("email") List<String> email);
 
-    @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,r.vehicleStatus,r.status,b.vehicle.id,b.customer.id) " +
+    @Query("SELECT new com.orion.dto.booking.BookingViewDto(b.id,b.startDate,b.endDate,r.vehicleStatus,r.status,b.vehicle.id,concat(r.customer.name, ' ',r.customer.lastName),r.vehicle.contractNumber) " +
             "FROM Rental r left join r.booking b " +
             "WHERE b.deletedAt is null " +
             "and  b.createdBy = :currentEmail " +

@@ -1,5 +1,6 @@
 package com.orion.mapper;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import com.orion.entity.*;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
@@ -20,6 +21,8 @@ public class RentalMapper {
         rental.setTotalCost(totalCost);
         rental.setBooking(booking);
         rental.setVehicleStatus(VehicleStatus.RESERVED);
+        String customerVehicleId = customer.getName().substring(0, 2) + customer.getLastName().substring(0, 2);
+        rental.setCustomerVehicleId(customerVehicleId + UlidCreator.getUlid().toString());
         return rental;
     }
 }

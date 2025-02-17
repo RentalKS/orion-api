@@ -1,5 +1,6 @@
 package com.orion.mapper;
 
+import com.github.f4b6a3.ulid.UlidCreator;
 import com.orion.dto.vehicle.VehicleDto;
 import com.orion.entity.*;
 import com.orion.infrastructure.cloudinary.FileUploadService;
@@ -20,6 +21,7 @@ public class VehicleMapper {
     private final TenantService tenantService;
     private final FileUploadService fileUploadService;
     private final SectionService sectionService;
+
     public Vehicle toEntity(VehicleDto vehicleDto, Vehicle vehicle) {
         Model model = modelService.findModelById(vehicleDto.getModelId());
         Location location = locationService.findLocationById(vehicleDto.getLocationId());
@@ -40,6 +42,7 @@ public class VehicleMapper {
         vehicle.setTransmission(vehicleDto.getTransmission());
         vehicle.setColor(vehicleDto.getColor());
         vehicle.setDescription(vehicleDto.getDescription());
+        vehicle.setContractNumber(UlidCreator.getUlid().toString());
         String imageUrl = fileUploadService.setFile(vehicleDto.getImage());
         vehicle.setImage(imageUrl);
         return vehicle;

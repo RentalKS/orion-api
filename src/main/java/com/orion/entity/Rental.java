@@ -38,6 +38,9 @@ public class Rental extends BaseEntity {
     @Column(name = "vehicle_status",length = 20)
     private VehicleStatus vehicleStatus;
 
+    @Column(name= "customer_vehicle_id")
+    private String customerVehicleId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
@@ -51,6 +54,7 @@ public class Rental extends BaseEntity {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @JsonIgnore
     private Customer customer;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", referencedColumnName = "id")

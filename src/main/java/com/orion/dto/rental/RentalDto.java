@@ -23,8 +23,11 @@ public class RentalDto {
     private Long totalDays;
     private CustomerDto customerDetails;
     private VehicleStatus vehicleStatus;
+    private String vehicleContractNumber;
 
-    public RentalDto(Long id, LocalDateTime startDate, LocalDateTime endDate, RentalStatus status, double totalCost, Long vehicleId, Long customerId, String name, String lastName, String email, String phoneNumber, String licenseNumber, String contactAgent, VehicleStatus vehicleStatus) {
+    public RentalDto(Long id, LocalDateTime startDate, LocalDateTime endDate, RentalStatus status, double totalCost,
+                     Long vehicleId, Long customerId, String name, String lastName, String email, String phoneNumber,
+                     String licenseNumber, String contactAgent, VehicleStatus vehicleStatus,String vehicleContractNumber) {
         this.id = id;
         this.startDate = DateUtil.localDateTimeToMilliseconds(startDate);
         this.endDate = DateUtil.localDateTimeToMilliseconds(endDate);
@@ -32,6 +35,7 @@ public class RentalDto {
         this.totalCost = totalCost;
         this.vehicleId = vehicleId;
         this.vehicleStatus = vehicleStatus;
+        this.vehicleContractNumber = vehicleContractNumber;
         this.customerDetails = new CustomerDto(customerId, name, lastName, email, phoneNumber, licenseNumber, contactAgent);
         this.totalDays = ChronoUnit.DAYS.between(startDate, endDate);
     }

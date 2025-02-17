@@ -21,7 +21,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
             "v.id, v.registrationNumber, v.year, v.fuelType, " +
             "v.mileage, v.transmission, v.color, v.description, v.image, " +
             "v.location.id,v.rateDates.id,v.insurancePolicy.id,v.section.id,r.vehicleStatus," +
-            "m.id,m.name,m.brand.id,m.type,m.seatingCapacity,m.fuelEfficiency,m.modelImage ) " +
+            "m.id,m.name,m.brand.id,m.type,m.seatingCapacity,m.fuelEfficiency,m.modelImage,v.contractNumber) " +
             "FROM Vehicle v " +
             "LEFT JOIN Rental r on r.vehicle.id = v.id " +
             "LEFT JOIN v.section s " +
@@ -91,7 +91,8 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
             "l.state," +
             "l.zipCode," +
             "l.country," +
-            "l.tables" +
+            "l.tables," +
+            "v.contractNumber" +
             ") " +
             "FROM Vehicle v " +
             "left join v.model m " +

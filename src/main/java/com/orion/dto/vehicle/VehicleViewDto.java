@@ -39,6 +39,7 @@ public class VehicleViewDto extends VehicleDto {
     private String createdByName;
     private Long createdById;
     private Long insuranceId;
+    private String contractVehicleNumber;
 
     public VehicleViewDto(LocalDateTime createdAt, Long id, Long modelId, ModelAccess modelName, Long brandId, String type,
                           Long seatingCapacity, String fuelEfficiency, String modelImageUrl, Long rateId, String name,
@@ -48,7 +49,7 @@ public class VehicleViewDto extends VehicleDto {
                           String sectionImageUrl, Long categoryId, String createdByName, Long createdById, Long idCategory,
                           LocalDateTime createdAtCategory, String categoryName, String categoryDescription, Long companyId,
                           Long idLocation, LocalDateTime createdAtLocation, String address, String city, String state,
-                          String zipCode, String country, String tables) {
+                          String zipCode, String country, String tables,String contractVehicleNumber ) {
 
         this.createdAt = DateUtil.localDateTimeToMilliseconds(createdAt);
         this.id = id;
@@ -58,6 +59,7 @@ public class VehicleViewDto extends VehicleDto {
         this.section = new SectionDto(sectionId,createdAtSection,sectionName,sectionDescription,sectionImageUrl,categoryId);
         this.createdByName = createdByName;
         this.createdById = createdById;
+        this.contractVehicleNumber = contractVehicleNumber;
         this.category = new CategoryDto(idCategory,createdAtCategory,categoryName,categoryDescription,companyId);
         this.location = new LocationDto(idLocation,createdAtLocation,address,city,state,zipCode,country,tables);
     }
@@ -66,11 +68,12 @@ public class VehicleViewDto extends VehicleDto {
                           String year, FuelType fuelType, Long mileage,
                           TransmissionType transmission, VehicleColor color,
                           String description, String imageUrl,
-                          long locationId, Long rateId, Long insuranceId,Long sectionId, VehicleStatus vehicleStatus,Long idModel, ModelAccess name, Long brandId, String type, Long seatingCapacity, String fuelEfficiency,String modelImageUrl) {
+                          long locationId, Long rateId, Long insuranceId,Long sectionId, VehicleStatus vehicleStatus,Long idModel, ModelAccess name, Long brandId, String type, Long seatingCapacity, String fuelEfficiency,String modelImageUrl,String contractVehicleNumber) {
         super(locationId, rateId,sectionId, registrationNumber, year, fuelType, mileage, transmission, color, description, imageUrl);
         this.id = id;
         this.insuranceId = insuranceId;
         this.vehicleStatus = vehicleStatus;
+        this.contractVehicleNumber = contractVehicleNumber;
         this.model = new ModelDto(idModel,name,brandId,type,seatingCapacity,fuelEfficiency,modelImageUrl);
     }
 }
