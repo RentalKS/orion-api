@@ -31,7 +31,7 @@ import static com.orion.util.TokenUtil.generateTransactionId;
 @RequiredArgsConstructor
 @Log4j2
 public class PaymentService extends BaseService {
-    private static final int TOKEN_EXPIRATION_MINUTES = 5;
+    private static final int TOKEN_EXPIRATION_MINUTES = 1020;
     private final PaymentRepository repository;
     private final RentalService rentalService;
     private final EmailService emailService;

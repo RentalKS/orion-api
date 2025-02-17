@@ -23,7 +23,7 @@ public class EmailService {
     public void sendAgreementEmail(String to, String token, LocalDateTime expirationTime) {
         try {
             String formattedExpirationTime = expirationTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String url = "https://localhost:8080/sign?token=" + token;
+            String url = "http://localhost:5173/sign?token=" + token;
             String subject = "Sign Your Rental Agreement";
 
 //            String logoUrl = "https://orionlogo.com/logo.png"; // URL to your company's logo

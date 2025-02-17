@@ -55,7 +55,8 @@ public class SecurityConfiguration {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/sign/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -75,6 +76,7 @@ public class SecurityConfiguration {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(req ->
                 req.requestMatchers(WHITE_LIST_URL).permitAll()
+                        .requestMatchers("/sign", "/sign/**").permitAll()
                     .requestMatchers("/api/v1/user/**").hasAnyRole(Role.ADMIN.getName(), Role.TENANT.getName())
                     .requestMatchers("/api/v1/management/**").hasAnyRole(Role.ADMIN.getName(), Role.AGENCY.getName())
                     .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(Permission.ADMIN_READ.name(), Permission.MANAGER_READ.name())
