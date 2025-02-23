@@ -3,6 +3,7 @@ package com.orion.controller;
 import com.orion.dto.PaymentDto;
 import com.orion.enums.payment.PaymentMethod;
 import com.orion.generics.ResponseObject;
+import com.orion.security.CustomUserDetails;
 import com.orion.service.payment.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,11 +32,11 @@ public class PaymentController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @PostMapping("/process")
-    public ResponseEntity<ResponseObject> processPayment(@RequestBody PaymentDto paymentDto) {
+    public ResponseEntity<ResponseObject> processPayment(@RequestBody PaymentDto paymentDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String methodName = "processPayment";
 
         log.info("{} -> Process payment", methodName);
-        ResponseObject response = service.processPayment(paymentDto);
+        ResponseObject response = service.processPayment(paymentDto, userDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -46,11 +48,11 @@ public class PaymentController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @PostMapping("/accept")
-    public ResponseEntity<ResponseObject> acceptPayment(@RequestBody PaymentDto paymentDto) {
+    public ResponseEntity<ResponseObject> acceptPayment(@RequestBody PaymentDto paymentDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String methodName = "acceptPayment";
 
         log.info("{} -> Accept payment", methodName);
-        ResponseObject response = service.acceptPayment(paymentDto);
+        ResponseObject response = service.acceptPayment(paymentDto, userDetails.getUsername());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

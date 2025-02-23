@@ -26,4 +26,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
      @Query("select new com.orion.dto.category.CategoryDto(c.id, c.createdAt, c.categoryName, c.categoryDescription, c.company.id) " +
             "from Category c where c.createdBy in :email and c.tenant.id = :tenantId and c.deletedAt is null")
      List<CategoryDto> findAllCategory(@Param("tenantId") Long tenantId,@Param("email") List<String> email);
+
+    @Query("select new com.orion.dto.category.CategoryDto(c.id, c.createdAt, c.categoryName, c.categoryDescription, c.company.id) " +
+            "from Category c where c.company.id in :companyList and c.deletedAt is null and c.tenant.id = :tenantId and c.deletedAt is null")
+    List<CategoryDto> findCategoriesByCompany(@Param("companyList") List<Long> companyList,@Param("tenantId") Long tenantId);
 }

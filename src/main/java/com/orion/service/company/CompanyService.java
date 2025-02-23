@@ -9,9 +9,12 @@ import com.orion.entity.Tenant;
 import com.orion.mapper.CompanyMapper;
 import com.orion.repository.CompanyRepository;
 import com.orion.service.BaseService;
+import com.orion.service.category.CategoryService;
 import com.orion.service.user.TenantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -26,6 +29,10 @@ public class CompanyService extends BaseService {
     private final CompanyRepository companyRepository;
     private final TenantService tenantService;
     private final CompanyMapper companyMapper;
+    @Autowired
+    @Lazy
+    private CategoryService categoryService;
+
     public ResponseObject createCompany(CompanyDto companyDto)  {
         String methodName = "createCompany";
         log.info("{} -> create company", methodName);
@@ -122,5 +129,24 @@ public class CompanyService extends BaseService {
         Optional<Company> company = companyRepository.findCompanyById(id, ConfigSystem.getTenant().getId());
         isPresent(company);
         return company.get();
+    }
+
+    public ResponseObject getAllCompanies() {
+        String methodName = "getAllCompanies";
+        log.info("{} -> get all companies", methodName);
+        ResponseObject responseObject = new ResponseObject();
+
+        try {
+            List<CompanyDto> companyList = companyRepository.findAllCompaniesByTenant(ConfigSystem.getTenant().getId());
+            List<CategoryDto> categories = categoryService.findByCompany(companyList.stream().map(CompanyDto::getId).toList());
+            companyList.forEach(company -> company.setCategories(categories.stream().filter(category -> category.getCompanyId().equals(company.getId())).toList()));
+            responseObject.setData(companyList);
+            responseObject.prepareHttpStatus(HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Failed to get all companies: {}", e.getMessage());
+            responseObject.prepareHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return responseObject;
     }
 }

@@ -1,5 +1,6 @@
 package com.orion.service.notification;
 
+import com.orion.dto.notification.NotificationView;
 import com.orion.entity.Notification;
 import com.orion.entity.User;
 
@@ -52,7 +53,7 @@ public class NotificationService {
         }
     }
 
-    public List<Notification> getUserNotifications(String email) {
+    public List<NotificationView> getUserNotifications(String email) {
         return repository.findByUserId(email);
     }
 
@@ -61,5 +62,11 @@ public class NotificationService {
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
         notification.setRead(true);
         repository.save(notification);
+    }
+
+    public void markAllNotificationAsRead(String email) {
+        List<Notification> notification = repository.findByEmailId(email);
+        notification.forEach(n -> n.setRead(true));
+        repository.saveAll(notification);
     }
 }

@@ -1,5 +1,6 @@
 package com.orion.service.category;
 
+import com.orion.dto.company.CompanyDto;
 import com.orion.dto.section.SectionDto;
 import com.orion.entity.User;
 import com.orion.generics.ResponseObject;
@@ -132,5 +133,13 @@ public class CategoryService extends BaseService {
         Optional<Category> category = categoryRepository.findCategoryById(id,ConfigSystem.getTenant().getId());
         isPresent(category);
         return category.get();
+    }
+
+    public List<CategoryDto> findByCompany(List<Long> companyList) {
+        List<CategoryDto> categories = categoryRepository.findCategoriesByCompany(companyList,ConfigSystem.getTenant().getId());
+        if(categories.isEmpty()){
+            return Collections.emptyList();
+        }
+        return categories;
     }
 }

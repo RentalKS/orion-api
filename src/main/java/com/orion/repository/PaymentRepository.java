@@ -13,9 +13,15 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    @Query("SELECT p FROM Payment p WHERE p.rental.id = :rentalId")
+    @Query("SELECT p FROM Payment p WHERE p.rental.id = :rentalId and p.deletedAt is null")
     List<Payment> findByRentalId(@Param("rentalId") Long rentalId);
 
-    @Query("SELECT p FROM Payment p WHERE p.transactionId = :transactionId")
+    @Query("SELECT p FROM Payment p WHERE p.transactionId = :transactionId and p.deletedAt is null")
     Optional<Payment> findByTransactionId(String transactionId);
+
+    @Query("SELECT p.signature FROM Payment p WHERE p.transactionId = :transactionId and p.deletedAt is null")
+    Optional<String> findSignatureByTransactionId(String transactionId);
+
+    @Query("SELECT p.signature FROM Payment p WHERE p.rental.id = :rentalId and p.deletedAt is null ")
+    List<String> findSignatureByRentalId(Long rentalId);
 }

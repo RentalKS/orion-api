@@ -43,6 +43,23 @@ public class CompanyController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @Operation(summary = "Get all companies", description = "Get all companies")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = CompanyDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
+    @PreAuthorize("hasAnyRole(@securityService.roleTenant)")
+    @GetMapping
+    public ResponseEntity<ResponseObject> getCompanyById() {
+        String methodName = "getAllCompanies";
+
+        log.info("{} -> Get all companies", methodName);
+        ResponseObject response = companyService.getAllCompanies();
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @Operation(summary = "Get company by id", description = "Get company by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = CompanyDto.class))),

@@ -24,6 +24,7 @@ public class RentalDto {
     private CustomerDto customerDetails;
     private VehicleStatus vehicleStatus;
     private String vehicleContractNumber;
+    private String signature;
 
     public RentalDto(Long id, LocalDateTime startDate, LocalDateTime endDate, RentalStatus status, double totalCost,
                      Long vehicleId, Long customerId, String name, String lastName, String email, String phoneNumber,

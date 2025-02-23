@@ -8,6 +8,7 @@ import com.orion.infrastructure.tenant.ConfigSystem;
 import com.orion.mapper.RentalMapper;
 import com.orion.repository.RentalRepository;
 import com.orion.service.BaseService;
+import com.orion.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class RentalService extends BaseService {
     private final RentalRepository repository;
     private final RentalMapper rentalMapper;
+    private final PaymentService paymentService;
 
     public void createRental(Vehicle vehicle, Customer customer, LocalDateTime startDate, LocalDateTime endDate, Tenant tenant, double totalCost, Booking booking) {
         Rental rental = rentalMapper.toEntity(vehicle, customer, startDate, endDate, tenant, totalCost, booking);
@@ -41,6 +43,9 @@ public class RentalService extends BaseService {
     public RentalDto findByBookingDto(Long bookingId) {
         Optional<RentalDto> optionalRental =  repository.findByBookingDto(bookingId);
         isPresent(optionalRental);
+
+        String signature = paymentService.findSignaturePaymentByRentalId(optionalRental.get().getId());
+        optionalRental.get().setSignature(signature);
         return optionalRental.get();
     }
 

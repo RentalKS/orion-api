@@ -12,6 +12,7 @@ import com.orion.infrastructure.cloudinary.FileUploadService;
 import com.orion.mapper.PaymentMapper;
 import com.orion.service.BaseService;
 import com.orion.service.bookingService.BookingService;
+import com.orion.service.notification.NotificationService;
 import com.orion.service.rental.RentalService;
 import com.orion.util.mail.EmailService;
 import com.orion.repository.*;
@@ -19,10 +20,13 @@ import com.orion.util.TokenUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.orion.util.TokenUtil.generateTransactionId;
@@ -33,14 +37,18 @@ import static com.orion.util.TokenUtil.generateTransactionId;
 public class PaymentService extends BaseService {
     private static final int TOKEN_EXPIRATION_MINUTES = 1020;
     private final PaymentRepository repository;
-    private final RentalService rentalService;
+    @Autowired
+    @Lazy
+    private  RentalService rentalService;
     private final EmailService emailService;
     private final PaymentMapper paymentMapper;
     private final BookingService bookingService;
     private final FileUploadService fileUploadService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional
-    public ResponseObject processPayment(PaymentDto paymentDto) {
+    public ResponseObject processPayment(PaymentDto paymentDto, String email) {
         String methodName = "processPayment";
         log.info("Entering: {}", methodName);
 
@@ -52,6 +60,7 @@ public class PaymentService extends BaseService {
 
         try {
             payment = sendPaymentConfirmationEmail(payment, rental,transactionId);
+            notificationService.sendNotification(email, "Payment Processing", "Customer payment is being processed. Please check your email for the agreement.");
             responseObject.setData("Payment processing. Please check your email for the agreement.");
             responseObject.prepareHttpStatus(HttpStatus.OK);
         } catch (Exception e) {
@@ -99,7 +108,7 @@ public class PaymentService extends BaseService {
     }
 
     @Transactional
-    public ResponseObject acceptPayment(PaymentDto paymentDto) {
+    public ResponseObject acceptPayment(PaymentDto paymentDto, String email) {
         String methodName = "validateAndCompleteRental";
         log.info("Entering: {}", methodName);
         ResponseObject responseObject = new ResponseObject();
@@ -114,7 +123,7 @@ public class PaymentService extends BaseService {
         try {
             rentalService.updateRentalStatus(rental, RentalStatus.WAITING_FOR_START, VehicleStatus.WAITING_TO_START);
             updatePaymentStatus(transactionId, paymentDto.getSignature(),PaymentStatus.SUCCESS);
-
+            notificationService.sendNotification(email, "Rental Agreement Signed", "Customer rental agreement has been signed and completed.");
             responseObject.setData("Rental agreement successfully signed and completed.");
             responseObject.prepareHttpStatus(HttpStatus.OK);
 
@@ -129,6 +138,7 @@ public class PaymentService extends BaseService {
     private void failPayment(Rental rental, String transactionId) {
         rentalService.updateRentalStatus(rental, RentalStatus.WAITING_FOR_PAYMENT, VehicleStatus.RESERVED);
         updatePaymentStatus(transactionId, null,PaymentStatus.FAILED);
+        notificationService.sendNotification(rental.getCustomer().getEmail(), "Rental Agreement Failed", "Your rental agreement has failed to be signed.");
     }
     private void updatePaymentStatus(String transactionId, String signature,PaymentStatus status) {
         Payment payment = findByTransactionId(transactionId);
@@ -159,5 +169,18 @@ public class PaymentService extends BaseService {
         if (!isValid) {
             ThrowException.throwBadRequestApiException(ErrorCode.BAD_REQUEST, List.of("Invalid token."));
         }
+    }
+
+    public String findSignaturePaymentByRentalId(String transactionId) {
+        return repository.findSignatureByTransactionId(transactionId).orElse(null);
+    }
+
+    public String findSignaturePaymentByRentalId(Long rentalId) {
+        List<String> signatures = repository.findSignatureByRentalId(rentalId);
+        if(!signatures.isEmpty()){
+            return signatures.stream().filter(Objects::nonNull).findFirst().orElse(null);
+        }
+        return null;
+
     }
 }

@@ -1,4 +1,5 @@
 package com.orion.controller;
+import com.orion.dto.notification.NotificationView;
 import com.orion.entity.Notification;
 import com.orion.security.CustomUserDetails;
 import com.orion.service.notification.NotificationService;
@@ -29,9 +30,9 @@ public class NotificationController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @GetMapping
-    public ResponseEntity<List<Notification>> getUserNotifications(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<List<NotificationView>> getUserNotifications(@AuthenticationPrincipal CustomUserDetails userDetails) {
         String email = userDetails.getUsername();
-        List<Notification> notifications = notificationService.getUserNotifications(email);
+        List<NotificationView> notifications = notificationService.getUserNotifications(email);
         return ResponseEntity.ok(notifications);
     }
 
@@ -45,6 +46,19 @@ public class NotificationController {
     @PostMapping("/read/{id}")
     public ResponseEntity<Void> markNotificationAsRead(@PathVariable Long id) {
         notificationService.markNotificationAsRead(id);
+        return ResponseEntity.ok().build();
+    }
+
+        @Operation(summary = "Mark all notification as read", description = "Mark notification as read")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation"),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "Files not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
+    @PostMapping("/read")
+    public ResponseEntity<Void> markNotificationAsRead(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        notificationService.markAllNotificationAsRead(userDetails.getUsername());
         return ResponseEntity.ok().build();
     }
 }

@@ -68,7 +68,7 @@ public class DashboardNativeQueryRepository {
             where += " AND v.created_at BETWEEN '" + infoDashboard.getFrom() + "' AND '" + infoDashboard.getTo() + "'";
         }
 
-        if (userIds != null) {
+        if (userIds != null && !userIds.isEmpty()) {
             String memberIdList = userIds.stream()
                     .map(String::valueOf)
                     .collect(Collectors.joining(",", "(", ")"));
@@ -77,15 +77,15 @@ public class DashboardNativeQueryRepository {
 
         String queryString = "SELECT " +
                 "COUNT(v.id) as totalVehicles, " +
-                "SUM(CASE WHEN v.status = '" + VehicleStatus.AVAILABLE + "' THEN 1 ELSE 0 END) as availableVehicles, " +
-                "SUM(CASE WHEN v.status = '" + VehicleStatus.WAITING_TO_START + "' THEN 1 ELSE 0 END) as waitingToStart, " +
-                "SUM(CASE WHEN v.status = '" + VehicleStatus.RENTED + "' THEN 1 ELSE 0 END) as rentedVehicles, " +
-                "SUM(CASE WHEN v.status = '" + VehicleStatus.UNDER_MAINTENANCE + "' THEN 1 ELSE 0 END) as underMaintenance, " +
-                "SUM(CASE WHEN v.status = '" + VehicleStatus.RESERVED + "' THEN 1 ELSE 0 END) as reserved, " +
-                "SUM(CASE WHEN v.status = '" + VehicleStatus.OUT_OF_SERVICE + "' THEN 1 ELSE 0 END) as outOfService, " +
+                "SUM(CASE WHEN r.vehicle_status = '" + VehicleStatus.AVAILABLE + "' THEN 1 ELSE 0 END) as availableVehicles, " +
+                "SUM(CASE WHEN r.vehicle_status = '" + VehicleStatus.WAITING_TO_START + "' THEN 1 ELSE 0 END) as waitingToStart, " +
+                "SUM(CASE WHEN r.vehicle_status = '" + VehicleStatus.RENTED + "' THEN 1 ELSE 0 END) as rentedVehicles, " +
+                "SUM(CASE WHEN r.vehicle_status = '" + VehicleStatus.UNDER_MAINTENANCE + "' THEN 1 ELSE 0 END) as underMaintenance, " +
+                "SUM(CASE WHEN r.vehicle_status = '" + VehicleStatus.RESERVED + "' THEN 1 ELSE 0 END) as reserved, " +
+                "SUM(CASE WHEN r.vehicle_status = '" + VehicleStatus.OUT_OF_SERVICE + "' THEN 1 ELSE 0 END) as outOfService, " +
                 "c.category_name as category, " +
                 "COUNT(c.id) as categoryCount " +
-                "FROM vehicles v " +
+                "FROM vehicles v left join rentals r on v.id = r.vehicle_id " +
                 "LEFT JOIN sections s on v.section_id = s.id LEFT JOIN categories c ON s.category_id = c.id " +
                 "LEFT JOIN user u ON v.user_id = u.id " +
                 "WHERE " + where + " and v.deleted_at is null " +
