@@ -3,6 +3,7 @@ package com.orion.repository;
 import com.orion.dto.rental.RentalDto;
 import com.orion.entity.Booking;
 import com.orion.entity.Rental;
+import com.orion.entity.Vehicle;
 import com.orion.enums.vehicle.RentalStatus;
 import com.orion.enums.vehicle.VehicleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -54,4 +55,7 @@ List<Rental> findRentalsWithinDateRange(@Param("startDate") LocalDateTime startD
             "WHERE c.id = :customerId " +
             "AND r.deletedAt IS NULL AND r.customer.deletedAt IS NULL")
     List<RentalDto> findCustomerRentals(@Param("customerId") Long customerId);
+
+    @Query("SELECT r.vehicle FROM Rental r WHERE r.vehicleStatus = :status AND r.deletedAt IS NULL")
+    Iterable<Vehicle> findByStatus(@Param("status") VehicleStatus status);
 }
