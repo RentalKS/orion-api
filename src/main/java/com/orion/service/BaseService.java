@@ -1,16 +1,13 @@
 package com.orion.service;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.orion.common.PageObject;
+import com.orion.generics.PageObject;
 import com.orion.exception.ErrorCode;
 import com.orion.exception.ThrowException;
+import com.orion.generics.SecurityService;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.tool.schema.Action;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
@@ -19,7 +16,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @Log4j2
-public class BaseService<T> {
+public class BaseService<T> extends SecurityService {
 
     protected final String Action_Create = Action.CREATE.name();
     protected final String Action_Update = Action.UPDATE.name();

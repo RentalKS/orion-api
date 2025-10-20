@@ -1,9 +1,9 @@
 package com.orion.controller;
 
-import com.orion.common.ResponseObject;
+import com.orion.generics.ResponseObject;
 import com.orion.dto.user.TenantDto;
 import com.orion.dto.tenant.UpdateTenantDto;
-import com.orion.service.TenantService;
+import com.orion.service.user.TenantService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class TenantController {
 
     @PreAuthorize("hasAuthority(@securityService.roleAdmin)")
     @GetMapping("/all")
-    public ResponseEntity getAllTenants(@RequestParam("page") Integer page, @RequestParam("size") Integer size, @RequestParam(required = false, name = "search") String search) {
+    public ResponseEntity getAllTenants(@PathVariable("page") Integer page, @PathVariable("size") Integer size, @PathVariable(required = false, name = "search") String search) {
         String methodName = "getAllTenants";
 
         log.info("{} -> Get all Tenants", methodName);

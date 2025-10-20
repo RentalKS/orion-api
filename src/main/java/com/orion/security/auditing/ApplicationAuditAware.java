@@ -1,6 +1,7 @@
 package com.orion.security.auditing;
 
 import com.orion.entity.User;
+import com.orion.security.CustomUserDetails;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,7 @@ public class ApplicationAuditAware implements AuditorAware<String> {
             return Optional.empty();
         }
 
-        auditor = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        auditor = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
 
         return Optional.of(auditor);
     }

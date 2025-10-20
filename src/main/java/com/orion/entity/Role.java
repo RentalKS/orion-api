@@ -45,6 +45,12 @@ public class Role {
             ADMIN_READ, ADMIN_UPDATE, ADMIN_DELETE, ADMIN_CREATE,
             MANAGER_READ, MANAGER_UPDATE, MANAGER_DELETE, MANAGER_CREATE));
 
+        @ManyToOne
+    @JoinColumn(name = "tenant_id")
+    public static final Role TENANT = new Role("TENANT", Set.of(
+            ADMIN_READ, ADMIN_UPDATE, ADMIN_DELETE, ADMIN_CREATE,
+            MANAGER_READ, MANAGER_UPDATE, MANAGER_DELETE, MANAGER_CREATE));
+
     @ManyToOne
     @JoinColumn(name = "agency_id")
     public static final Role AGENCY = new Role("AGENCY", Set.of(

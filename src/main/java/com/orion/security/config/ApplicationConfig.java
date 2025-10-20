@@ -1,10 +1,15 @@
 package com.orion.security.config;
 
+import com.orion.entity.User;
+import com.orion.security.CustomUserDetails;
 import com.orion.security.auditing.ApplicationAuditAware;
 import com.orion.repository.UserRepository;
+import com.orion.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,16 +21,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@RequiredArgsConstructor
-public class ApplicationConfig {
-
-    private final UserRepository repository;
-
+public class ApplicationConfig  {
+    @Autowired
+    @Lazy
+    private UserService userService;
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> {
+            User user = userService.findByEmail(username);
+            return new CustomUserDetails(user);
+        };
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

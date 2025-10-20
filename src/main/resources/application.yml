@@ -1,4 +1,17 @@
 spring:
+  cloudinary:
+    url: cloudinary://455168161139481:YnrO3MvvhleM6DPpVYGu003KbwU@vata
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: shpatvata1@gmail.com
+    password: xfuwmqdkqgoiraor
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   security:
     cors:
       allowed-origins: http://localhost:3000
@@ -35,7 +48,7 @@ spring:
 
   #flyway
   flyway:
-    schemas: ${SCHEMA:orion }
+    schemas: ${SCHEMA:orion}
     user: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:shpatvata}
     baseline-on-migrate: 'true'
@@ -58,10 +71,14 @@ application:
 springdoc:
   swagger-ui:
     enabled: 'true'
-    path: ${SWAGGER_PATH:/api/swagger-ui.html}
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+    default-model-rendering: model
   api-docs:
-    path: ${SWAGGER_API-DOCS_PATH:api/v3/api-docs}
-    enabled: 'true'
+    path: /v3/api-docs
+    enabled: true
 
 ##Logging
 logging:
@@ -72,7 +89,12 @@ logging:
     rollingpolicy:
       max-file-size: 100MB
   level:
+    org.springframework: DEBUG
     org.springframework.security: DEBUG
+    org.springframework.scheduling: DEBUG
+    com.orion.service.schedule: DEBUG
+    com.orion: DEBUG
+    org.springframework.web: DEBUG
 # port
 server:
   port: ${SERVER_PORT:8080}

@@ -1,7 +1,10 @@
 package com.orion.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.orion.enums.vehicle.VehicleColor;
 import com.orion.enums.vehicle.VehicleStatus;
+import com.orion.enums.vehicle.FuelType;
+import com.orion.enums.vehicle.TransmissionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,79 +21,50 @@ import java.util.List;
 @Table(name = "vehicles")
 public class Vehicle extends BaseEntity {
 
-    @Column(name = "model")
-    private String model;
+    @Column(name = "registration_number", nullable = false, unique = true)
+    private String registrationNumber;
 
     @Column(name = "year")
     private String year;
 
-    @Column(name = "price")
-    private String price;
-
-    @Column(name = "image")
-    private String image;
-
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private VehicleStatus status;
-
-    @Column(name="fuel_type")
-    private String fuelType;
+    @Column(name = "fuel_type")
+    private FuelType fuelType;
 
     @Column(name="mileage")
     private Long mileage;
 
-    @Column(name="engine")
-    private String engine;
-
+    @Enumerated(EnumType.STRING)
     @Column(name="transmission")
-    private String transmission;
+    private TransmissionType transmission;
 
     @Column(name="color")
-    private String color;
+    @Enumerated(EnumType.STRING)
+    private VehicleColor color;
 
-    @Column(name="interior")
-    private String interior;
+    @Column(name="description")
+    private String description;
 
-    @Column(name="exterior")
-    private String exterior;
+    @Column(name="image")
+    private String image;
 
-    @Column(name="vin")
-    private String vin;
+    @Column(name= "contract_number")
+    private String contractNumber;
 
-    @Column(name="stock_number")
-    private String stockNumber;
-
-    @Column(name="mpg")
-    private String mpg;
-
-    @Column(name="features")
-    private String features;
-
-    @Column(name="options")
-    private String options;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "model_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Model model;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
+    @JsonIgnore
     private Location location;
-
-    @Column(name = "registration_number", nullable = false, unique = true)
-    private String registrationNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", referencedColumnName = "id")
+    @JsonIgnore
     private Section section;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fleet_id", referencedColumnName = "id")
-    private Fleet fleet;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vehicle_type_id", referencedColumnName = "id")
-    private VehicleType vehicleType;
 
     @JsonIgnore
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
@@ -98,10 +72,24 @@ public class Vehicle extends BaseEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    private List<InsurancePolicy> insurancePolicies;
+    private List<Rental> rentals;
 
+    @OneToOne(mappedBy = "vehicle", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private InsurancePolicy insurancePolicy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rate_dates_id", referencedColumnName = "id")
+    @JsonIgnore
+    private RateDates rateDates;
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
 }

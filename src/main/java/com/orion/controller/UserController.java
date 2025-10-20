@@ -1,9 +1,10 @@
 package com.orion.controller;
 
-import com.orion.common.ResponseObject;
+import com.orion.generics.ResponseObject;
 import com.orion.dto.user.ChangePasswordRequest;
 import com.orion.dto.user.UserData;
-import com.orion.service.UserService;
+import com.orion.security.CustomUserDetails;
+import com.orion.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,8 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -43,13 +44,32 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
     @GetMapping("/me")
-    public ResponseEntity myProfile(@AuthenticationPrincipal UserDetails applicationUserDetails) {
+    public ResponseEntity myProfile(@AuthenticationPrincipal CustomUserDetails applicationUserDetails) {
         String methodName = "getMyProfile";
 
         log.info("{} -> Get my profile", methodName);
-        ResponseObject responseObject = service.myProfile(applicationUserDetails);
+        ResponseObject responseObject = service.myProfile(applicationUserDetails.getUsername());
 
         log.info("{} -> Get my profile, response status: {}",methodName, responseObject.getCode());
+        return ResponseEntity.status(responseObject.getStatus()).body(responseObject);
+    }
+
+    @Operation(summary = "Get my users", description = "Returns my users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = UserData.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
+    @PreAuthorize("hasAuthority(@securityService.roleTenant)")
+    @GetMapping("/members")
+    public ResponseEntity getAgencyMembersForTenant() {
+        String methodName = "getAgencyMembersForTenant";
+
+        log.info("{} -> Get my users", methodName);
+        ResponseObject responseObject = service.myMembers();
+
+        log.info("{} -> Get my users, response status: {}",methodName, responseObject.getCode());
         return ResponseEntity.status(responseObject.getStatus()).body(responseObject);
     }
 }
